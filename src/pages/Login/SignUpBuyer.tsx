@@ -6,6 +6,7 @@ import Button from 'react-bootstrap/Button';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai'; // Import eye icons
 import Header from "../../components/Header-sub";
 
+
 const SignUpBuyer: React.FC = () => {
 
   const [verificationCode, setVerificationCode] = useState("");
@@ -161,7 +162,7 @@ const SignUpBuyer: React.FC = () => {
                 <Button variant="primary" type="submit" className="mb-3" 
                   style={{ 
                     backgroundColor: '#00BA29',
-                    fontSize: '16px',
+                    fontSize: '10px',
                     marginBottom: '10px',
                     border: 'none',
                     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
@@ -173,6 +174,8 @@ const SignUpBuyer: React.FC = () => {
           </Col>
         </Row>
       </Form>
+      <div>
+      </div>
     </div>
   );
 };
