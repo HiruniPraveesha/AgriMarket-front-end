@@ -5,8 +5,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 const Header: React.FC = () => {
   const gradientStyle = {
     fontFamily: "Sansita",
-    paddingLeft: "40%",
     fontSize: "4rem",
+    marginLeft: "20%",
     background:
       "linear-gradient(180deg, #032004 8.13%, #18C01F 62.1%, #00FF0B 73.6%)",
     backgroundClip: "text",
@@ -15,19 +15,10 @@ const Header: React.FC = () => {
   };
 
   return (
-    <nav className="navbar navbar-light bg-white">
-      <div className="container-fluid">
-        <a className="navbar-brand d-flex align-items-center" href="#">
-          <img
-            src={Logo}
-            alt="logo"
-            width="180rem"
-            className="d-inline-block align-text-top"
-          />
-          <span style={gradientStyle}>Agri Market</span>
-        </a>
-      </div>
-    </nav>
+    <div className="p-3 d-flex align-items-center">
+      <img src={Logo} alt="logo" width="180rem" className="me-3" />
+      <div style={gradientStyle}>Agri Market</div>
+    </div>
   );
 };
 
