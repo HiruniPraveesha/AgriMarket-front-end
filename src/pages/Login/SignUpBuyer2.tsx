@@ -6,7 +6,7 @@ import Button from 'react-bootstrap/Button';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai'; // Import eye icons
 import Header from "../../components/Header-sub";
 
-const SignUpBuyer: React.FC = () => {
+const SignUpBuyer2: React.FC = () => {
 
   const [verificationCode, setVerificationCode] = useState("");
   const [isCodeSent, setIsCodeSent] = useState(false);
@@ -170,6 +170,7 @@ const SignUpBuyer: React.FC = () => {
                 </Button>
               </Col>
             </Form.Group>
+
           </Col>
         </Row>
       </Form>
@@ -177,4 +178,4 @@ const SignUpBuyer: React.FC = () => {
   );
 };
 
-export default SignUpBuyer;
+export default SignUpBuyer2;
