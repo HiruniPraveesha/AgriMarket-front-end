@@ -5,7 +5,6 @@ import SignUpBuyer from "./pages/Login/SignUpBuyer";
 const App: React.FC = () => {
   return (
     <div>
-      <SignUpBuyer />
       <SignIn />
     </div>
   );
