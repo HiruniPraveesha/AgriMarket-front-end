@@ -1,4 +1,5 @@
-// Import necessary dependencies and components
+import React from "react";
+import { Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Header from "../../components/Header-sub";
 import Footer from "../../components/Footer-sub";
@@ -6,12 +7,12 @@ import signupImage from "../../assets/signupimage.png";
 import SignUpIcon from "../../assets/signup_icon.svg";
 import Button from "react-bootstrap/Button";
 
+import SelectLogin from "./selectLogin";
+
 function SignIn() {
   return (
-    <div>
-      <div>
-        <Header />
-      </div>
+    <div style={{ margin: "0 20%" }}>
+      <Header />
       <div className="container-fluid p-3">
         <div className="row">
           {/* Login Column */}
@@ -133,29 +134,27 @@ function SignIn() {
                   Don't have an Account yet?
                 </p>
               </div>
-
-              <Button
-                variant="primary"
-                type="submit"
-                className="mb-4 py-3"
-                style={{
-                  marginTop: "30px",
-                  borderRadius: "15px",
-                  backgroundColor: "#00BA29",
-                  fontSize: "1.2rem",
-                  border: "none",
-                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-                }}
-              >
-                Register Now
-              </Button>
+              {/* <Link to="/selectLogin" style={{ textDecoration: "none" }}>
+                <Button
+                  variant="primary"
+                  className="mb-4 py-3"
+                  style={{
+                    marginTop: "30px",
+                    borderRadius: "15px",
+                    backgroundColor: "#00BA29",
+                    fontSize: "1.2rem",
+                    border: "none",
+                    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                  }}
+                >
+                  Register Now
+                </Button>
+              </Link> */}
             </div>
           </div>
         </div>
       </div>
-      <div>
-        <Footer />
-      </div>
+      <Footer />
     </div>
   );
 }
