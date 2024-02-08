@@ -8,7 +8,7 @@ import Search from "../assets/Search.svg";
 import language from "../assets/Languages.svg";
 import { Dropdown } from "react-bootstrap";
 
-const HeaderNew = () => {
+const MainHeader = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isSticky, setIsSticky] = useState(false);
 
@@ -37,11 +37,12 @@ const HeaderNew = () => {
       className={`text-center text-lg-start text-muted ${
         isSticky ? "sticky-top" : ""
       }`}
-      style={{ fontSize: "0.7rem", padding: "0", marginTop: "0" }}
+      style={{ fontSize: "0.7rem", margin: "0", overflowX: "hidden" }} // Updated style
     >
-      <div className="bg-light" style={{ marginBottom: "0", marginTop: "0" }}>
+      <div className="bg-light" style={{ margin: "0", overflowX: "hidden" }}>
+        {" "}
         <div className="row">
-          <div className="col-md-3 col-lg-2 col-xl-2 mx-auto mb-1  d-flex justify-content-center align-items-center">
+          <div className="col-md-3 col-lg-2 col-xl-2 mx-auto d-flex justify-content-center align-items-center">
             <Dropdown>
               <Dropdown.Toggle variant="light" id="dropdown-basic">
                 <img
@@ -57,12 +58,9 @@ const HeaderNew = () => {
               </Dropdown.Menu>
             </Dropdown>
           </div>
-          <div
-            className="col-md-7 col-lg-7 col-xl-7 mx-auto mb-1"
-            style={{ marginBottom: "0px" }}
-          ></div>
+          <div className="col-md-7 col-lg-7 col-xl-7"></div>
 
-          <div className="col-md-2 col-lg-2 col-xl-2 mx-auto mb-md-0 mb-1 mt-2">
+          <div className="col-md-2 col-lg-2 col-xl-2 mx-auto mt-2">
             <a
               href="#"
               className="text-decoration-none"
@@ -88,9 +86,10 @@ const HeaderNew = () => {
         </div>
       </div>
 
-      <div className="bg-white">
+      <div className="bg-white" style={{ margin: "0", overflowX: "hidden" }}>
+        {" "}
         <div className="row">
-          <div className="col-md-3 col-lg-2 col-xl-2 mx-auto mb-1 ml-2  d-flex justify-content-center align-items-center">
+          <div className="col-md-3 col-lg-2 col-xl-2 mx-auto ml-2  d-flex justify-content-center align-items-center">
             <a href="#">
               <img
                 src={Logo}
@@ -100,7 +99,7 @@ const HeaderNew = () => {
             </a>
           </div>
 
-          <div className="col-md-7 col-lg-7 col-xl-7 mx-auto mb-1 mt-0 d-flex justify-content-center align-items-center">
+          <div className="col-md-7 col-lg-7 col-xl-7 mx-auto mt-0 d-flex justify-content-center align-items-center">
             <Dropdown>
               <Dropdown.Toggle
                 variant="light"
@@ -146,19 +145,20 @@ const HeaderNew = () => {
             </button>
           </div>
 
-          <div className="col-md-2 col-lg-2 col-xl-2 mx-auto mb-md-0 mb-1 mt-1  d-flex justify-content-center align-items-center">
-            <a href="#" className="nav-link" style={{ margin: "0 10px" }}>
+          <div className="col-md-2 col-lg-2 col-xl-2 mx-auto mt-1 d-flex justify-content-center align-items-center">
+            <a href="#" className="nav-link" style={{ padding: "0 5px" }}>
               <img src={Bell} alt="Bell" />
             </a>
-            <a href="#" className="nav-link" style={{ margin: "0 10px" }}>
+            <a href="#" className="nav-link" style={{ padding: "0 5px" }}>
               <img src={Cart} alt="Cart" />
             </a>
           </div>
         </div>
       </div>
-      <div className="bg-light">
+      <div className="bg-light" style={{ margin: "0", overflowX: "hidden" }}>
+        {" "}
         <div className="row">
-          <div className="col-md-9 col-lg-9 col-xl-9 mx-auto mb-1">
+          <div className="col-md-9 col-lg-9 col-xl-9 mx-auto">
             <nav
               className="navbar navbar-expand-lg navbar-light bg-light text-black"
               style={{
@@ -233,7 +233,7 @@ const HeaderNew = () => {
           </div>
 
           <div
-            className="col-md-2 col-lg-2 col-xl-2 mx-auto mb-md-0 mt-2 text-black"
+            className="col-md-2 col-lg-2 col-xl-2 mx-auto mt-2 text-black"
             style={{ fontSize: "12px" }}
           >
             CALL US NOW +94 76 123 4567
@@ -243,4 +243,5 @@ const HeaderNew = () => {
     </header>
   );
 };
-export default HeaderNew;
+
+export default MainHeader;
