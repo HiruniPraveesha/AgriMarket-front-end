@@ -9,10 +9,11 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 export default function Footer2() {
   return (
-    <footer className="bg-light text-center text-lg-start text-muted mt-2">
+    <footer
+      className="bg-light text-center text-lg-start text-muted mt-2"
+      style={{ fontSize: "0.9rem" }}
+    >
       <div className="container mt-3">
-        {" "}
-        {/* Reduced the top margin */}
         <div className="row mt-3">
           <div className="col-md-2 col-lg-2 col-xl-2 mx-auto mb-4">
             <h6
