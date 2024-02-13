@@ -1,12 +1,11 @@
 import React from "react";
-import SignIn from "./pages/Login/SignIn";
-import SignUpBuyer from "./pages/Login/SignUpBuyer";
+
+import BecomeASeller from "./pages/Login/BecomeASeller";
 
 const App: React.FC = () => {
   return (
     <div>
-      <SignUpBuyer />
-      <SignIn />
+      <BecomeASeller />
     </div>
   );
 };
