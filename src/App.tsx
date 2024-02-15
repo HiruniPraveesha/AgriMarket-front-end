@@ -1,5 +1,4 @@
 import React from "react";
-
 import BecomeASeller from "./pages/Login/BecomeASeller";
 
 const App: React.FC = () => {
