@@ -8,7 +8,7 @@ import Search from "../assets/Search.svg";
 import language from "../assets/Languages.svg";
 import { Dropdown } from "react-bootstrap";
 
-const MainHeader = () => {
+const HeaderNew = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isSticky, setIsSticky] = useState(false);
 
@@ -37,12 +37,20 @@ const MainHeader = () => {
       className={`text-center text-lg-start text-muted ${
         isSticky ? "sticky-top" : ""
       }`}
-      style={{ fontSize: "0.7rem", margin: "0", overflowX: "hidden" }} // Updated style
+      style={{
+        fontSize: "0.7rem",
+        padding: "0",
+        marginTop: "0",
+        position: "fixed",
+        width: "100%",
+        zIndex: "999",
+        top: "0",
+      }}
     >
-      <div className="bg-light" style={{ margin: "0", overflowX: "hidden" }}>
-        {" "}
+      <div className="bg-light" style={{ marginBottom: "0", marginTop: "0" }}>
         <div className="row">
-          <div className="col-md-3 col-lg-2 col-xl-2 mx-auto d-flex justify-content-center align-items-center">
+          {/* Dropdown */}
+          <div className="col-md-3 col-lg-2 col-xl-2 mb-1 d-flex justify-content-center align-items-center">
             <Dropdown>
               <Dropdown.Toggle variant="light" id="dropdown-basic">
                 <img
@@ -51,16 +59,18 @@ const MainHeader = () => {
                   style={{ width: "18px", height: "18px" }}
                 />
               </Dropdown.Toggle>
-
               <Dropdown.Menu>
                 <Dropdown.Item href="#/action-1">English</Dropdown.Item>
                 <Dropdown.Item href="#/action-2">සිංහල</Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
           </div>
-          <div className="col-md-7 col-lg-7 col-xl-7"></div>
 
-          <div className="col-md-2 col-lg-2 col-xl-2 mx-auto mt-2">
+          {/* Empty Column */}
+          <div className="col-md-7 col-lg-7 col-xl-7 mb-1"></div>
+
+          {/* Help & Login/Register */}
+          <div className="col-md-2 col-lg-2 col-xl-2 mb-md-0 mb-1 mt-2">
             <a
               href="#"
               className="text-decoration-none"
@@ -86,10 +96,11 @@ const MainHeader = () => {
         </div>
       </div>
 
-      <div className="bg-white" style={{ margin: "0", overflowX: "hidden" }}>
-        {" "}
+      {/* Main Header Content */}
+      <div className="bg-white">
         <div className="row">
-          <div className="col-md-3 col-lg-2 col-xl-2 mx-auto ml-2  d-flex justify-content-center align-items-center">
+          {/* Logo */}
+          <div className="col-md-3 col-lg-2 col-xl-2 mb-1 ml-2 d-flex justify-content-center align-items-center">
             <a href="#">
               <img
                 src={Logo}
@@ -99,7 +110,8 @@ const MainHeader = () => {
             </a>
           </div>
 
-          <div className="col-md-7 col-lg-7 col-xl-7 mx-auto mt-0 d-flex justify-content-center align-items-center">
+          {/* Search Bar */}
+          <div className="col-md-7 col-lg-7 col-xl-7 mb-1 mt-0 d-flex justify-content-center align-items-center">
             <Dropdown>
               <Dropdown.Toggle
                 variant="light"
@@ -115,7 +127,6 @@ const MainHeader = () => {
               >
                 All categories
               </Dropdown.Toggle>
-
               <Dropdown.Menu>
                 <Dropdown.Item style={{ padding: "4px 8px" }}>1</Dropdown.Item>
                 <Dropdown.Item style={{ padding: "4px 8px" }}>2</Dropdown.Item>
@@ -123,14 +134,12 @@ const MainHeader = () => {
                 <Dropdown.Item style={{ padding: "4px 8px" }}>4</Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
-
             <input
               className="form-control mr-sm-2"
               type="search"
               aria-label="Search"
               style={{ borderRadius: "0", width: "200px", fontSize: "0.7rem" }}
             />
-
             <button
               className="btn btn-success my-2 my-sm-0"
               type="submit"
@@ -145,20 +154,23 @@ const MainHeader = () => {
             </button>
           </div>
 
-          <div className="col-md-2 col-lg-2 col-xl-2 mx-auto mt-1 d-flex justify-content-center align-items-center">
-            <a href="#" className="nav-link" style={{ padding: "0 5px" }}>
+          {/* Bell & Cart Icons */}
+          <div className="col-md-2 col-lg-2 col-xl-2 mb-md-0 mt-1 d-flex justify-content-center align-items-center">
+            <a href="#" className="nav-link" style={{ margin: "0 10px" }}>
               <img src={Bell} alt="Bell" />
             </a>
-            <a href="#" className="nav-link" style={{ padding: "0 5px" }}>
+            <a href="#" className="nav-link" style={{ margin: "0 10px" }}>
               <img src={Cart} alt="Cart" />
             </a>
           </div>
         </div>
       </div>
-      <div className="bg-light" style={{ margin: "0", overflowX: "hidden" }}>
-        {" "}
+
+      {/* Additional Navbar */}
+      <div className="bg-light">
         <div className="row">
-          <div className="col-md-9 col-lg-9 col-xl-9 mx-auto">
+          {/* Navbar */}
+          <div className="col-md-9 col-lg-9 col-xl-9 mb-1 mx-auto">
             <nav
               className="navbar navbar-expand-lg navbar-light bg-light text-black"
               style={{
@@ -182,7 +194,6 @@ const MainHeader = () => {
                 >
                   <span className="navbar-toggler-icon"></span>
                 </button>
-
                 <div
                   className={`collapse navbar-collapse ${
                     isExpanded ? "show" : ""
@@ -232,8 +243,9 @@ const MainHeader = () => {
             </nav>
           </div>
 
+          {/* Contact Info */}
           <div
-            className="col-md-2 col-lg-2 col-xl-2 mx-auto mt-2 text-black"
+            className="col-md-2 col-lg-2 col-xl-2 mb-md-0 mt-1 text-black"
             style={{ fontSize: "12px" }}
           >
             CALL US NOW +94 76 123 4567
@@ -244,4 +256,4 @@ const MainHeader = () => {
   );
 };
 
-export default MainHeader;
+export default HeaderNew;

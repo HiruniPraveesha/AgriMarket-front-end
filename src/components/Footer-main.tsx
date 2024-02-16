@@ -11,16 +11,21 @@ export default function Footer2() {
   return (
     <footer
       className="bg-light text-center text-lg-start text-muted mt-2"
-      style={{ fontSize: "0.9rem" }}
+      style={{ fontSize: "0.8rem" }}
     >
       <div className="container mt-3">
         <div className="row mt-3">
-          <div className="col-md-2 col-lg-2 col-xl-2 mx-auto mb-4">
+          <div className="col-md-2 col-lg-2 col-xl-2 mx-auto mb-1">
             <h6
               className="fw-bold mb-2"
               style={{ color: "#00BA28", marginTop: "10px" }}
             >
-              <span style={{ borderBottom: "3px solid #00BA28" }}>
+              <span
+                style={{
+                  borderBottom: "3px solid #00BA28",
+                  fontSize: "0.9rem",
+                }}
+              >
                 Quick Links
               </span>
             </h6>
@@ -46,12 +51,17 @@ export default function Footer2() {
             </p>
           </div>
 
-          <div className="col-md-3 col-lg-2 col-xl-2 mx-auto mb-4">
+          <div className="col-md-3 col-lg-2 col-xl-2 mx-auto mb-1">
             <h6
               className="fw-bold mb-2"
               style={{ color: "#00BA28", marginTop: "10px" }}
             >
-              <span style={{ borderBottom: "3px solid #00BA28" }}>
+              <span
+                style={{
+                  borderBottom: "3px solid #00BA28",
+                  fontSize: "0.9rem",
+                }}
+              >
                 Information
               </span>
             </h6>
@@ -77,12 +87,17 @@ export default function Footer2() {
             </p>
           </div>
 
-          <div className="col-md-3 col-lg-2 col-xl-2 mx-auto mb-4">
+          <div className="col-md-3 col-lg-2 col-xl-2 mx-auto mb-1">
             <h6
               className="fw-bold mb-2"
               style={{ color: "#00BA28", marginTop: "10px" }}
             >
-              <span style={{ borderBottom: "3px solid #00BA28" }}>
+              <span
+                style={{
+                  borderBottom: "3px solid #00BA28",
+                  fontSize: "0.9rem",
+                }}
+              >
                 Categories
               </span>
             </h6>
@@ -108,12 +123,17 @@ export default function Footer2() {
             </p>
           </div>
 
-          <div className="col-md-4 col-lg-3 col-xl-3 mx-auto mb-md-0 mb-4">
+          <div className="col-md-4 col-lg-3 col-xl-3 mx-auto mb-md-0 mb-1">
             <h6
               className="fw-bold mb-2"
               style={{ color: "#00BA28", marginTop: "10px" }}
             >
-              <span style={{ borderBottom: "3px solid #00BA28" }}>
+              <span
+                style={{
+                  borderBottom: "3px solid #00BA28",
+                  fontSize: "0.9rem",
+                }}
+              >
                 About Us
               </span>
             </h6>
