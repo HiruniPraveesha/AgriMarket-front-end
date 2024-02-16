@@ -134,22 +134,21 @@ function SignIn() {
                   Don't have an Account yet?
                 </p>
               </div>
-              {/* <Link to="/selectLogin" style={{ textDecoration: "none" }}>
-                <Button
-                  variant="primary"
-                  className="mb-4 py-3"
-                  style={{
-                    marginTop: "30px",
-                    borderRadius: "15px",
-                    backgroundColor: "#00BA29",
-                    fontSize: "1.2rem",
-                    border: "none",
-                    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-                  }}
-                >
-                  Register Now
-                </Button>
-              </Link> */}
+
+              <Button
+                variant="primary"
+                className="mb-4 py-3"
+                style={{
+                  marginTop: "30px",
+                  borderRadius: "15px",
+                  backgroundColor: "#00BA29",
+                  fontSize: "1.2rem",
+                  border: "none",
+                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                }}
+              >
+                Register Now
+              </Button>
             </div>
           </div>
         </div>
