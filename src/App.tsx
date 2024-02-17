@@ -10,11 +10,7 @@ const App: React.FC = () => {
   return (
     <div>
       <div>
-        <MainHeader />
-      </div>
-      <div>
         <ProductMap />
-        <MainFooter />
       </div>
     </div>
   );
