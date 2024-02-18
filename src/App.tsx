@@ -9,7 +9,6 @@ import Payment from "./pages/Checkout/Payment";
 import Select from "./pages/Checkout/Select";
 import PopupWindow from "./pages/Checkout/Complete";
 import BuyerProfile from "./pages/Buyer/BuyerProfile";
-import Complete from "./pages/Checkout/Complete";
 
 const App: React.FC = () => {
   return (
