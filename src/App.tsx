@@ -10,10 +10,9 @@ import ProductMap from "./pages/ProductMap";
 const App: React.FC = () => {
   return (
     <div>
-      <MainHeader />
-      <div style={{ paddingBottom: "10%" }}></div>
-      <BecomeASeller />
-      <MainFooter />
+      <div>
+        <ProductMap />
+      </div>
     </div>
   );
 };
