@@ -6,14 +6,19 @@ import "./index.css";
 import SignIn from "./pages/Login/SignIn";
 import SelectLogin from "./pages/Login/selectLogin";
 import SignUpBuyer from "./pages/Login/SignUpBuyer";
-import BecomeASeller from "./pages/BecomeASeller";
+import BecomeASeller from "./pages/Login/BecomeASeller";
 import ProductMap from "./pages/ProductMap";
-// import HomePage from "./pages/HomePage";
+import HomePage from "./pages/HomePage";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <SignIn />,
+    element: <App />,
+    errorElement: <div>404 Not Found</div>, //put this into a page later
+  },
+  {
+    path: "/Home",
+    element: <HomePage />,
     errorElement: <div>404 Not Found</div>, //put this into a page later
   },
   {
