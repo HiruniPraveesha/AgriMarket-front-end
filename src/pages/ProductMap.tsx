@@ -11,7 +11,7 @@ import Icon4 from "../assets/icon4.svg";
 export default function App() {
   return (
     <div>
-      <div style={{ paddingBottom: "10%" }}>
+      <div>
         <MainHeader />
       </div>
       <div className="container">

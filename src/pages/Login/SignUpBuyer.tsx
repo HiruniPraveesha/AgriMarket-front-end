@@ -10,12 +10,14 @@ import Footer from "../../components/Footer-sub";
 const SignUpBuyer: React.FC = () => {
   const [verificationCode, setVerificationCode] = useState("");
   const [isCodeSent, setIsCodeSent] = useState(false);
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [address, setAddress] = useState("");
+  const [mobile, setMobile] = useState("");
+  const [password, setPassword] = useState("");
+  const [termsChecked, setTermsChecked] = useState(false);
 
   const handleSendVerificationCode = () => {
-    // Add your logic here to send the verification code to the user's phone number
-    // For example, you can make an API call or trigger a function to send the code.
-
-    // For the purpose of this example, I'm just updating the state to simulate the code being sent.
     setIsCodeSent(true);
   };
 
@@ -23,6 +25,49 @@ const SignUpBuyer: React.FC = () => {
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     setVerificationCode(e.target.value);
+  };
+
+  const handleFullNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFullName(e.target.value);
+  };
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+  };
+
+  const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setAddress(e.target.value);
+  };
+
+  const handleMobileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setMobile(e.target.value);
+  };
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
+  };
+
+  const handleTermsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTermsChecked(e.target.checked);
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    // Add your validation logic here
+    if (
+      !fullName ||
+      !email ||
+      !address ||
+      !mobile ||
+      !password ||
+      !termsChecked
+    ) {
+      alert("Please fill out all required fields.");
+      return;
+    }
+
+    // Continue with your form submission logic here
   };
 
   const [showPassword, setShowPassword] = useState(false);
@@ -36,15 +81,17 @@ const SignUpBuyer: React.FC = () => {
       <div>
         <Header />
       </div>
-      <div style={{ padding: "20px", fontSize: "20px", textAlign: "center" }}>
+      <div style={{ fontSize: "18px", textAlign: "center" }}>
         <p style={{ fontWeight: "Bold" }}>SIGN UP</p>
       </div>
       <Form
         style={{
           backgroundColor: "#D9D9D9",
           padding: "20px",
-          fontSize: "10px",
+          paddingBottom: 0,
+          fontSize: "14px",
         }}
+        onSubmit={handleSubmit}
       >
         <Row>
           {/* Left Part */}
@@ -54,7 +101,14 @@ const SignUpBuyer: React.FC = () => {
                 Full Name<span style={{ color: "red" }}>*</span>
               </Form.Label>
               <Col sm="8">
-                <Form.Control type="text" className="mb-3" />
+                <Form.Control
+                  type="text"
+                  className="mb-3"
+                  value={fullName}
+                  onChange={handleFullNameChange}
+                  style={{ fontSize: "14px" }}
+                  required
+                />
               </Col>
             </Form.Group>
 
@@ -67,7 +121,14 @@ const SignUpBuyer: React.FC = () => {
                 Email<span style={{ color: "red" }}>*</span>
               </Form.Label>
               <Col sm="8">
-                <Form.Control type="email" className="mb-3" />
+                <Form.Control
+                  type="email"
+                  className="mb-3"
+                  value={email}
+                  onChange={handleEmailChange}
+                  style={{ fontSize: "14px" }}
+                  required
+                />
               </Col>
             </Form.Group>
 
@@ -80,9 +141,20 @@ const SignUpBuyer: React.FC = () => {
                 Address<span style={{ color: "red" }}>*</span>
               </Form.Label>
               <Col sm="8">
-                <Form.Control type="text" className="mb-3" />
-                <Form.Control type="text" className="mb-3" />
-                <Form.Control type="text" />
+                <Form.Control
+                  type="text"
+                  className="mb-3"
+                  value={address}
+                  onChange={handleAddressChange}
+                  style={{ fontSize: "14px" }}
+                  required
+                />
+                <Form.Control
+                  type="text"
+                  className="mb-3"
+                  style={{ fontSize: "14px" }}
+                />
+                <Form.Control type="text" style={{ fontSize: "14px" }} />
               </Col>
             </Form.Group>
           </Col>
@@ -98,7 +170,14 @@ const SignUpBuyer: React.FC = () => {
                 Mobile<span style={{ color: "red" }}>*</span>
               </Form.Label>
               <Col sm="8">
-                <Form.Control type="text" className="mb-3" />
+                <Form.Control
+                  type="text"
+                  className="mb-3"
+                  value={mobile}
+                  onChange={handleMobileChange}
+                  style={{ fontSize: "14px" }}
+                  required
+                />
               </Col>
             </Form.Group>
 
@@ -113,6 +192,7 @@ const SignUpBuyer: React.FC = () => {
                     className="mb-3"
                     value={verificationCode}
                     onChange={handleVerificationCodeChange}
+                    style={{ fontSize: "14px" }}
                   />
                   <Button
                     variant="primary"
@@ -152,7 +232,48 @@ const SignUpBuyer: React.FC = () => {
                   <Form.Control
                     type={showPassword ? "text" : "password"}
                     className="mb-3"
-                    style={{ paddingRight: "40px" }} // Adjust padding to accommodate the icon
+                    style={{ paddingRight: "40px", fontSize: "14px" }} // Adjust padding to accommodate the icon
+                    value={password}
+                    onChange={handlePasswordChange}
+                    required
+                  />
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "50%",
+                      right: "10px",
+                      transform: "translateY(-50%)",
+                      cursor: "pointer",
+                    }}
+                    onClick={togglePasswordVisibility}
+                  >
+                    {showPassword ? (
+                      <AiOutlineEyeInvisible />
+                    ) : (
+                      <AiOutlineEye />
+                    )}
+                  </div>
+                </div>
+              </Col>
+            </Form.Group>
+
+            <Form.Group
+              as={Row}
+              className="mb-4"
+              controlId="formPlaintextPassword"
+            >
+              <Form.Label column sm="4">
+                Re-enter Password<span style={{ color: "red" }}>*</span>
+              </Form.Label>
+              <Col sm="8">
+                <div style={{ position: "relative" }}>
+                  <Form.Control
+                    type={showPassword ? "text" : "password"}
+                    className="mb-3"
+                    style={{ paddingRight: "40px", fontSize: "14px" }} // Adjust padding to accommodate the icon
+                    value={password}
+                    onChange={handlePasswordChange}
+                    required
                   />
                   <div
                     style={{
@@ -190,6 +311,9 @@ const SignUpBuyer: React.FC = () => {
                       </a>
                     </span>
                   }
+                  checked={termsChecked}
+                  onChange={handleTermsChange}
+                  required
                 />
               </Col>
             </Form.Group>
@@ -202,8 +326,7 @@ const SignUpBuyer: React.FC = () => {
                   className="mb-3"
                   style={{
                     backgroundColor: "#00BA29",
-                    fontSize: "10px",
-                    marginBottom: "10px",
+                    fontSize: "16px",
                     border: "none",
                     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
                   }}

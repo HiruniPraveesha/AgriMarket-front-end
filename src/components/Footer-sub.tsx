@@ -1,13 +1,14 @@
+import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-function SignIn() {
+function FooterSub() {
   return (
     <div>
       <div
-        className="d-flex flex-column flex-md-row text-center text-md-start justify-content-between py-4 px-4 px-xl-5"
+        className="d-flex flex-column flex-md-row text-center text-md-start justify-content-between py-2 px-4 px-xl-5"
         style={{ backgroundColor: "#00BA29" }}
       >
-        <div className="d-flex align-items-center">
+        <div className="d-flex flex-column flex-md-row align-items-center">
           <a href="/about" className="text-white mx-1 text-decoration-none">
             About Us
           </a>
@@ -35,4 +36,4 @@ function SignIn() {
   );
 }
 
-export default SignIn;
+export default FooterSub;

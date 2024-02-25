@@ -7,6 +7,7 @@ import login from "../assets/Login.svg";
 import Search from "../assets/Search.svg";
 import language from "../assets/Languages.svg";
 import { Dropdown } from "react-bootstrap";
+import { Link } from "react-router-dom";
 
 const HeaderNew = () => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -41,7 +42,7 @@ const HeaderNew = () => {
         fontSize: "0.7rem",
         padding: "0",
         marginTop: "0",
-        position: "fixed",
+        position: isSticky ? "fixed" : "static",
         width: "100%",
         zIndex: "999",
         top: "0",
@@ -79,8 +80,8 @@ const HeaderNew = () => {
               Help
             </a>
             <span style={{ margin: "0 10px" }}></span>
-            <a
-              href="#"
+            <Link
+              to="/signIn"
               className="text-decoration-none"
               style={{ color: "#00BA29", fontSize: "12px" }}
             >
@@ -91,7 +92,7 @@ const HeaderNew = () => {
               />
               <span style={{ margin: "0 2px" }}></span>
               Login/Register
-            </a>
+            </Link>
           </div>
         </div>
       </div>
@@ -211,13 +212,13 @@ const HeaderNew = () => {
                       </a>
                     </li>
                     <li className="nav-item">
-                      <a
+                      <Link
                         className="nav-link text-black"
-                        href="#"
+                        to="/ProductMap"
                         style={{ fontSize: "12px", paddingRight: "10px" }}
                       >
                         PRODUCT MAP
-                      </a>
+                      </Link>
                     </li>
                     <li className="nav-item">
                       <a

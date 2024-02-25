@@ -15,9 +15,11 @@ const Header: React.FC = () => {
   };
 
   return (
-    <div className="p-3 d-flex align-items-center">
-      <img src={Logo} alt="logo" width="180rem" className="me-3" />
-      <div style={gradientStyle}>Agri Market</div>
+    <div className="p-3 d-flex flex-column flex-md-row align-items-center">
+      <img src={Logo} alt="logo" width="180rem" className="me-3 mb-3 mb-md-0" />
+      <div className="text-center text-md-start" style={gradientStyle}>
+        Agri Market
+      </div>
     </div>
   );
 };
