@@ -6,14 +6,12 @@ import MainHeader from "./components/Header-main";
 import MainFooter from "./components/Footer-main";
 import BecomeASeller from "./pages/BecomeASeller";
 import ProductMap from "./pages/ProductMap";
+import SignupSeller2 from "./pages/Login/SignupSeller2";
 
 const App: React.FC = () => {
   return (
     <div>
-      <MainHeader />
-      <div style={{ paddingBottom: "10%" }}></div>
-      <BecomeASeller />
-      <MainFooter />
+      <SignupSeller2 />
     </div>
   );
 };
