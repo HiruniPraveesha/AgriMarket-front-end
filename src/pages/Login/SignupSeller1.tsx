@@ -1,7 +1,6 @@
-// SignupSeller1.tsx
 import React, { useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
-import BecomeASeller from "../BecomeASeller"; // Import the BecomeASeller component
+import BecomeASeller from "../BecomeASeller";
 import arrow from "../../assets/arrow.svg";
 import Line from "../../assets/Line.svg";
 
@@ -14,7 +13,7 @@ const SignupSeller1: React.FC = () => {
   const [phoneNumberValid, setPhoneNumberValid] = useState(true);
   const [phoneNumberEntered, setPhoneNumberEntered] = useState(false);
   const [verificationClicked, setVerificationClicked] = useState(false);
-  const [blurEffect, setBlurEffect] = useState(true); // Add state for blur effect
+  const [blurEffect, setBlurEffect] = useState(true);
 
   const handleClose = () => setShow(false);
 
@@ -60,7 +59,13 @@ const SignupSeller1: React.FC = () => {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (phoneNumberValid && verificationComplete) {
-      console.log("Form submitted successfully");
+      // Perform additional checks such as checking if the number is from Sri Lanka
+      // If the checks pass, proceed to the next page
+      console.log(
+        "Phone number is valid and verified. Proceeding to the next page."
+      );
+      // Example: Redirect to the next page
+      window.location.href = "/next-page";
     } else {
       console.log("Form submission failed. Please check your input.");
     }
@@ -74,7 +79,7 @@ const SignupSeller1: React.FC = () => {
         backdrop="static"
         keyboard={false}
         dialogClassName="BecomeASellerModal"
-        onExited={() => setBlurEffect(false)} // Disable blur effect when modal is closed
+        onExited={() => setBlurEffect(false)}
       >
         <div
           style={{
@@ -85,7 +90,7 @@ const SignupSeller1: React.FC = () => {
             height: "100vh",
             overflow: "hidden",
             zIndex: -1,
-            filter: blurEffect ? "blur(5px)" : "none", // Apply blur effect conditionally
+            filter: blurEffect ? "blur(5px)" : "none",
           }}
         >
           <BecomeASeller />
@@ -130,7 +135,7 @@ const SignupSeller1: React.FC = () => {
               <Form.Group controlId="phoneNumber">
                 <Form.Label
                   style={{
-                    fontSize: "15px",
+                    fontSize: "14px",
                   }}
                 >
                   Phone Number
@@ -145,7 +150,9 @@ const SignupSeller1: React.FC = () => {
                     fontSize: "14px",
                     padding: "5px 15px",
                     height: "33px",
-                    width: "425px",
+                    width: "100%",
+                    maxWidth: "425px",
+                    margin: "0 auto",
                   }}
                 />
                 {!phoneNumberEntered && verificationClicked && (
@@ -158,14 +165,14 @@ const SignupSeller1: React.FC = () => {
                 </Form.Control.Feedback>
               </Form.Group>
               <Form.Group controlId="verification">
-                <Form.Label style={{ margin: "15px 0", fontSize: "15px" }}>
+                <Form.Label style={{ margin: "15px 0", fontSize: "14px" }}>
                   Verification
                 </Form.Label>
                 <div
                   style={{
                     position: "relative",
                     overflow: "hidden",
-                    cursor: "move", // Change cursor to move
+                    cursor: "move",
                   }}
                   onMouseDown={handleMouseDown}
                   onMouseMove={handleMouseMove}
@@ -199,13 +206,15 @@ const SignupSeller1: React.FC = () => {
                     style={{
                       color: "gray",
                       fontSize: "14px",
-                      padding: "5px 60px", // Adjust this value to vertically center the text
-                      pointerEvents: "none", // Prevent the div from receiving pointer events
-                      width: "425px", // Adjust width as needed
-                      height: "33px", // Adjust height as needed
-                      border: "1px solid #ced4da", // Add border to mimic text box
-                      borderRadius: "4px", // Add border radius to mimic text box
-                      backgroundColor: "#e9ecef", // Add background color to mimic text box
+                      padding: "5px 60px",
+                      pointerEvents: "none",
+                      width: "100%",
+                      maxWidth: "425px",
+                      margin: "0 auto",
+                      height: "33px",
+                      border: "1px solid #ced4da",
+                      borderRadius: "4px",
+                      backgroundColor: "#e9ecef",
                     }}
                   >
                     Slide to verify
@@ -243,7 +252,7 @@ const SignupSeller1: React.FC = () => {
                   type="submit"
                   style={{
                     fontSize: "12px",
-                    padding: "5px 20px",
+                    padding: "15px 50px",
                     marginTop: "30px",
                     color: "#ffff",
                     backgroundColor: "#00BA29",
