@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Row, Col, Form, Button } from 'react-bootstrap';
 import Back from '../../assets/Back.svg';
+import HeaderSub from "../../components/Header-sub";
 
 interface StepProgressBarProps {
   currentStep: number;
@@ -59,9 +60,11 @@ const StepProgressBar: React.FC<StepProgressBarProps> = ({ currentStep }) => {
 
   return (
     <div>
+      <div style={{margin:'0 20%'}}><HeaderSub/></div>
+    <div>
       <Row className="justify-content-between align-items-center">
-        <Col xs={2} md={2}></Col>
-        <Col xs={8} md={8} className="d-flex justify-content-between align-items-center">
+        <Col xs={3} md={3}></Col>
+        <Col xs={6} md={6} className="d-flex justify-content-between align-items-center">
           {/* Step Progress Bar */}
           <div style={{ marginLeft: '20px' }}>
             <div
@@ -110,7 +113,7 @@ const StepProgressBar: React.FC<StepProgressBarProps> = ({ currentStep }) => {
             <p style={{ margin: 0, whiteSpace: 'nowrap', fontSize: '14px', marginTop:'50px' }}>Add Product</p>
           </div>
         </Col>
-        <Col xs={2} md={2}></Col>
+        <Col xs={3} md={3}></Col>
       </Row>
       <Row className="justify-content-between align-items-center">
         <Col md={3}></Col>
@@ -184,6 +187,7 @@ const StepProgressBar: React.FC<StepProgressBarProps> = ({ currentStep }) => {
         </Col>
         <Col md={3}></Col>
       </Row>
+    </div>
     </div>
   );
 };

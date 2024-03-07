@@ -23,9 +23,9 @@ import AddProduct from "./pages/Login/AddProduct";
 const App: React.FC = () => {
   return (
     <div>
-      <HeaderSub/>
-      {/* <AddLogin currentStep={1}/> */}
-      < Verifybank currentStep={2}/>
+      {/* <HeaderSub/> */}
+      <AddLogin currentStep={1}/>
+      {/* < Verifybank currentStep={2}/> */}
       {/* <AddProduct currentStep={3}/> */}
       {/* <MainHeader />  */}
       {/* <Checkout/>  */}

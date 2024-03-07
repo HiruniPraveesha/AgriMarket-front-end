@@ -3,6 +3,7 @@ import { Row, Col, Form, Button } from 'react-bootstrap';
 import { FaTimes } from 'react-icons/fa';
 import UploadImage from '../../assets/UploadImage.svg';
 import Back from '../../assets/Back.svg';
+import HeaderSub from "../../components/Header-sub";
 
 const Verifybank: React.FC<{ currentStep: number }> = ({ currentStep }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -74,10 +75,11 @@ const Verifybank: React.FC<{ currentStep: number }> = ({ currentStep }) => {
   };
 
   return (
-    <div>
+      <div > 
+      <div style={{margin:'0 20%'}}><HeaderSub/></div>
       <Row className="justify-content-between align-items-center">
-        <Col xs={2} md={2}></Col>
-        <Col xs={8} md={8} className="d-flex justify-content-between align-items-center">
+        <Col xs={3} md={3}></Col>
+        <Col xs={6} md={6} className="d-flex justify-content-between align-items-center">
           {/* Step Progress Bar */}
           <div style={{ marginLeft: '20px' }}>
             <div
@@ -126,12 +128,12 @@ const Verifybank: React.FC<{ currentStep: number }> = ({ currentStep }) => {
             <p style={{ margin: 0, whiteSpace: 'nowrap', fontSize: '14px', marginTop: '50px' }}>Add Product</p>
           </div>
         </Col>
-        <Col xs={2} md={2}></Col>
+        <Col xs={3} md={3}></Col>
       </Row>
 
       <Row>
-        <Col xs={2} md={2}></Col>
-        <Col xs={8} md={8}>
+        <Col xs={3} md={3}></Col>
+        <Col xs={6} md={6}>
           <p style={{ marginTop: '50px', fontWeight: 'bold', fontSize: '18px' }}>ID & Bank Account Information</p>
           <p>Let us know about your bank information, don’t worry we’ll keep this information confidential.</p>
 
@@ -260,7 +262,7 @@ const Verifybank: React.FC<{ currentStep: number }> = ({ currentStep }) => {
             </Button>
           </Form>
         </Col>
-        <Col xs={2} md={2}></Col>
+        <Col xs={3} md={3}></Col>
       </Row>
     </div>
   );
