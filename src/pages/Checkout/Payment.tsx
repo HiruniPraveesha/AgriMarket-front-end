@@ -10,6 +10,8 @@ import Wallet from '../../assets/Wallet.svg';
 import CashOnDelivery from '../../assets/COD.svg';
 import Modal from 'react-bootstrap/Modal';
 import CompeleteOrder from '../../assets/Completed.svg';
+import MainHeader from '../../components/Header-main';
+import MainFooter from "../../components/Footer-main";
 
 function Payment() {
    
@@ -52,6 +54,8 @@ function Payment() {
   
 
   return (
+    <>
+    <MainHeader/>
     <section className="h-100 gradient-custom">
       <Container className="py-5 h-100">
         <Row className="justify-content-center my-4">
@@ -264,6 +268,8 @@ function Payment() {
         </Row>
       </Container>
     </section>
+    <MainFooter/>
+    </>
   );
 }
 

@@ -11,7 +11,7 @@ export default function Footer2() {
   return (
     <footer
       className="bg-light text-center text-lg-start text-muted mt-2"
-      style={{ fontSize: "0.9rem" }}
+      style={{ fontSize: "0.9rem" , fontFamily: "'Poppins', sans-serif"}}
     >
       <div className="container mt-3">
         <div className="row mt-3">

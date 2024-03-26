@@ -1,10 +1,14 @@
 import React from "react";
 import { Button, Card, Col, Container, Form, Image, Row, Tooltip } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-import Avacado from '../../assets/Avocado.png'
+import Avacado from '../../assets/Avocado.png';
+import MainHeader from "../../components/Header-main";
+import MainFooter from "../../components/Footer-main";
 
 export default function Checkout() {
   return (
+    <>
+    <MainHeader/>
     <section className="h-100 gradient-custom">
       <Container className="py-5 h-100">
         <Row className="justify-content-center my-4">
@@ -152,5 +156,7 @@ export default function Checkout() {
         </Row>
       </Container>
     </section>
+    <MainFooter/>
+    </>
   );
 }

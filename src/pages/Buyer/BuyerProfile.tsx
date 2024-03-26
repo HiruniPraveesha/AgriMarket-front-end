@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { Button, Col, Container, Form, Modal, Row,} from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import ProPic from '../../assets/ProPic.png';
+import MainHeader from '../../components/Header-main';
+import MainFooter from '../../components/Footer-main';
+import { Link } from "react-router-dom";
 
 export default function BuyerProfile() {
     const [email, setEmail] = useState('Nehanperera123@gmail.com');
@@ -66,10 +69,20 @@ export default function BuyerProfile() {
         setShowAddressModal(true);
     };
     
+    const handleEditProfilePicture = () => {
+        setShowProfilePictureModal(true);
+    };
+
+    const handleSaveProfilePicture = () => {
+        setProfilePicture(newProfilePicture);
+        setShowProfilePictureModal(false);
+    };
 
 
     return (
-        <section className="h-100 gradient-custom">
+        <>
+        <MainHeader />
+        <section className="h-100 gradient-custom" style={{margin:'0 20%'}}>
             <Container className="py-5 h-100">
                 <Row>
                 <Col className="justify-content-center my-4" md="5">
@@ -192,7 +205,7 @@ export default function BuyerProfile() {
                     <hr style={{ marginBottom: '5px', marginTop: '0' }}/>
                     <Row>
                     <Form.Group>
-                        <Button variant="link" style={{ padding: '0', color: '#00BA29', fontSize: '11px', marginBottom: '15px' }}>Shopping Cart</Button>
+                        <Link to ="/shopping-cart"><Button variant="link" style={{ padding: '0', color: '#00BA29', fontSize: '11px', marginBottom: '15px' }}>Shopping Cart</Button></Link>
                         </Form.Group>
                     </Row>
                     <p style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '5px' }}>Manage Addresses</p>
@@ -239,8 +252,9 @@ export default function BuyerProfile() {
                     <hr style={{ marginBottom: '5px', marginTop: '0' }} />
                     <Row>
                     <Form.Group>
+                        <Link to="/ongoing-orders">
                         <Button variant="link" style={{ padding: '0', color: '#00BA29', fontSize: '11px', marginBottom: '20px' }}>
-                            View your ongoing Orders</Button>
+                            View your ongoing Orders</Button></Link>
                         </Form.Group>
                     </Row>
 
@@ -248,8 +262,9 @@ export default function BuyerProfile() {
                     <hr style={{ marginBottom: '5px', marginTop: '0' }} />
                     <Row>
                     <Form.Group>
+                        <Link to="/order-history">
                         <Button variant="link" style={{ padding: '0', color: '#00BA29', fontSize: '11px', marginBottom: '50px' }}>
-                        View your past orders</Button>
+                        View your past orders</Button></Link>
                         </Form.Group>
                     </Row>
 
@@ -259,8 +274,9 @@ export default function BuyerProfile() {
                     <hr style={{ marginBottom: '5px', marginTop: '0' }} />
                     <Row>
                         <Form.Group>
+                            <Link to="/wallet">
                     <Button variant="link" style={{ padding: '0', color: '#00BA29', fontSize: '11px', marginBottom: '20px' }}>
-                    View your wallet </Button>
+                    View your wallet </Button></Link>
                         </Form.Group>
                     </Row>
                     <Row>
@@ -270,5 +286,7 @@ export default function BuyerProfile() {
                 </Row>
             </Container>
         </section>
+        <MainFooter/>
+        </>
     );
 }

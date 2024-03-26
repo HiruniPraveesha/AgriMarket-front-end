@@ -37,7 +37,7 @@ const MainHeader = () => {
       className={`text-center text-lg-start text-muted ${
         isSticky ? "sticky-top" : ""
       }`}
-      style={{ fontSize: "0.7rem", margin: "0", overflowX: "hidden" }} // Updated style
+      style={{ fontSize: "0.7rem", margin: "0", overflowX: "hidden" , fontFamily: "'Poppins', sans-serif"}} // Updated style
     >
       <div className="bg-light" style={{ margin: "0", overflowX: "hidden" }}>
         {" "}
