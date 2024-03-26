@@ -8,9 +8,14 @@ import SelectLogin from "./pages/Login/selectLogin";
 import SignUpBuyer from "./pages/Login/SignUpBuyer";
 import BecomeASeller from "./pages/BecomeASeller";
 import ProductMap from "./pages/ProductMap";
+import Email from "./pages/Login/ForgotPw/Email";
 // import HomePage from "./pages/HomePage";
 
 const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <App />,
+  },
   {
     path: "/",
     element: <SignIn />,
@@ -19,6 +24,10 @@ const router = createBrowserRouter([
   {
     path: "/signIn",
     element: <SignIn />,
+  },
+  {
+    path: "/Email",
+    element: <Email />,
   },
   {
     path: "/select",
