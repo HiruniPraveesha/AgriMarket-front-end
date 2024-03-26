@@ -6,6 +6,7 @@ import {
   FaEnvelope,
 } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { Link } from "react-router-dom";
 
 export default function Footer2() {
   return (
@@ -30,19 +31,25 @@ export default function Footer2() {
               </span>
             </h6>
             <p>
-              <a href="#!" className="text-reset text-decoration-none">
+              <Link to="/" className="text-reset text-decoration-none">
                 Home
-              </a>
+              </Link>
             </p>
             <p>
-              <a href="#!" className="text-reset text-decoration-none">
+              <Link
+                to="/ProductMap"
+                className="text-reset text-decoration-none"
+              >
                 Product Map
-              </a>
+              </Link>
             </p>
             <p>
-              <a href="#!" className="text-reset text-decoration-none">
+              <Link
+                to="/ProductCalendar"
+                className="text-reset text-decoration-none"
+              >
                 Product Calendar
-              </a>
+              </Link>
             </p>
             <p>
               <a href="#!" className="text-reset text-decoration-none">
@@ -71,13 +78,16 @@ export default function Footer2() {
               </a>
             </p>
             <p>
-              <a href="#!" className="text-reset text-decoration-none">
-                Private Policy
-              </a>
+              <Link
+                to="/PrivacyPolicy"
+                className="text-reset text-decoration-none"
+              >
+                Privacy Policy
+              </Link>
             </p>
             <p>
-              <a href="#!" className="text-reset text-decoration-none">
-                Terms and Services
+              <a href="/TC" className="text-reset text-decoration-none">
+                Terms and Conditions
               </a>
             </p>
             <p>

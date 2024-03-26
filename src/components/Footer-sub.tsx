@@ -1,5 +1,6 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { Link } from "react-router-dom";
 
 function FooterSub() {
   return (
@@ -13,16 +14,16 @@ function FooterSub() {
             About Us
           </a>
           <span className="text-white mx-1">|</span>
-          <a href="/privacy" className="text-white mx-1 text-decoration-none">
-            Privacy
-          </a>
-          <span className="text-white mx-1">|</span>
-          <a
-            href="/terms-and-conditions"
+          <Link
+            to="/PrivacyPolicy"
             className="text-white mx-1 text-decoration-none"
           >
+            Privacy
+          </Link>
+          <span className="text-white mx-1">|</span>
+          <Link to="/TC" className="text-white mx-1 text-decoration-none">
             Terms and Conditions
-          </a>
+          </Link>
           <span className="text-white mx-1">|</span>
           <a
             href="/contact-us"

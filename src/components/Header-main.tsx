@@ -205,7 +205,7 @@ const HeaderNew = () => {
                     <li className="nav-item text-black">
                       <a
                         className="nav-link text-black"
-                        href="#"
+                        href="/"
                         style={{ fontSize: "12px", paddingRight: "10px" }}
                       >
                         HOME
@@ -221,13 +221,13 @@ const HeaderNew = () => {
                       </Link>
                     </li>
                     <li className="nav-item">
-                      <a
+                      <Link
                         className="nav-link text-black"
-                        href="#"
+                        to="/ProductCalendar"
                         style={{ fontSize: "12px", paddingRight: "10px" }}
                       >
                         PRODUCT CALENDAR
-                      </a>
+                      </Link>
                     </li>
                     <li className="nav-item">
                       <a
