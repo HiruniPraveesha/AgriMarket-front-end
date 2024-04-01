@@ -191,14 +191,24 @@ function Payment() {
 )}
 
 
-              {showForm2 && (
-                <Form>
-                  <Form.Group controlId="form2">
-                    <Form.Label>Form 2</Form.Label>
-                    <Form.Control type="text" placeholder="Enter text" />
-                  </Form.Group>
-                </Form>
-              )}
+{showForm2 && (
+  <Form style={{ margin: '0 5%', backgroundColor: '#f0f0f0' }}>
+    <div className="row">
+      <div className="col-md-6">
+        <Form.Group controlId="form2">
+          <Form.Label style={{ fontWeight: 'bold', margin:'0 10%', marginTop:'20px' }}>Wallet Balance</Form.Label>
+          <p style={{ fontSize: '40px', margin:'0 10%', fontWeight:'bold'}}>Rs.3450</p>
+        </Form.Group>
+      </div>
+      <div className="col-md-6">
+       <Form.Label style={{ fontWeight: 'bold', margin:'0 10%', marginTop:'20px' }}>Recharge</Form.Label> 
+      </div>
+    </div>
+    <Button style={{ backgroundColor: '#01B928', color: 'white' }} onClick={handlePlaceOrder}>Place Order</Button>
+  </Form>
+)}
+
+
 
               {showForm3 && (
                 <Form style={{margin:'10px'}}>
@@ -207,6 +217,9 @@ function Payment() {
               </Form>
               
               )}
+
+
+
               {/* Bootstrap Modal for confirmation */}
       <Modal show={showConfirmation} onHide={handleCloseConfirmation} centered >
         <Modal.Header closeButton style={{ background: '#DFFFC0' }}>
