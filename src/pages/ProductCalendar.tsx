@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import { OverlayTrigger, Popover, Modal, Button, Form } from "react-bootstrap";
+import { Modal, Button, Form } from "react-bootstrap";
 import MainHeader from "../components/Header-main";
 import MainFooter from "../components/Footer-main";
 
@@ -17,13 +17,7 @@ function ProductCalendar() {
       start: new Date(2022, 3, 1, 10, 0),
       end: new Date(2022, 3, 1, 12, 0),
       description: "New stock of Product A available for purchase.",
-    },
-    {
-      id: 2,
-      title: "Product B - Restocking",
-      start: new Date(2022, 3, 2, 13, 0),
-      end: new Date(2022, 3, 2, 15, 0),
-      description: "Product B will be restocked at this time.",
+      category: "Category 1", // Add category to event data
     },
   ]);
 
@@ -31,39 +25,117 @@ function ProductCalendar() {
   const [showModal, setShowModal] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState<any>(null);
   const [product, setProduct] = useState("");
-  const [availableTime, setAvailableTime] = useState("");
+  const [note, setNote] = useState("");
+  const [category, setCategory] = useState("");
 
   // Function to handle opening and closing modal
   const toggleModal = () => setShowModal(!showModal);
 
   // Function to handle event creation
   const handleSelectSlot = ({ start, end }: { start: Date; end: Date }) => {
-    setSelectedSlot({ start, end });
-    toggleModal();
+    const today = new Date();
+    if (start >= today) {
+      setSelectedSlot({ start, end });
+      setSelectedEvent(null); // Clear selectedEvent state
+      toggleModal();
+    } else {
+      alert("Products can only be added to days that are after today.");
+    }
   };
 
   // State for selected event
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
 
-  // Function to handle event click
+  // Function to handle an event on click
   const handleEventClick = (event: any) => {
     setSelectedEvent(event);
+    setProduct(event.title.split(" - ")[0]);
+    setNote(event.title.split(" - ")[1]); // Remove the slice to include the entire note
+    setCategory(event.category); // Set the category from the selected event
+    toggleModal();
   };
 
-  // Function to handle form submission in modal
-  const handleFormSubmit = () => {
-    const { start, end } = selectedSlot;
-    const newEvent = {
-      id: events.length + 1,
-      title: `${product} - Available`,
-      start,
-      end,
-      description: `New stock of ${product} available at ${availableTime}.`,
-    };
-    setEvents([...events, newEvent]);
+  // Function to handle deleting an event
+  const handleDeleteEvent = () => {
+    const updatedEvents = events.filter(
+      (event) => event.id !== selectedEvent.id
+    );
+    setEvents(updatedEvents);
+    clearFormFields(); // Clear form fields
     toggleModal();
+  };
+
+  // Clear the form fields in the clearFormFields function
+  const clearFormFields = () => {
     setProduct("");
-    setAvailableTime("");
+    setNote("");
+    setCategory(""); // Clear the category as well
+  };
+
+  // The handleEditEvent function
+  const handleEditEvent = () => {
+    const updatedEvents = events.map((event) =>
+      event.id === selectedEvent.id
+        ? {
+            ...event,
+            title: `${product}${note} - Available`,
+            description: `New stock of ${product} will be available. ${note}.`,
+            category, // Set the category from the state
+          }
+        : event
+    );
+    setEvents(updatedEvents);
+    toggleModal();
+    clearFormFields();
+  };
+
+  // Update the handleFormSubmit function
+  const handleFormSubmit = () => {
+    const { start, end } = selectedSlot || {};
+    if (selectedEvent) {
+      handleEditEvent();
+    } else {
+      setSelectedEvent(null);
+      const newEvent = {
+        id: events.length + 1,
+        title: `${product} ${note} - Available`,
+        start,
+        end,
+        description: `New stock of ${product} will be available. ${note}.`,
+        category, // Set the category from the state
+      };
+      setEvents([...events, newEvent]);
+      toggleModal();
+      clearFormFields();
+    }
+  };
+
+  // Function to clear form fields when the modal is closed without saving
+  const handleModalClose = () => {
+    clearFormFields();
+    toggleModal();
+  };
+  // Function to get event style based on category
+  const getEventStyle = (event: any) => {
+    let style: React.CSSProperties = {
+      backgroundColor: "#FFD700", // Default color
+      color: "#000", // Default text color
+    };
+
+    if (event.category === "Category 1") {
+      style.backgroundColor = "green";
+      style.color = "#FFF"; // White text color
+    } else if (event.category === "Category 2") {
+      style.backgroundColor = "#FF5733";
+      style.color = "#FFF"; // White text color
+    } else if (event.category === "Category 3") {
+      style.backgroundColor = "#C4A484";
+      style.color = "#000"; // Black text color
+    }
+
+    return {
+      style,
+    };
   };
 
   return (
@@ -105,34 +177,35 @@ function ProductCalendar() {
               selectable
               onSelectSlot={handleSelectSlot}
               onSelectEvent={handleEventClick}
+              eventPropGetter={getEventStyle}
             />
-            {selectedEvent && (
-              <OverlayTrigger
-                trigger="click"
-                placement="top"
-                overlay={
-                  <Popover id="event-details-popover" className="bg-success">
-                    <Popover.Header as="h3">
-                      {selectedEvent.title}
-                    </Popover.Header>
-                    <Popover.Body>{selectedEvent.description}</Popover.Body>
-                  </Popover>
-                }
-              >
-                <Button style={{ display: "none" }} />
-              </OverlayTrigger>
-            )}
           </div>
         </div>
       </div>
       <MainFooter />
 
-      <Modal show={showModal} onHide={toggleModal} className="bg-green">
+      <Modal show={showModal} onHide={handleModalClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Add Event Details</Modal.Title>
+          <Modal.Title>
+            {selectedEvent ? "Edit" : "Add"} Product Details
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
+            <Form.Group controlId="category">
+              <Form.Label>Category</Form.Label>
+              <Form.Control
+                as="select"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                required
+              >
+                <option value="">Select a category</option>
+                <option value="Category 1">Vegetable</option>
+                <option value="Category 2">Fruits</option>
+                <option value="Category 3">Grains</option>
+              </Form.Control>
+            </Form.Group>
             <Form.Group controlId="productName">
               <Form.Label>Product Name</Form.Label>
               <Form.Control
@@ -140,15 +213,16 @@ function ProductCalendar() {
                 placeholder="Enter product name"
                 value={product}
                 onChange={(e) => setProduct(e.target.value)}
+                required
               />
             </Form.Group>
-            <Form.Group controlId="availableTime">
+            <Form.Group controlId="note">
               <Form.Label>Note</Form.Label>
               <Form.Control
                 type="text"
                 placeholder="Enter a note"
-                value={availableTime}
-                onChange={(e) => setAvailableTime(e.target.value)}
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
               />
             </Form.Group>
           </Form>
@@ -157,9 +231,29 @@ function ProductCalendar() {
           <Button variant="secondary" onClick={toggleModal}>
             Close
           </Button>
-          <Button variant="primary" onClick={handleFormSubmit}>
-            Save Event
-          </Button>
+          {selectedEvent ? (
+            <>
+              <Button variant="danger" onClick={handleDeleteEvent}>
+                Delete
+              </Button>
+              <Button
+                variant="primary"
+                onClick={handleEditEvent}
+                style={{ backgroundColor: "#00BA29", borderColor: "#00BA29" }}
+              >
+                Save Changes
+              </Button>
+            </>
+          ) : (
+            <Button
+              variant="success"
+              onClick={handleFormSubmit}
+              disabled={!category || !product}
+              style={{ backgroundColor: "#00BA29", borderColor: "#00BA29" }}
+            >
+              Save
+            </Button>
+          )}
         </Modal.Footer>
       </Modal>
     </div>
