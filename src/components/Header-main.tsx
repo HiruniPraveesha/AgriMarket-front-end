@@ -223,7 +223,7 @@ const HeaderNew = () => {
                     <li className="nav-item">
                       <Link
                         className="nav-link text-black"
-                        to="/ProductCalendar"
+                        to="/CalendarBuyer"
                         style={{ fontSize: "12px", paddingRight: "10px" }}
                       >
                         PRODUCT CALENDAR

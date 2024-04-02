@@ -12,9 +12,11 @@ import HomePage from "./pages/HomePage";
 import AddLogin from "./pages/Login/AddLogin";
 import AddProduct from "./pages/Login/AddProduct";
 import VerifyBank from "./pages/Login/VerifyBank";
-import ProductCalendar from "./pages/ProductCalendar";
+import CalendarSeller from "./pages/CalendarSeller";
 import TC from "./pages/T&C";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
+import CalendarBuyer from "./pages/CalendarBuyer";
+import Dashboard from "./pages/Dashbaord";
 
 const router = createBrowserRouter([
   {
@@ -48,8 +50,16 @@ const router = createBrowserRouter([
     element: <ProductMap />,
   },
   {
-    path: "/ProductCalendar",
-    element: <ProductCalendar />,
+    path: "/CalendarSeller",
+    element: <CalendarSeller />,
+  },
+  {
+    path: "/CalendarBuyer",
+    element: <CalendarBuyer />,
+  },
+  {
+    path: "/Dashboard",
+    element: <Dashboard />,
   },
   {
     path: "/TC",
@@ -59,6 +69,7 @@ const router = createBrowserRouter([
     path: "/PrivacyPolicy",
     element: <PrivacyPolicy />,
   },
+
   // {
   //   path: "/AddLogin",
   //   element: <AddLogin />,
