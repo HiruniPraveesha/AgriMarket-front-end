@@ -25,6 +25,7 @@ import Wallet from './pages/Buyer/Wallet';
 import SignUpBuyer from './pages/Login/SignUpBuyer';
 import AddLogin from "./pages/Login/AddLogin";
 import Verifybank from './pages/Login/VerifyBank';
+import RechargeWallet from './pages/Buyer/RechargeWallet';
 
 
 function App() {
@@ -42,7 +43,9 @@ function App() {
         <Route path='/signup-buyer' element={<SignUpBuyer/>}/>
         <Route path='/add-login' element={<AddLogin currentStep={1}/>}/>
         <Route path='/verify-bank' element={<Verifybank currentStep={2}/>}/>
-        <Route path='/signup-buyer' element={<SignUpBuyer/>}/>
+        <Route path='/signup-buyer' element={<SignUpBuyer/>}/> 
+        <Route path='/recharge-wallet' element={<RechargeWallet/>}/>
+
       </Routes>
     </Router>
   );
