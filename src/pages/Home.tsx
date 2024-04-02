@@ -1,4 +1,3 @@
-
 import React, { useRef } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Container, Row, Col, Button, Card, Carousel } from 'react-bootstrap';
@@ -33,46 +32,50 @@ const Home: React.FC = () => {
       window.open('https://example.com', '_blank');
     }
   };
-  
-  const buttonStyle: React.CSSProperties = {
-    backgroundColor: 'white',
-    fontFamily: 'Inter',
-    color: 'black',
-    transition: 'box-shadow 0.3s',
-    fontWeight: 'bold',
-    borderRadius: '7px',
-    border: 'none',
-    boxShadow: '0 2px 15px rgba(0, 0, 0, 0.4)',
-    width: '100%',
-    height: '50px',
-    fontSize: '14px',
-    marginBottom: '15px',
-  };
-  
-  const buttonImageStyle: React.CSSProperties = {
-    height: '30px',
-    padding: '5px',
-  };
+
+  const generateButton = (text: string, image: string) => (
+    <Col md={2}>
+      <Button
+        variant="outline-primary"
+        className="btn-custom" // Add a custom class for further styling
+        style={{ 
+          backgroundColor: 'white',
+          fontFamily: 'Inter',
+          color: 'black',
+          transition: 'box-shadow 0.3s',
+          fontWeight: 'bold',
+          borderRadius: '7px',
+          border: 'none',
+          boxShadow: '0 2px 15px rgba(0, 0, 0, 0.4)',
+          width: '100%',
+          height: '50px',
+          fontSize: '14px',
+          marginBottom: '15px',
+        }}
+        onMouseOver={(e) => (e.currentTarget.style.boxShadow = '2px 2px 3px 3px rgba(0, 0, 0, 0.1)')}
+        onMouseOut={(e) => (e.currentTarget.style.boxShadow = '0 2px 15px rgba(0, 0, 0, 0.4)')}
+        onClick={() => handleButtonClick('scroll')}
+      >
+        <img src={image} alt={text} style={{ height: '30px', padding: '5px' }}/>
+        {text}
+      </Button>
+    </Col>
+  );
 
   return (
     <div>
-     
       
-      
-      <Container fluid style={{ margin: 0, padding: 0, backgroundColor: '#DFFFC0', overflow: 'hidden' }} ref={firstContainerRef}>
-        <Row style={{ margin: 0, padding: 0}}>
-          <Col md={3} style={{ backgroundColor: '#DFFFC0', height: 'auto', margin: 0, padding: 0 }}>
-            <img
-              src={Image1}
-              alt="Image1"
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-            />
+      <Container fluid className="p-0 bg-light" ref={firstContainerRef}
+        style={{ margin: 0, padding: 0, backgroundColor: '#DFFFC0', overflow: 'hidden' }}
+      >
+        <Row className="m-0">
+          <Col md={3} className="p-0" style={{  backgroundColor: '#DFFFC0' }}>
+            <img src={Image1} alt="Image1" className="w-100" />
           </Col>
-          <Col md={5} className="d-md-flex" style={{ backgroundColor: '#DFFFC0', height: 'auto', margin: 0, padding: 0, position: 'relative' }}>
-            <div className="flex-md-row flex-md-column" style={{ margin: 0, paddingLeft: '20px', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
-              <div>
-                <p 
-                  style={{
+          <Col md={5} className="p-0 d-md-flex align-items-center" style={{backgroundColor: '#DFFFC0' }}>
+            <div className="text-center text-md-start p-3">
+              <p className="text-uppercase fw-bold" 
+              style={{
                     fontFamily: 'Sansita',
                     letterSpacing: '3px',
                     fontSize: '3rem',
@@ -82,135 +85,77 @@ const Home: React.FC = () => {
                     backgroundClip: 'text',
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',
-                  }}
-                >AgriMarket</p>
-                <p 
-                  style={{
+                  }}>AgriMarket</p>
+              <p className="text-success" 
+              style={{
                     fontFamily: 'Inika',
                     fontWeight: 'bold',
                     color: '#00BA29',
                     letterSpacing: '1px', 
-                  }}
-                >100% Healthy and Affordable</p>
-                <p 
-                  style={{
-                    color: '#00BA29',
-                    fontSize: '28px',
-                    fontWeight: 'bold',
-                    letterSpacing: '1px', 
-                  }}
-                >Organic Products</p>
-                <p 
-                  style={{
-                    fontFamily: 'Inika',
-                    color: '#00BA29',
-                    fontWeight: 'bold',
-                    letterSpacing: '1px', 
-                  }}
-                >Small Charges, Big Difference</p>
-                <div style={{ marginTop: '20px' }}>
-                <Button
-  variant="primary"
-  onClick={() => handleButtonClick('scroll')}
-  style={{
-    backgroundColor: '#00BA29',
-    fontWeight: 'bold',
-    fontSize: '11px',
-    border: 'none',
-    borderRadius: '3px',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-    width: '145px',
-    height: '50px',
-    marginRight: '10px', // Add this line to adjust the right margin
-    marginBottom: '10px', // Add this line to adjust the bottom margin in smaller screens
-  }}
-  onMouseOver={(e) => (e.currentTarget.style.boxShadow = '2px 2px 3px 3px rgba(0, 0, 0, 0.2)')}
-  onMouseOut={(e) => (e.currentTarget.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1)')}
->
-  Shop Now
-</Button>
-<Button
-  variant="success"
-  onClick={() => handleButtonClick('openNewWindow')}
-  style={{
-    backgroundColor: '#00BA29',
-    fontSize: '11px',
-    fontWeight: 'bold',
-    border: 'none',
-    borderRadius: '3px',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-    width: '145px',
-    height: '50px',
-    marginBottom: '10px', // Add this line to adjust the bottom margin in smaller screens
-  }}
-  onMouseOver={(e) => (e.currentTarget.style.boxShadow = '2px 2px 3px 3px rgba(0, 0, 0, 0.2)')}
-  onMouseOut={(e) => (e.currentTarget.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1)')}
->
-  Become a Seller
-</Button>
-
-                </div>
+                  }}>100% Healthy and Affordable</p>
+              <p className="text-success fw-bold"
+              style={{
+                color: '#00BA29',
+                fontSize: '28px',
+                fontWeight: 'bold',
+                letterSpacing: '1px', 
+              }}>Organic Products</p>
+              <p className="text-success"
+              style={{
+                fontFamily: 'Inika',
+                color: '#00BA29',
+                fontWeight: 'bold',
+                letterSpacing: '1px', 
+              }}>Small Charges, Big Difference</p>
+              <div className="mt-4">
+                <Button variant="primary" className="me-2" 
+                style={{
+                  backgroundColor: '#00BA29',
+                  fontWeight: 'bold',
+                  fontSize: '11px',
+                  border: 'none',
+                  borderRadius: '3px',
+                  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                  width: '145px',
+                  height: '50px',
+                  marginRight: '10px', // Add this line to adjust the right margin
+                  marginBottom: '10px', // Add this line to adjust the bottom margin in smaller screens
+                }}
+                onClick={() => handleButtonClick('scroll')}
+                onMouseOver={(e) => (e.currentTarget.style.boxShadow = '2px 2px 3px 3px rgba(0, 0, 0, 0.2)')}
+                onMouseOut={(e) => (e.currentTarget.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1)')}
+                >Shop Now</Button>
+                <Button variant="success" 
+                style={{
+                  backgroundColor: '#00BA29',
+                  fontSize: '11px',
+                  fontWeight: 'bold',
+                  border: 'none',
+                  borderRadius: '3px',
+                  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                  width: '145px',
+                  height: '50px',
+                  marginBottom: '10px', // Add this line to adjust the bottom margin in smaller screens
+                }}
+                onClick={() => handleButtonClick('openNewWindow')}
+                onMouseOver={(e) => (e.currentTarget.style.boxShadow = '2px 2px 3px 3px rgba(0, 0, 0, 0.2)')}
+                onMouseOut={(e) => (e.currentTarget.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1)')}
+                >Become a Seller</Button>
               </div>
             </div>
           </Col>
-
-          <Col md={4} style={{ backgroundColor: '#DFFFC0', height: 'auto', margin: 0, padding: 0, position: 'relative' }}>
-            <div style={{ margin: 0, padding: 0, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <img
-                src={Image2}
-                alt="Image2"
-                style={{ width: '100%', height: '100%', objectFit: 'contain', marginTop: '87px' }}
-              />
-            </div>
+          <Col md={4} className="p-0" style={{backgroundColor: '#DFFFC0' }}>
+            <img src={Image2} alt="Image2" className="w-100" style={{ width: '100%', height: '100%', objectFit: 'contain', marginTop: '50px' }} />
           </Col>
         </Row>
       </Container>
+
       <Container fluid>
         <Row className="d-flex justify-content-evenly mt-4 mb-4">
-          <Col md={2}>
-            <Button
-              variant="outline-primary"
-              style={buttonStyle}
-              onMouseOver={(e) => (e.currentTarget.style.boxShadow = '2px 2px 3px 3px rgba(0, 0, 0, 0.1)')}
-              onMouseOut={(e) => (e.currentTarget.style.boxShadow = '0 2px 15px rgba(0, 0, 0, 0.4)')}
-            >
-              <img src={FruitImage} alt="Fruits" style={buttonImageStyle} />
-              Fruits
-            </Button>
-          </Col>
-          <Col md={2}>
-            <Button
-              variant="outline-primary"
-              style={buttonStyle}
-              onMouseOver={(e) => (e.currentTarget.style.boxShadow = '2px 2px 3px 3px rgba(0, 0, 0, 0.1)')}
-              onMouseOut={(e) => (e.currentTarget.style.boxShadow = '0 2px 15px rgba(0, 0, 0, 0.4)')}
-            >
-              <img src={VegeImage} alt="Vegetables" style={buttonImageStyle} />
-              Vegetables
-            </Button>
-          </Col>
-          <Col md={2}>
-            <Button
-              variant="outline-primary"
-              style={buttonStyle}
-              onMouseOver={(e) => (e.currentTarget.style.boxShadow = '2px 2px 3px 3px rgba(0, 0, 0, 0.1)')}
-              onMouseOut={(e) => (e.currentTarget.style.boxShadow = '0 2px 15px rgba(0, 0, 0, 0.4)')}
-            >
-              <img src={GrainImage} alt="Grains" style={buttonImageStyle} />
-              Grains
-            </Button>
-          </Col>
-          <Col md={2}>
-            <Button
-              variant="outline-primary"
-              style={buttonStyle}
-              onMouseOver={(e) => (e.currentTarget.style.boxShadow = '2px 2px 3px 3px rgba(0, 0, 0, 0.1)')}
-              onMouseOut={(e) => (e.currentTarget.style.boxShadow = '0 2px 15px rgba(0, 0, 0, 0.4)')}
-            >
-              <img src={OtherImage} alt="Other" style={buttonImageStyle} />
-              Other
-            </Button>
-          </Col>
+        {generateButton("Fruits", FruitImage)}
+          {generateButton("Vegetables", VegeImage)}
+          {generateButton("Grains", GrainImage)}
+          {generateButton("Other", OtherImage)}
         </Row>
       </Container>
 
