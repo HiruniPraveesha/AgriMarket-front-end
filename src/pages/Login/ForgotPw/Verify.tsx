@@ -1,61 +1,73 @@
 import React, { useState, useRef } from "react";
-import Mail from "../../../assets/email icon.png";
+import Mail from "../../../assets/email icon.png"; // Importing image file
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import "bootstrap/dist/css/bootstrap.min.css";
 
+// Functional Component
 const Verify: React.FC = () => {
+  // State variables using useState hook
   const [isHovered, setIsHovered] = useState<boolean>(false);
   const [isResendHovered, setIsResendHovered] = useState<boolean>(false);
   const [code, setCode] = useState<string[]>(["", "", "", ""]); // State to store individual digit values
-  const codeInputsRefs = useRef<(HTMLInputElement | null)[]>([
-    null,
-    null,
-    null,
-    null,
-  ]);
+  const codeInputsRefs = useRef<(HTMLInputElement | null)[]>([null, null, null, null]);
 
   const handleCodeChange = (
     index: number,
     value: string,
-    e: React.KeyboardEvent<HTMLInputElement>
+    e: React.ChangeEvent<HTMLInputElement> | React.KeyboardEvent<HTMLInputElement>, 
   ) => {
     const newCode = [...code];
-
-    // Clear the previous input if backspace is pressed and the current input is empty
+  
+    // Type guard for ChangeEvent
+    if ('key' in e === false) {
+      newCode[index] = value;
+      setCode(newCode);
+      return;
+    }
+  
+    // From here onwards, e is definitely a KeyboardEvent
     if (e.key === "Backspace" && !value && index > 0) {
       newCode[index - 1] = "";
       setCode(newCode);
       codeInputsRefs.current[index - 1]?.focus();
       return;
     }
-
+  
     newCode[index] = value;
     setCode(newCode);
-
+  
     // Move focus to the next input
     if (value && index < 3 && codeInputsRefs.current[index + 1]) {
       codeInputsRefs.current[index + 1]?.focus();
     }
   };
+  
+  
 
+  // Function to handle form submission
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log("Form submitted with code:", code.join(""));
   };
 
+  // TSX return
   return (
     <div className="container">
+      {/* Header Section */}
       <div className="text-center pb-3">
         <img src={Mail} alt="Key" className="pb-3" />
         <h4>Verify your email</h4>
       </div>
 
+      {/* Instructional Text */}
       <p className="text-center pb-3 text-muted">
         Please enter 4 digit code sent to your email.
       </p>
 
+      {/* Form */}
       <Form onSubmit={handleSubmit}>
+        {/* Code Input Fields */}
         <div className="d-flex justify-content-center align-items-center pb-5">
           {code.map((value, index) => (
             <div key={index} className="d-inline-block px-1" style={{ margin: '15px' }}>
@@ -66,13 +78,14 @@ const Verify: React.FC = () => {
                 style={{ width: "50px", height: "60px", fontSize: "16px", backgroundColor: '#BEF3C9', border: 'none',borderBottom: '2px solid #00BA29', borderRadius: '0' }} // Inline CSS
                 value={value}
                 onChange={(e) => handleCodeChange(index, e.target.value, e)}
-                onKeyDown={(e) => handleCodeChange(index, e.target.value, e)}
+                onKeyDown={(e) => handleCodeChange(index, e.currentTarget.value, e)}
                 ref={(el) => (codeInputsRefs.current[index] = el)}
               />
             </div>
           ))}
         </div>
 
+        {/* Resend Code Button */}
         <div className="d-flex justify-content-center mb-3">
           <Button
             variant="primary"
@@ -88,6 +101,7 @@ const Verify: React.FC = () => {
           </Button>
         </div>
 
+        {/* Verify Button */}
         <div className="d-flex justify-content-center">
           <Button
             variant="primary"

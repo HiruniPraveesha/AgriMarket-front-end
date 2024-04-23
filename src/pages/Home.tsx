@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Container, Row, Col, Button, Card, Carousel } from 'react-bootstrap';
 import Header from "../components/Header-main";
@@ -14,14 +14,43 @@ import ExampleCarouselImage from '../assets/Offers.png';
 
 
 
+// Functional Component for Home Page
 const Home: React.FC = () => {
-  const firstContainerRef = useRef<HTMLDivElement>(null);
 
+    const [categories , setCategories] = useState([]);
+    useEffect(()=>{
+      fetch('http://localhost:8000/categories')
+      .then(function(response) {
+        return response.json();
+      }).then(function(response) {
+        setCategories(response.data);
+      });
+    },[])
+
+    const [products, setProducts] = useState<any[]>([]);
+
+  useEffect(() => {
+    // Make an HTTP GET request to fetch data from the API endpoint
+    fetch('http://localhost:8000/products')
+      .then(response => response.json())
+      .then(data => {
+        console.log('Fetched products:', data);
+        // Update the state with the fetched products data
+        setProducts(data.data);
+      })
+      .catch(error => {
+        console.error('Error fetching products:', error);
+      });
+  }, []); 
+
+ // useRef hook to reference the first container element
+  const firstContainerRef = useRef<HTMLDivElement>(null);
+// Function to handle button click events
   const handleButtonClick = (type: string) => {
     if (type === 'scroll') {
       const scrollAmount = 10; // Adjust the scroll amount as needed
       const firstContainerHeight = firstContainerRef.current?.clientHeight;
-
+      
       if (firstContainerHeight) {
         window.scrollTo({
           top: firstContainerHeight + scrollAmount,
@@ -32,9 +61,9 @@ const Home: React.FC = () => {
       window.open('https://example.com', '_blank');
     }
   };
-
+// Function to generate custom buttons with text and image
   const generateButton = (text: string, image: string) => (
-    <Col md={2}>
+    <Col md={3}>
       <Button
         variant="outline-primary"
         className="btn-custom" // Add a custom class for further styling
@@ -49,7 +78,7 @@ const Home: React.FC = () => {
           boxShadow: '0 2px 15px rgba(0, 0, 0, 0.4)',
           width: '100%',
           height: '50px',
-          fontSize: '14px',
+          fontSize: '16px',
           marginBottom: '15px',
         }}
         onMouseOver={(e) => (e.currentTarget.style.boxShadow = '2px 2px 3px 3px rgba(0, 0, 0, 0.1)')}
@@ -61,8 +90,9 @@ const Home: React.FC = () => {
       </Button>
     </Col>
   );
-
+// tSX return
   return (
+
     <div>
       
       <Container fluid className="p-0 bg-light" ref={firstContainerRef}
@@ -122,8 +152,8 @@ const Home: React.FC = () => {
                   marginBottom: '10px', // Add this line to adjust the bottom margin in smaller screens
                 }}
                 onClick={() => handleButtonClick('scroll')}
-                onMouseOver={(e) => (e.currentTarget.style.boxShadow = '2px 2px 3px 3px rgba(0, 0, 0, 0.2)')}
-                onMouseOut={(e) => (e.currentTarget.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1)')}
+                onMouseOver={(e) => (e.currentTarget.style.boxShadow = '1px 1px 2px 2px rgba(0, 0, 0, 0.2)')}
+                onMouseOut={(e) => (e.currentTarget.style.boxShadow = '0 3px 7px rgba(0, 0, 0, 0.1)')}
                 >Shop Now</Button>
                 <Button variant="success" 
                 style={{
@@ -138,8 +168,8 @@ const Home: React.FC = () => {
                   marginBottom: '10px', // Add this line to adjust the bottom margin in smaller screens
                 }}
                 onClick={() => handleButtonClick('openNewWindow')}
-                onMouseOver={(e) => (e.currentTarget.style.boxShadow = '2px 2px 3px 3px rgba(0, 0, 0, 0.2)')}
-                onMouseOut={(e) => (e.currentTarget.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1)')}
+                onMouseOver={(e) => (e.currentTarget.style.boxShadow = '1px 1px 2px 2px rgba(0, 0, 0, 0.2)')}
+                onMouseOut={(e) => (e.currentTarget.style.boxShadow = '0 3px 7px rgba(0, 0, 0, 0.1)')}
                 >Become a Seller</Button>
               </div>
             </div>
@@ -151,11 +181,12 @@ const Home: React.FC = () => {
       </Container>
 
       <Container fluid>
+       
         <Row className="d-flex justify-content-evenly mt-4 mb-4">
-        {generateButton("Fruits", FruitImage)}
-          {generateButton("Vegetables", VegeImage)}
-          {generateButton("Grains", GrainImage)}
-          {generateButton("Other", OtherImage)}
+        {/* Pass category name and corresponding image to generateButton */}
+    {categories.map((c, index) => (
+      generateButton(c, [FruitImage, VegeImage, GrainImage, OtherImage][index])
+    ))}
         </Row>
       </Container>
 
@@ -183,34 +214,44 @@ const Home: React.FC = () => {
             >Featured Products</h1>
           </Col>
         </Row>
+{/*Product list*/}
         <Row className="mt-4 d-flex justify-content-center align-items-center">
-  {[1, 2, 3, 4, 5, 6, 7, 8].map((index) => (
-    <Col key={index} xs={12} sm={6} md={6} lg={3} className="mb-4">
-      <Card style={{ width: '100%', border: '2px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)', borderRadius: '10px', padding: '20px' }}>
-        <Card.Link href="#">
-          <div className="d-flex justify-content-center align-items-center">
-            <Card.Img
-              variant="top"
-              src={Item1}
-              style={{ height: '70%', width: '70%', alignItems: 'center' }}
-              onClick={(e) => {
-                e.preventDefault();
-                // Add any custom functionality you want here
-              }}
-            />
-          </div>
-        </Card.Link>
-        <Card.Body>
-          <Card.Text style={{ fontSize: '14px', lineHeight: '1.5' }}>
-            <span style={{ fontWeight: 'bold' }}>Rs.700.00</span><br />
-            <span style={{ fontFamily: 'Sans-serif' }}>Carrot - 1 Kg</span><br />
-            <span style={{ fontStyle: 'italic', color: '#555' }}>Sachee Stores</span>
-          </Card.Text>
-        </Card.Body>
-      </Card>
-    </Col>
-  ))}
-</Row>
+      {products.map(product => (
+        <Col key={product.id} xs={12} sm={6} md={6} lg={3} className="mb-4">
+          <Card style={{ width: '100%', border: '2px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)', borderRadius: '10px', padding: '20px' }}>
+            <Card.Link href="#">
+              <div className="d-flex justify-content-center align-items-center">
+                <Card.Img
+                  variant="top"
+                  src={Item1} // Use the image from the fetched product data
+                  style={{ height: '70%', width: '70%', alignItems: 'center' }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    // Add any custom functionality you want here
+                  }}
+                />
+              </div>
+            </Card.Link>
+            <Card.Body>
+              <Card.Text style={{ fontSize: '14px', lineHeight: '2' }}>
+                <span style={{ fontWeight: 'bold' }}>Rs. {product.price}</span><br /> {/* Use the price from the fetched product data */}
+                <span style={{ fontFamily: 'Sans-serif' }}>{product.name}</span><br /> {/* Use the name from the fetched product data */}
+                <span style={{ fontFamily: 'Sans-serif' }}>{product.seller.store_name}</span><br />
+                <Button variant="primary"
+                  style={{
+                    backgroundColor: '#00BA29',
+                    border: 'none',
+                    fontSize: '12px' // Adjust the font size here
+                  }}
+                  onMouseOver={(e) => (e.currentTarget.style.boxShadow = '1px 1px 2px 2px rgba(0, 0, 0, 0.2)')}
+                  onMouseOut={(e) => (e.currentTarget.style.boxShadow = '0 3px 7px rgba(0, 0, 0, 0.1)')}
+                >Add to Cart</Button>
+              </Card.Text>
+            </Card.Body>
+          </Card>
+        </Col>
+      ))}
+    </Row>
 
       </Container>
 
@@ -268,18 +309,25 @@ const Home: React.FC = () => {
           </div>
         </Card.Link>
         <Card.Body>
-          <Card.Text style={{ fontSize: '14px', lineHeight: '1.5' }}>
+          <Card.Text style={{ fontSize: '14px', lineHeight: '2' }}>
             <span style={{ fontWeight: 'bold' }}>Rs.700.00</span><br />
             <span style={{ fontFamily: 'Sans-serif' }}>Carrot - 1 Kg</span><br />
-            <span style={{ fontStyle: 'italic', color: '#555' }}>Sachee Stores</span>
+            <span style={{ fontStyle: 'italic', color: '#555' }}>Sachee Stores</span><br />
+            <Button variant="primary" 
+        style={{ 
+          backgroundColor: '#00BA29', 
+          border: 'none', 
+          fontSize: '12px' // Adjust the font size here
+        }}
+         onMouseOver={(e) => (e.currentTarget.style.boxShadow = '1px 1px 2px 2px rgba(0, 0, 0, 0.2)')}
+         onMouseOut={(e) => (e.currentTarget.style.boxShadow = '0 3px 7px rgba(0, 0, 0, 0.1)')} 
+        >Add to Cart</Button>
           </Card.Text>
         </Card.Body>
       </Card>
     </Col>
   ))}
 </Row>
-
-
       </Container>
       <div>
         <Footer />

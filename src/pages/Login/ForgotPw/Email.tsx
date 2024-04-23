@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
-import key from "../../../assets/key.png";
+import key from "../../../assets/key.png"; // Importing image file
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-const Email2: React.FC = () => {
+// Functional Component
+const Email: React.FC = () => {
+    // State variables using useState hook
     const [email, setEmail] = useState<string>('');
     const [isEmailValid, setIsEmailValid] = useState<boolean>(true);
     const [areFieldsFilled, setAreFieldsFilled] = useState<boolean>(true);
     const [isHovered, setIsHovered] = useState<boolean>(false);
 
+    // Function to handle form submission
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
@@ -37,6 +40,7 @@ const Email2: React.FC = () => {
         console.log("Form submitted with email:", email);
     };
 
+    // TSX return
     return (
         <div className="container" style={{
             display: 'flex',
@@ -45,15 +49,18 @@ const Email2: React.FC = () => {
             alignItems: 'center',
             padding: '20px',
         }}>
+            {/* Header Section */}
             <div className="text-center pb-3">
                 <img src={key} alt="Key" className="pb-3" />
                 <h4>Forgot Password?</h4>
             </div>
 
+            {/* Instructional Text */}
             <p className="text-center pb-3 text-muted">
                 Please enter your email address<br /> to receive a verification code
             </p>
 
+            {/* Form */}
             <Form onSubmit={handleSubmit} style={{
                  width: '100%', // Make the form full width initially
                  maxWidth: '400px', // Limit the maximum width for larger screens
@@ -66,6 +73,7 @@ const Email2: React.FC = () => {
                         onChange={(e) => setEmail(e.target.value)}
                     />
                 </Form.Group>
+                {/* Error Messages */}
                 {!areFieldsFilled && (
                     <div className="text-danger">
                         Please enter your email.
@@ -76,6 +84,8 @@ const Email2: React.FC = () => {
                         Please enter a valid email address.
                     </div>
                 )}
+
+                {/* Button Section */}
                 <div className="d-flex justify-content-center"
                     style={{
                         paddingTop: '35px',
@@ -105,4 +115,4 @@ const Email2: React.FC = () => {
     );
 };
 
-export default Email2;
+export default Email;
