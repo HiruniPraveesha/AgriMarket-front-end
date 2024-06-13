@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Col, Container, Form, Modal, Row } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import ProPic from '../../assets/ProPic.png';
 import MainHeader from '../../components/Header-main';
 import MainFooter from '../../components/Footer-main';
 import { Link } from "react-router-dom";
+import axios from 'axios';
+
 
 export default function BuyerProfile() {
-    const [email] = useState('Nehanperera123@gmail.com');
+    const [email, setEmail] = useState('Nehanperera123@gmail.com');
     const [contactNumber, setContactNumber] = useState('0764091213');
     const [userName, setUserName] = useState('John Doe');
     const [newUserName, setNewUserName] = useState(userName);
@@ -23,6 +25,8 @@ export default function BuyerProfile() {
     const [city, setCity] = useState('Kandy');
     const [newCity, setNewCity] = useState(city);
     const [showCityModal, setShowCityModal] = useState(false);
+
+
 
     const handleEditContactNumber = () => {
         setShowContactNumberModal(true);
@@ -77,8 +81,67 @@ export default function BuyerProfile() {
         setShowCityModal(false);
     };
 
+    const [loading, setLoading] = useState(false);
+    const [userdetails, setUserDetails] = useState([]);
+
+const id = 1;
+
+    const fetchBuyerDetails = async () => {
+        try {
+            setLoading(true);
+            const url = "http://localhost:8000/getUserDetails";
+            const response = await axios.get(url, { params: { id } });
+            console.log(response.data.data);
+            setUserName(response.data.data.name);
+            setEmail(response.data.data.email);
+            setContactNumber(response.data.data.contactNumber);
+            setCity(response.data.data.city);
+            setLoading(false);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchBuyerDetails();
+    }, []);
+
+
+
+    const cityOptions = [
+        "Ampara",
+        "Anuradhapura",
+        "Badulla",
+        "Batticaloa",
+        "Colombo",
+        "Galle",
+        "Gampaha",
+        "Hambantota",
+        "Jaffna",
+        "Kalutara",
+        "Kandy",
+        "Kegalle",
+        "Kilinochchi",
+        "Kurunegala",
+        "Mannar",
+        "Matale",
+        "Matara",
+        "Monaragala",
+        "Mullaitivu",
+        "Nuwara Eliya",
+        "Polonnaruwa",
+        "Puttalam",
+        "Ratnapura",
+        "Trincomalee",
+        "Vavuniya"
+    ];
+
+
     return (
         <>
+            ,
             <MainHeader />
             <section className="h-100 gradient-custom" style={{ margin: '0 20%' }}>
                 <Container className="py-5 h-100">
@@ -212,112 +275,121 @@ export default function BuyerProfile() {
                             </Row>
 
                             <p style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '5px' }}>View your Shopping cart</p>
-                    <hr style={{ marginBottom: '5px', marginTop: '0' }}/>
-                    <Row>
-                    <Form.Group>
-                        <Link to ="/shopping-cart"><Button variant="link" style={{ padding: '0', color: '#00BA29', fontSize: '11px', marginBottom: '15px' }}>Shopping Cart</Button></Link>
-                        </Form.Group>
-                    </Row>
-                    <p style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '5px' }}>Manage Addresses</p>
-                    <hr style={{ marginBottom: '5px', marginTop: '0' }}/>
+                            <hr style={{ marginBottom: '5px', marginTop: '0' }} />
+                            <Row>
+                                <Form.Group>
+                                    <Link to="/shopping-cart"><Button variant="link" style={{ padding: '0', color: '#00BA29', fontSize: '11px', marginBottom: '15px' }}>Shopping Cart</Button></Link>
+                                </Form.Group>
+                            </Row>
+                            <p style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '5px' }}>Manage Addresses</p>
+                            <hr style={{ marginBottom: '5px', marginTop: '0' }} />
 
-                    <Row>
-                    <Form.Group>
-                    <p style={{ marginBottom: '5px', fontWeight: 'bold', fontSize: '11px' }}>City</p>
-                    <p style={{ color: '#666666', marginBottom: '1px', fontSize:'12px' }}>
-                    <span>{city}</span>
-                    </p>
-                    <Button variant="link" style={{ padding: '0', color: '#00BA29', fontSize: '11px', marginBottom: '15px' }} onClick={handleChangeCity}>Edit</Button>
-                    </Form.Group>
-<Modal show={showCityModal} onHide={() => setShowCityModal(false)} style={{ fontSize: '12px' }}>
-    <Modal.Header closeButton>
-        <Modal.Title style={{ fontSize: '12px' }}>Change City</Modal.Title>
-    </Modal.Header>
-    <Modal.Body>
-        <Form.Group>
-            <Form.Label>New City</Form.Label>
-            <Form.Control type="text" value={newCity} onChange={(e) => setNewCity(e.target.value)} style={{ fontSize: '12px' }} />
-        </Form.Group>
-    </Modal.Body>
-    <Modal.Footer>
-        <Button variant="secondary" onClick={() => setShowCityModal(false)} style={{ fontSize: '12px' }}>Cancel</Button>
-        <Button onClick={handleSaveCity} style={{ fontSize: '12px', backgroundColor: '#00BA29' }}>Save Changes</Button>
-    </Modal.Footer>
-</Modal>
-
-
-                    </Row>
-                    <Row>
-                    <p style={{ marginBottom: '5px', fontWeight: 'bold', fontSize:'11px' }}>Current Address</p>
-                    <p style={{ marginBottom: '5px', fontSize: '12px', color: '#666666' }}>
-                    {newAddressLine1}, {newAddressLine2}, {newAddressLine3}
-                    </p>   
-                    <Form.Group>
-                    <Button variant="link" style={{ padding: '0', color: '#00BA29', fontSize: '11px', marginBottom: '15px' }} 
-                    onClick={handleChangeAddress}>Change Address</Button>
-                    </Form.Group>
-
-                    <Modal show={showAddressModal} onHide={() => setShowAddressModal(false)} style={{ fontSize: '12px' }}>
-                    <Modal.Header closeButton>
-                    <Modal.Title style={{ fontSize: '12px' }}>Edit Address</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                    <Form.Group>
-                    <Form.Label>New Address Line 1</Form.Label>
-                    <Form.Control type="text" value={newAddressLine1} onChange={(e) => setNewAddressLine1(e.target.value)} style={{ fontSize: '12px', marginBottom:'5px' }} />
-                    </Form.Group>
-                    <Form.Group>
-                    <Form.Label>New Address Line 2</Form.Label>
-                    <Form.Control type="text" value={newAddressLine2} onChange={(e) => setNewAddressLine2(e.target.value)} style={{ fontSize: '12px', marginBottom:'5px' }} />
-                    </Form.Group>
-                    </Modal.Body>
-                    <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShowAddressModal(false)} style={{ fontSize: '12px' }}>Cancel</Button>
-                    <Button variant="primary" onClick={handleSaveAddress} style={{ fontSize: '12px', backgroundColor: '#00BA29' }}>Save Changes</Button>
-                    </Modal.Footer>
-                    </Modal>
-                    </Row>
+                            <Row>
+                                <Form.Group>
+                                    <p style={{ marginBottom: '5px', fontWeight: 'bold', fontSize: '11px' }}>City</p>
+                                    <p style={{ color: '#666666', marginBottom: '1px', fontSize: '12px' }}>
+                                        <span>{city}</span>
+                                    </p>
+                                    <Button variant="link" style={{ padding: '0', color: '#00BA29', fontSize: '11px', marginBottom: '15px' }} onClick={handleChangeCity}>Edit</Button>
+                                </Form.Group>
+                                <Modal show={showCityModal} onHide={() => setShowCityModal(false)} style={{ fontSize: '12px' }}>
+                                    <Modal.Header closeButton>
+                                        <Modal.Title style={{ fontSize: '12px' }}>Change City</Modal.Title>
+                                    </Modal.Header>
+                                    <Modal.Body>
+                                        <Form.Group>
+                                            <Form.Label>New City</Form.Label>
+                                            <Form.Control
+                                                as="select"
+                                                value={newCity}
+                                                onChange={(e) => setNewCity(e.target.value)}
+                                                style={{ fontSize: '12px' }}
+                                            >
+                                                {cityOptions.map((option) => (
+                                                    <option key={option} value={option}>{option}</option>
+                                                ))}
+                                            </Form.Control>
+                                        </Form.Group>
+                                    </Modal.Body>
+                                    <Modal.Footer>
+                                        <Button variant="secondary" onClick={() => setShowCityModal(false)} style={{ fontSize: '12px' }}>Cancel</Button>
+                                        <Button onClick={handleSaveCity} style={{ fontSize: '12px', backgroundColor: '#00BA29' }}>Save Changes</Button>
+                                    </Modal.Footer>
+                                </Modal>
+                            </Row>
 
 
-                    </Col>
-                <Col md="2"></Col>
-                <Col  className="justify-content-center my-4" md="5">
-                    <p style={{ fontSize: '17px', fontWeight: 'bold' }}>My Orders</p>
-                    <p style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '5px' }}>Track your Orders</p>
-                    <hr style={{ marginBottom: '5px', marginTop: '0' }} />
-                    <Row>
-                    <Form.Group>
-                        <Link to="/ongoing-orders">
-                        <Button variant="link" style={{ padding: '0', color: '#00BA29', fontSize: '11px', marginBottom: '20px' }}>
-                            View your ongoing Orders</Button></Link>
-                        </Form.Group>
-                    </Row>
+                            <Row>
+                                <p style={{ marginBottom: '5px', fontWeight: 'bold', fontSize: '11px' }}>Current Address</p>
+                                <p style={{ marginBottom: '5px', fontSize: '12px', color: '#666666' }}>
+                                    {newAddressLine1}, {newAddressLine2}, {newAddressLine3}
+                                </p>
+                                <Form.Group>
+                                    <Button variant="link" style={{ padding: '0', color: '#00BA29', fontSize: '11px', marginBottom: '15px' }}
+                                        onClick={handleChangeAddress}>Change Address</Button>
+                                </Form.Group>
 
-                    <p style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '5px' }}>View your order history</p>
-                    <hr style={{ marginBottom: '5px', marginTop: '0' }} />
-                    <Row>
-                    <Form.Group>
-                        <Link to="/order-history">
-                        <Button variant="link" style={{ padding: '0', color: '#00BA29', fontSize: '11px', marginBottom: '50px' }}>
-                        View your past orders</Button></Link>
-                        </Form.Group>
-                    </Row>
+                                <Modal show={showAddressModal} onHide={() => setShowAddressModal(false)} style={{ fontSize: '12px' }}>
+                                    <Modal.Header closeButton>
+                                        <Modal.Title style={{ fontSize: '12px' }}>Edit Address</Modal.Title>
+                                    </Modal.Header>
+                                    <Modal.Body>
+                                        <Form.Group>
+                                            <Form.Label>New Address Line 1</Form.Label>
+                                            <Form.Control type="text" value={newAddressLine1} onChange={(e) => setNewAddressLine1(e.target.value)} style={{ fontSize: '12px', marginBottom: '5px' }} />
+                                        </Form.Group>
+                                        <Form.Group>
+                                            <Form.Label>New Address Line 2</Form.Label>
+                                            <Form.Control type="text" value={newAddressLine2} onChange={(e) => setNewAddressLine2(e.target.value)} style={{ fontSize: '12px', marginBottom: '5px' }} />
+                                        </Form.Group>
+                                    </Modal.Body>
+                                    <Modal.Footer>
+                                        <Button variant="secondary" onClick={() => setShowAddressModal(false)} style={{ fontSize: '12px' }}>Cancel</Button>
+                                        <Button variant="primary" onClick={handleSaveAddress} style={{ fontSize: '12px', backgroundColor: '#00BA29' }}>Save Changes</Button>
+                                    </Modal.Footer>
+                                </Modal>
+                            </Row>
 
-                    
-                    <p style={{ fontSize: '17px', fontWeight: 'bold' }}>Billing Information</p>
-                    <p style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '5px' }}>Wallet</p>
-                    <hr style={{ marginBottom: '5px', marginTop: '0' }} />
-                    <Row>
-                        <Form.Group>
-                            <Link to="/wallet">
-                    <Button variant="link" style={{ padding: '0', color: '#00BA29', fontSize: '11px', marginBottom: '20px' }}>
-                    View your wallet </Button></Link>
-                        </Form.Group>
-                    </Row>
-                    <Row>
-                    <p style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '5px' }}>Credit or Debit Card</p>
-                    </Row>
-                </Col>
+
+                        </Col>
+                        <Col md="2"></Col>
+                        <Col className="justify-content-center my-4" md="5">
+                            <p style={{ fontSize: '17px', fontWeight: 'bold' }}>My Orders</p>
+                            <p style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '5px' }}>Track your Orders</p>
+                            <hr style={{ marginBottom: '5px', marginTop: '0' }} />
+                            <Row>
+                                <Form.Group>
+                                    <Link to="/ongoing-orders">
+                                        <Button variant="link" style={{ padding: '0', color: '#00BA29', fontSize: '11px', marginBottom: '20px' }}>
+                                            View your ongoing Orders</Button></Link>
+                                </Form.Group>
+                            </Row>
+
+                            <p style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '5px' }}>View your order history</p>
+                            <hr style={{ marginBottom: '5px', marginTop: '0' }} />
+                            <Row>
+                                <Form.Group>
+                                    <Link to="/order-history">
+                                        <Button variant="link" style={{ padding: '0', color: '#00BA29', fontSize: '11px', marginBottom: '50px' }}>
+                                            View your past orders</Button></Link>
+                                </Form.Group>
+                            </Row>
+
+
+                            <p style={{ fontSize: '17px', fontWeight: 'bold' }}>Billing Information</p>
+                            <p style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '5px' }}>Wallet</p>
+                            <hr style={{ marginBottom: '5px', marginTop: '0' }} />
+                            <Row>
+                                <Form.Group>
+                                    <Link to="/wallet">
+                                        <Button variant="link" style={{ padding: '0', color: '#00BA29', fontSize: '11px', marginBottom: '20px' }}>
+                                            View your wallet </Button></Link>
+                                </Form.Group>
+                            </Row>
+                            <Row>
+                                <p style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '5px' }}>Credit or Debit Card</p>
+                            </Row>
+                        </Col>
                     </Row>
                 </Container>
             </section>
@@ -325,3 +397,4 @@ export default function BuyerProfile() {
         </>
     );
 }
+

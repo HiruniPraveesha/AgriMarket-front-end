@@ -59,10 +59,17 @@ function Payment() {
     <section className="h-100 gradient-custom">
       <Container className="py-5 h-100">
         <Row className="justify-content-center my-4">
-          <Col md="8">
-            <h5>Select Payment Method</h5>
+          
+          <Col md="7">
+
+          <h2 className="mb-0 text-black" style={{ fontWeight: '600', fontSize:'20px'}}>
+              Select Payment Method</h2>
+
+              <hr/>
+
             <div>
-              <div style={{ display: 'flex', justifyContent: 'flex-start', padding:'20px'}}>
+              
+              <div style={{ display: 'flex', justifyContent: 'flex-start', padding:'25px'}}>
               
               <Button
                 onClick={handleShowForm1}
@@ -73,14 +80,15 @@ function Payment() {
                 width: '100px',
                 height: '100px',
                 backgroundColor:'#DFDEDC',
+                borderRadius:'0',
                 margin: '0 10px',
                 transform: selectedButton === 1 ? 'scale(1.2)' : 'scale(1)',
-                transition: 'transform 0.3s ease-in-out',
+                transition: 'transform 0.3s ease-in-out'
                 }} >
                 <div style={{ marginBottom: '5px' }}>
                 <Image src={CreditCard} style={{ maxWidth: '50px', maxHeight: '50px' }} />
                 </div>
-                <div style={{ fontSize: '8px', color:'black' }}>Credit/Debit Card</div>
+                <div style={{ fontSize: '10px', color:'black' }}>Credit/Debit Card</div>
                 </Button>
 
 
@@ -94,6 +102,7 @@ function Payment() {
                     width: '100px',
                     height: '100px',
                     backgroundColor:'#DFDEDC',
+                    borderRadius:'0',
                     margin: '0 10px',
                     transform: selectedButton === 2 ? 'scale(1.2)' : 'scale(1)',
                     transition: 'transform 0.3s ease-in-out',
@@ -101,7 +110,7 @@ function Payment() {
                   <div style={{ marginBottom: '10px' }}>
                     <Image src={Wallet} style={{ maxWidth: '50px', maxHeight: '50px' }} />
                   </div>
-                  <div style={{ fontSize: '8px', color:'black' }}>Wallet</div>
+                  <div style={{ fontSize: '12px', color:'black' }}>Wallet</div>
                 </Button>
 
                 <Button
@@ -114,6 +123,7 @@ function Payment() {
                     height: '100px',
                     justifyContent:'center',
                     backgroundColor:'#DFDEDC',
+                    borderRadius:'0',
                     margin: '0 10px',
                     transform: selectedButton === 3 ? 'scale(1.2)' : 'scale(1)',
                     transition: 'transform 0.3s ease-in-out',
@@ -121,7 +131,7 @@ function Payment() {
                   <div style={{ marginBottom: '5px' }}>
                     <Image src={CashOnDelivery} style={{ maxWidth: '50px', maxHeight: '50px' }} />
                   </div>
-                  <div style={{ fontSize: '8px', color:'black' }}>Cash On Delivery</div>
+                  <div style={{ fontSize: '12px', color:'black' }}>Cash </div>
                 </Button>
 
               </div>
@@ -217,67 +227,38 @@ function Payment() {
               </Form>
               
               )}
-
-
-
-              {/* Bootstrap Modal for confirmation */}
-      <Modal show={showConfirmation} onHide={handleCloseConfirmation} centered >
-        <Modal.Header closeButton style={{ background: '#DFFFC0' }}>
-        </Modal.Header>
-        <Modal.Body style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', background: 'linear-gradient(to bottom, #DFFFC0, #FFFFFF)' }} >
-        <img src={CompeleteOrder} style={{ height: '74px', width: '388px', alignSelf: 'center' }} alt="Complete Order" />
-        <p style={{fontWeight:'bold', marginTop:'13px'}}>ORDER IS CONFIRMED !</p>
-        <p style={{color:'#666666', fontSize:'12px', marginTop:'5px'}}>Thank you so much for your order.</p>
-        </Modal.Body>
-
-        <Modal.Footer>
-        <Button 
-  variant="secondary" 
-  onClick={handleCloseConfirmation} 
-  style={{
-    display: 'block',
-    margin: 'auto',
-    backgroundColor: '#01B928',
-    borderColor: '#01B928'
-  }}
->
-  Check Status
-</Button>
-
-        </Modal.Footer>
-      </Modal>
+  
             </div>
           </Col>
 
-          <Col md="1"></Col>
 
-          <Col md="3">
-            <Card className="mb-4" style={{ background: 'linear-gradient(to bottom, #DFFFC0, #FFFFFF)' }}>
-              <h5 style={{ margin: '5%', fontSize: '15px' }}>Order Summary</h5>
-              <hr className="my-1" />
+          <Col md='5'>
+
+            <Card  className="p-4 bg-green" style={{ background: 'linear-gradient(to Right, #DFFFC0, #FFFFFF)', border: '1px solid #01B928' }}>
+            <h5 style={{ fontSize: '15px', fontWeight: 'bold' }}>Order Summary</h5>
+
+              <hr />
+              
               <Card.Body>
-                <Row>
-                  <Col md="9">
-                    <p className="mb-0" style={{ fontSize: '7px', margin: '0%', color: '' }}>
-                      Subtotal (<span>2</span> Items and shipping fee included )
+                <Row style={{marginBottom:'5%'}}>
+                    <p className="mb-0" style={{ fontSize: '12px'}}>
+                    <span>2</span> Items & shipping fee included 
                     </p>
-                  </Col>
-                  <Col md="3">
-                    <strong><p className="text-start text-md-center" style={{ fontSize: '8px' }}>Rs.450.00</p></strong>
-                  </Col>
                 </Row>
 
-                <Row >
-                  <Col md="7" className="mb-4 mb-lg-0">
+                <Row style={{marginBottom:'-15px'}}>
+                  <Col md="7" className="mb-4 mb-lg-0" style={{fontWeight:'bold'}}>
                     Total Amount
                   </Col>
                   <Col md="5" className="mb-4 mb-lg-0">
-                    <strong><p style={{ fontSize: '15px', textAlign: 'end', color: '#00BA29' }}>Rs.450.00</p></strong>
+                    <strong><p style={{ fontSize: '30px', textAlign: 'end', color: '#00BA29' }}>Rs.450</p></strong>
                   </Col>
                 </Row>
+                
               </Card.Body>
             </Card>
           </Col>
+
         </Row>
       </Container>
     </section>
