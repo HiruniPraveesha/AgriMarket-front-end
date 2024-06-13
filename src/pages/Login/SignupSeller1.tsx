@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import BecomeASeller from "./BecomeASeller";
-import arrow from "../../assets/arrow.svg";
+// import arrow from "../../assets/arrow.svg";
 import Line from "../../assets/Line.svg";
 
 const SignupSeller1: React.FC = () => {
@@ -179,7 +179,7 @@ const SignupSeller1: React.FC = () => {
                   onMouseUp={handleMouseUp}
                 >
                   <img
-                    src={arrow}
+                    // src={arrow}
                     alt="Arrow"
                     style={{
                       width: "20px",

@@ -2,22 +2,51 @@ import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Logo from "../assets/Logo1.png";
 import Bell from "../assets/Bell.svg";
-import Cart from "../assets/Cart.svg";
+import Cart from "../assets/Cart.svg"; 
 import login from "../assets/Login.svg";
 import Search from "../assets/Search.svg";
 import language from "../assets/Languages.svg";
 import { Dropdown } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import jwt, { JwtPayload } from 'jsonwebtoken';
+
+// Example function to verify and decode token
+// Replace 'any' with the specific type of your token
+const verifyToken = (token: string): JwtPayload | string => {
+  try {
+    const decoded = jwt.verify(token, "your_secret_key_here") as JwtPayload;
+    return decoded;
+  } catch (error) {
+    return "Invalid token"; // or handle error as needed
+  }
+};
 
 const HeaderNew = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isSticky, setIsSticky] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // State to manage login status
+  const [userEmail, setUserEmail] = useState<string | null>(null); // State to store user email
 
   const toggleNavbar = () => {
     setIsExpanded(!isExpanded);
   };
 
   useEffect(() => {
+    // Example of checking if user is logged in using token stored in localStorage
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      // Fetch user details or decode token to get user information
+      const decodedToken = verifyToken(token);
+      if (typeof decodedToken !== 'string' && decodedToken.email) {
+        setUserEmail(decodedToken.email); // Set user email if logged in
+        setIsLoggedIn(true);
+      } else {
+        setIsLoggedIn(false);
+      }
+    } else {
+      setIsLoggedIn(false);
+    }
+
     const handleScroll = () => {
       const offset = window.scrollY;
       if (offset > 0) {
@@ -80,19 +109,23 @@ const HeaderNew = () => {
               Help
             </a>
             <span style={{ margin: "0 10px" }}></span>
-            <Link
-              to="/signIn"
-              className="text-decoration-none"
-              style={{ color: "#00BA29", fontSize: "12px" }}
-            >
-              <img
-                src={login}
-                style={{ width: "14px", height: "12px" }}
-                alt="Login"
-              />
-              <span style={{ margin: "0 2px" }}></span>
-              Login/Register
-            </Link>
+            {isLoggedIn ? (
+              <span style={{ fontSize: "12px" }}>{userEmail}</span>
+            ) : (
+              <Link
+                to="/signIn"
+                className="text-decoration-none"
+                style={{ color: "#00BA29", fontSize: "12px" }}
+              >
+                <img
+                  src={login}
+                  style={{ width: "14px", height: "12px" }}
+                  alt="Login"
+                />
+                <span style={{ margin: "0 2px" }}></span>
+                Login/Register
+              </Link>
+            )}
           </div>
         </div>
       </div>

@@ -1,0 +1,25 @@
+/* .custom-background {
+    background-color: linear-gradient(to bottom, #ff0c0c 0%, #00e600 100%);
+  }
+  .color {
+    color: #ff0c0c;
+  }
+  #col{
+    background-color: #ff0c0c;
+    transition-duration: 2s; 
+  } */
+  .mb-5 a {
+    color: black; /* Set default text color */
+    transition: all 0.2s ease; /* Add transition for color change */
+  }
+  
+  .mb-5:hover a {
+    transform: translateY(-3px);
+    text-decoration: underline;
+    font-size: larger;
+    color: #408d1c; /* Change text color on hover */
+  }
+  .cardBody:hover {
+    background-color: #FF9999; /* Change to the desired background color on hover */
+  }
+  
