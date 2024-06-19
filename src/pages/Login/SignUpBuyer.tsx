@@ -27,7 +27,7 @@ const SignUpBuyer: React.FC = () => {
 
   const handleSendVerificationCode = () => {
     axios
-      .post("http://localhost:8000/send-otp", { email, contactNo })
+      .post("http://localhost:8001/send-otp", { email, contactNo })
       .then((res) => {
         if (res.status === 200) {
           setIsCodeSent(true);
@@ -148,7 +148,7 @@ const SignUpBuyer: React.FC = () => {
     console.log("Sending values to backend:", values); // Log values being sent to backend
 
     axios
-      .post("http://localhost:8000/signup", values)
+      .post("http://localhost:8001/signup", values)
       .then((res) => {
         console.log("Response from backend:", res); // Log backend response
         if (res.status === 201) {
@@ -454,3 +454,4 @@ const SignUpBuyer: React.FC = () => {
 };
 
 export default SignUpBuyer;
+

@@ -163,7 +163,7 @@ const HeaderNew: React.FC = () => {
             <Nav.Link href="/">{userEmail ?? "Login / Register"}</Nav.Link>
             <span style={{ margin: "0 10px" }}></span>
             <Link
-              to="/signIn"
+              to="/selectLogin"
               className="text-decoration-none"
               style={{ color: "#00BA29", fontSize: "12px" }}
             >
@@ -384,3 +384,4 @@ const HeaderNew: React.FC = () => {
 };
 
 export default HeaderNew;
+

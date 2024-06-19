@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { GoogleMap, useJsApiLoader, MarkerF } from "@react-google-maps/api";
 import "bootstrap/dist/css/bootstrap.min.css";
-import Form from "react-bootstrap/Form";
 import MainHeader from "../components/Header-main";
 import MainFooter from "../components/Footer-main";
+import axios from "axios";
+
+import Form from "react-bootstrap/Form";
 import Icon1 from "../assets/icon1.svg";
 import Icon2 from "../assets/icon2.svg";
 import Icon3 from "../assets/icon3.svg";
@@ -11,42 +13,110 @@ import Icon4 from "../assets/icon4.svg";
 
 export default function App() {
   const containerStyle = {
-    width: "1000px",
+    width: "950px",
     height: "550px",
   };
-  const center = {
-    lat: 6.9271,
-    lng: 79.8612,
+
+  const bounds = {
+    north: 9.8284, // Northernmost latitude
+    south: 5.9086, // Southernmost latitude
+    west: 79.521, // Westernmost longitude
+    east: 81.879, // Easternmost longitude
   };
 
-  const points = [
-    { lat: 6.9271, lng: 79.8612, text: "Colombo" },
-    { lat: 7.2906, lng: 80.6337, text: "Kandy" },
-    { lat: 6.9278, lng: 79.8488, text: "Dehiwala" },
-    // Add more markers as needed
-  ];
+  const center = {
+    lat: (bounds.north + bounds.south) / 2,
+    lng: (bounds.east + bounds.west) / 2,
+  };
+
+  const [points, setPoints] = useState<
+    { lat: number; lng: number; text: string; category_id: number }[]
+  >([]);
+
+  const [sellers, setSellers] = useState<string[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
+
+  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+  const [selectedSeller, setSelectedSeller] = useState<string | null>(null);
+
+  const filteredPoints = selectedCategory
+    ? points.filter(
+        (point) =>
+          point.category_id === selectedCategory &&
+          (selectedSeller ? point.text.includes(selectedSeller) : true)
+      )
+    : points.filter((point) =>
+        selectedSeller ? point.text.includes(selectedSeller) : true
+      );
 
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
     googleMapsApiKey: "AIzaSyAeISjci_t8f7qOvcYnEzJ4-iEiwfDwokA",
   });
 
-  const [map, setMap] = React.useState<google.maps.Map | null>(null);
+  const [map, setMap] = useState<google.maps.Map | null>(null);
 
   const onLoad = React.useCallback(
     (map: google.maps.Map) => {
-      // This is just an example of getting and using the map instance!!! don't just blindly copy!
-      const bounds = new window.google.maps.LatLngBounds(center);
-      map.fitBounds(bounds);
-
-      setMap(map);
+      const googleMap = map;
+      googleMap.fitBounds(bounds);
     },
-    [center]
+    [bounds]
   );
 
-  const onUnmount = React.useCallback((map: google.maps.Map) => {
+  const onUnmount = React.useCallback(() => {
     setMap(null);
   }, []);
+
+  useEffect(() => {
+    const fetchPoints = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:8000/products-seller-cities"
+        );
+
+        const data = response.data;
+        console.log("Fetched points:", data);
+        setPoints(
+          data.map((item: any) => ({
+            lat: item.lat,
+            lng: item.lng,
+            text: `${item.store_name} (${item.product_name})`,
+            category_id: item.category_id,
+          }))
+        );
+
+        // Extract seller names from data and remove duplicates
+        const sellerNames = [
+          ...new Set(data.map((item: any) => item.store_name)),
+        ] as string[];
+        setSellers(sellerNames);
+
+        // Extract category names from data and remove duplicates
+        const categoryNames = [
+          ...new Set(data.map((item: any) => item.category_name)),
+        ] as string[];
+        setCategories(categoryNames);
+      } catch (error) {
+        console.error("Error fetching points:", error);
+      }
+    };
+
+    fetchPoints();
+  }, []);
+
+  const getCategoryMarker = (categoryId: number) => {
+    switch (categoryId) {
+      case 1:
+        return "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"; // Blue marker for category 1
+      case 2:
+        return "http://maps.google.com/mapfiles/ms/icons/green-dot.png"; // Green marker for category 2
+      case 3:
+        return "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png"; // Green marker for category 2
+      default:
+        return "http://maps.google.com/mapfiles/ms/icons/red-dot.png"; // Default red marker for other categories
+    }
+  };
 
   return isLoaded ? (
     <div>
@@ -74,6 +144,7 @@ export default function App() {
             </div>
             <div className="p-2" style={{ backgroundColor: "#DFFFC0" }}>
               <div className="me-3 mt-2">
+                <h6>Select your city :</h6>
                 <Form.Select aria-label="Select District">
                   <option>Select District</option>
                   <option value="1">Colombo</option>
@@ -82,19 +153,37 @@ export default function App() {
                 </Form.Select>
               </div>
               <div className="me-3 mt-4">
-                <Form.Select aria-label="Select Farmer">
+                <h6>Select your farmer :</h6>
+                <Form.Select
+                  aria-label="Select Farmer"
+                  onChange={(e) =>
+                    setSelectedSeller(
+                      e.target.value !== "Select Farmer" ? e.target.value : null
+                    )
+                  }
+                >
                   <option>Select Farmer</option>
-                  <option value="1">Kasun</option>
-                  <option value="2">Kamala</option>
-                  <option value="3">Sunethra</option>
+                  {sellers.map((seller, index) => (
+                    <option key={index} value={seller}>
+                      {seller}
+                    </option>
+                  ))}
                 </Form.Select>
               </div>
               <div className="me-3 mt-4 mb-4">
-                <Form.Select aria-label="Select Category">
+                <h6>Select your category :</h6>
+                <Form.Select
+                  aria-label="Select Category"
+                  onChange={(e) =>
+                    setSelectedCategory(parseInt(e.target.value))
+                  }
+                >
                   <option>Select Category</option>
-                  <option value="1">Vegetables</option>
-                  <option value="2">Fruits</option>
-                  <option value="3">Food</option>
+                  {categories.map((category, index) => (
+                    <option key={index} value={index + 1}>
+                      {category}
+                    </option>
+                  ))}
                 </Form.Select>
               </div>
             </div>
@@ -125,7 +214,7 @@ export default function App() {
             <GoogleMap
               mapContainerStyle={containerStyle}
               center={center}
-              zoom={10}
+              zoom={7}
               onLoad={onLoad}
               onUnmount={onUnmount}
               options={{
@@ -133,8 +222,14 @@ export default function App() {
                 mapTypeControl: false,
               }}
             >
-              {points.map((point, i) => (
-                <MarkerF key={i} position={point}></MarkerF>
+              {filteredPoints.map((point, i) => (
+                <MarkerF
+                  key={i}
+                  position={point}
+                  icon={{
+                    url: getCategoryMarker(point.category_id),
+                  }}
+                ></MarkerF>
               ))}
 
               {/* Child components, such as markers, info windows, etc. */}

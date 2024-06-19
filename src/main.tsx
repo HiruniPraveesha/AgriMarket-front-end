@@ -9,6 +9,14 @@ import SelectLogin from "./pages/Login/selectLogin";
 import SignUpBuyer from "./pages/Login/SignUpBuyer";
 import BecomeASeller from "./pages/Login/BecomeASeller";
 import ProductMap from "./pages/ProductMap";
+import SignupSeller from "./pages/Login/SignupSeller";
+
+import StepProgressBar from "./pages/Login/StepProgressBar";
+import Verifybank from "./pages/Login/Verifybank";
+//import AddProduct from "./pages/Login/AddProduct";
+import Email2 from "./pages/Login/Email";
+import Verify from "./pages/Login/Verify";
+import NewPW from "./pages/Login/NewPW";
 import HomePage from "./pages/HomePage";
 import SellerDashboard from "./pages/sellerDashboard";
 // import AddLogin from "./pages/Login/AddLogin";
@@ -48,6 +56,10 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
+  },
+  {
+    path: "/",
+    element: <App />,
     errorElement: <div>404 Not Found</div>,
   },
   {
@@ -68,7 +80,7 @@ const router = createBrowserRouter([
     element: <SignIn />,
   },
   {
-    path: "/select",
+    path: "/selectLogin",
     element: <SelectLogin />,
   },
   {
@@ -179,6 +191,37 @@ const router = createBrowserRouter([
   {
     path: "/admin-products",
     element: <Products />,
+  },
+  {
+    path: "/signupSeller",
+    element: <SignupSeller/>,
+  },
+  
+  {
+    path: "/stepProgressBar",
+    element: <StepProgressBar currentStep={0}/>,
+  },
+  
+  {
+    path: "/verifybank",
+    element: <Verifybank currentStep={0} />,
+  },
+  /*
+  {
+    path: "/addProduct",
+    element: <AddProduct/>,
+  },*/
+  {
+    path: "/email",
+    element: <Email2/>,
+  },
+  {
+    path: "/verify",
+    element: <Verify/>,
+  },
+  {
+    path: "/newpw",
+    element: <NewPW/>,
   },
 ]);
 

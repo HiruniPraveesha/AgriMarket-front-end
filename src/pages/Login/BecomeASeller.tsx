@@ -55,7 +55,7 @@ const BecomeASeller: React.FC = () => {
                 </p>
                 <div className="signbtn">
                   <Link
-                    to="#"
+                    to="/signupSeller"
                     className="btn btn-success btn-lg"
                     style={{
                       fontFamily: "'Poppins', sans-serif",
@@ -346,8 +346,8 @@ const BecomeASeller: React.FC = () => {
                 </div>
               </div>
               <div className="container mt-4 text-center">
-                <a
-                  href="#"
+                <Link
+                    to="/signupSeller"
                   className="btn btn-outline-dark btn-lg"
                   style={{
                     fontSize: "17px",
@@ -360,7 +360,7 @@ const BecomeASeller: React.FC = () => {
                   }}
                 >
                   Be a Seller Now!
-                </a>
+                </Link>
                 <style>
                   {`
       @keyframes tada {
@@ -476,8 +476,8 @@ const BecomeASeller: React.FC = () => {
           <div className="row justify-content-center">
             <div className="col-md-6 text-center">
               <div className="signbtn">
-                <a
-                  href="#"
+                <Link
+                    to="/signupSeller"
                   className="btn btn-success btn-lg"
                   style={{
                     margin: "25px",
@@ -490,7 +490,7 @@ const BecomeASeller: React.FC = () => {
                   }}
                 >
                   Join AgriMarket Now
-                </a>
+                </Link>
               </div>
             </div>
           </div>
