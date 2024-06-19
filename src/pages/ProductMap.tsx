@@ -51,7 +51,7 @@ export default function App() {
 
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
-    googleMapsApiKey: "AIzaSyAeISjci_t8f7qOvcYnEzJ4-iEiwfDwokA",
+    googleMapsApiKey: "cccc",
   });
 
   const [map, setMap] = useState<google.maps.Map | null>(null);
