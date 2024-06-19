@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Container, Row, Col, Button, Card, Carousel } from "react-bootstrap";
 import Header from "../components/Header-main";
@@ -12,8 +12,19 @@ import OtherImage from "../assets/Other.png";
 import Item1 from "../assets/Carrot.png";
 import ExampleCarouselImage from "../assets/Offers.png";
 
+interface HeaderProps {
+  userEmail: string | null;
+}
+
 const Home: React.FC = () => {
   const firstContainerRef = useRef<HTMLDivElement>(null);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Fetch user's email from local storage
+    const email = localStorage.getItem("userEmail");
+    setUserEmail(email);
+  }, []);
 
   const handleButtonClick = (type: string) => {
     if (type === "scroll") {
@@ -54,7 +65,7 @@ const Home: React.FC = () => {
   return (
     <div>
       <div>
-        <Header />
+        <Header/>
       </div>
       <div>
         <Container

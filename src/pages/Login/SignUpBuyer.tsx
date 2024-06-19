@@ -3,172 +3,191 @@ import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Button from "react-bootstrap/Button";
-import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai"; 
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import Header from "../../components/Header-sub";
 import Footer from "../../components/Footer-sub";
-import { Link } from "react-router-dom";
-// import axios from "axios";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
+import { useNavigate, Link } from "react-router-dom";
 
 const SignUpBuyer: React.FC = () => {
-
-
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    line1: "",
-    line2: "",
-    city: "",
-    contactNo: "",
-    password: ""
-  });
-
-  const [registrationSuccess, setRegistrationSuccess] = useState(false); 
-  const [registrationError, setRegistrationError] = useState(""); 
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    console.log("Input name:", name);
-    console.log("Input value:", value);
-    setFormData({
-      ...formData,
-      [name]: value
-    });
-    console.log("After State Update:", formData);
-  };
-
-
-  
-
-
-
-
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    
-    try {
-      if (
-        !formData.name ||
-        !formData.email ||
-        !formData.contactNo||
-        !formData.line1 ||
-        !formData.password||
-        !termsChecked
-      ) {
-        alert("Please fill out all required fields.");
-        return;
-      }
-
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(formData.email)) {
-        alert("Please enter a valid email address.");
-        return;
-      }
-  
-     
-      const contactNoRegex = /^\d{10}$/;
-      if (!contactNoRegex.test(formData.contactNo)) {
-        alert("Please enter a valid 10-digit contact number.");
-        return;
-      }
-      
-
-
-      await axios.post("http://localhost:8080/signup", formData);
-
-    //   const enteredOTP = prompt("Please enter the OTP sent to your email:");
-
-   
-    // if (enteredOTP) {
-      
-    //   const response = await axios.post("http://localhost:8000/verifyOTP", { email: formData.email, otp: enteredOTP });
-      
-    // }
-      setRegistrationSuccess(true);
-      console.log("successful");
-      setRegistrationError("");
-  } catch (error) {
-      const axiosError = error as AxiosError;
-      if (axiosError.response && axiosError.response.status === 400) {
-          const responseData = axiosError.response.data;
-          const errorMessage = typeof responseData === 'string' ? responseData : 'An error occurred';
-          if (errorMessage === 'User already exist') {
-              setRegistrationError('User already exists');
-          } else {
-              console.error('Error saving data:', error);
-              setRegistrationError('An error occurred. Please try again later.');
-          }
-      } else {
-          console.error('Error saving data:', error);
-          setRegistrationError('An error occurred. Please try again later.');
-      }
-  }
-  
-  };
-
-
-
-  
-
-
-
- 
-
-
+  const [verificationCode, setVerificationCode] = useState("");
+  const [isCodeSent, setIsCodeSent] = useState(false);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [address, setAddress] = useState("");
+  const [contactNo, setContactNo] = useState("");
+  const [password, setPassword] = useState("");
+  const [reEnteredPassword, setReEnteredPassword] = useState("");
+  const [termsChecked, setTermsChecked] = useState(false);
+  const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
+  const [passwordMatchError, setPasswordMatchError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
+  const navigate = useNavigate();
+
+  const handleSendVerificationCode = () => {
+    axios
+      .post("http://localhost:8000/send-otp", { email, contactNo })
+      .then((res) => {
+        if (res.status === 200) {
+          setIsCodeSent(true);
+          alert("Verification code sent successfully.");
+        } else {
+          alert("Error sending verification code.");
+        }
+      })
+      .catch((err) => {
+        console.error("Error response from backend:", err.response);
+        if (err.response && err.response.data && err.response.data.error) {
+          alert(err.response.data.error); // Display the specific error message
+        } else {
+          alert("An error occurred while sending the verification code.");
+        }
+      });
   };
-  const [termsChecked, setTermsChecked] = useState(false);
+
+  const handleVerificationCodeChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setVerificationCode(e.target.value);
+  };
+
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setName(e.target.value);
+  };
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+  };
+
+  const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setAddress(e.target.value);
+  };
+
+  const handleContactNoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setContactNo(e.target.value);
+  };
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newPassword = e.target.value;
+    setPassword(newPassword);
+    setPasswordErrors(validatePassword(newPassword));
+    if (reEnteredPassword && newPassword !== reEnteredPassword) {
+      setPasswordMatchError("Passwords do not match.");
+    } else {
+      setPasswordMatchError("");
+    }
+  };
+
+  const handleReEnteredPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newReEnteredPassword = e.target.value;
+    setReEnteredPassword(newReEnteredPassword);
+    if (newReEnteredPassword !== password) {
+      setPasswordMatchError("Passwords do not match.");
+    } else {
+      setPasswordMatchError("");
+    }
+  };
+
   const handleTermsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTermsChecked(e.target.checked);
   };
 
-  
+  const validatePassword = (password: string): string[] => {
+    const errors: string[] = [];
+    if (password.length < 7)
+      errors.push("Password must be at least 7 characters long.");
+    if (!/[a-z]/.test(password))
+      errors.push("Password must include at least one lowercase letter.");
+    if (!/[A-Z]/.test(password))
+      errors.push("Password must include at least one uppercase letter.");
+    if (!/\d/.test(password))
+      errors.push("Password must include at least one number.");
+    if (!/[@!#]/.test(password))
+      errors.push(
+        "Password must include at least one special character (@, !, #)."
+      );
+    return errors;
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (passwordErrors.length > 0) {
+      alert("Please meet all password requirements.");
+      return;
+    }
+
+    if (password !== reEnteredPassword) {
+      alert("Passwords do not match.");
+      return;
+    }
+
+    if (
+      !name ||
+      !email ||
+      !address ||
+      !contactNo ||
+      !password ||
+      !termsChecked ||
+      !verificationCode
+    ) {
+      alert("Please fill out all required fields.");
+      return;
+    }
+
+    const values = {
+      name,
+      email,
+      address,
+      contactNo,
+      password,
+      otp: verificationCode,
+    };
+
+    console.log("Sending values to backend:", values); // Log values being sent to backend
+
+    axios
+      .post("http://localhost:8000/signup", values)
+      .then((res) => {
+        console.log("Response from backend:", res); // Log backend response
+        if (res.status === 201) {
+          navigate("/SignIn");
+        } else {
+          alert("Error during sign up");
+        }
+      })
+      .catch((err) => {
+        console.error("Error response from backend:", err.response); // Log error response from backend
+        if (err.response && err.response.data && err.response.data.error) {
+          alert(err.response.data.error);
+        } else {
+          alert("An error occurred during sign up");
+        }
+      });
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   return (
     <div style={{ margin: "0 20%" }}>
-      <div>
-        <Header />
-      </div>
-      <div style={{ padding: "20px", fontSize: "20px", textAlign: "center" }}>
+      <Header />
+      <div style={{ fontSize: "18px", textAlign: "center" }}>
         <p style={{ fontWeight: "Bold" }}>SIGN UP</p>
       </div>
-      {registrationError && (
-        <div style={{ textAlign: "center", color: "red" }}>
-          {registrationError}
-        </div>
-      )}
-      {registrationSuccess && ( // Conditionally render success message
-         <div style={{ position: "fixed", top: 0, left: 0, width: "100%", height: "100%", backgroundColor: "rgba(0, 0, 0, 0.5)", backdropFilter: "blur(5px)", display: "flex", justifyContent: "center", alignItems: "center" }}>
-         <div style={{ backgroundColor: "white", padding: "20px", borderRadius: "8px", textAlign: "center" }}>
-           <p>Registration successful!</p>
-           <Link to="/signIn">
-            <button
-              type="button"
-              className="btn btn-primary continue"
-              style={{
-                backgroundColor: "#DFFFC0",
-                borderRadius: "55px",
-                color: "#00BA29",
-                fontSize: "10px",
-              }}
-            >
-              Next
-            </button>
-          </Link>
-         </div>
-       </div>
-      )}
-      <Form 
-        onSubmit={handleSubmit}
+      <p style={{ textAlign: "right" }}>
+        Already member?<Link to="/SignIn">Login</Link> here
+      </p>
+      <Form
         style={{
           backgroundColor: "#D9D9D9",
           padding: "20px",
-          fontSize: "10px",
+          paddingBottom: 0,
+          fontSize: "14px",
         }}
+        onSubmit={handleSubmit}
       >
         <Row>
           {/* Left Part */}
@@ -178,7 +197,14 @@ const SignUpBuyer: React.FC = () => {
                 Full Name<span style={{ color: "red" }}>*</span>
               </Form.Label>
               <Col sm="8">
-                <Form.Control type="text" className="mb-3" name="name" value={formData.name} onChange={handleInputChange} />
+                <Form.Control
+                  type="text"
+                  className="mb-3"
+                  value={name}
+                  onChange={handleNameChange}
+                  style={{ fontSize: "14px" }}
+                  required
+                />
               </Col>
             </Form.Group>
 
@@ -191,7 +217,14 @@ const SignUpBuyer: React.FC = () => {
                 Email<span style={{ color: "red" }}>*</span>
               </Form.Label>
               <Col sm="8">
-                <Form.Control type="text" className="mb-3" name="email" value={formData.email} onChange={handleInputChange}/>
+                <Form.Control
+                  type="email"
+                  className="mb-3"
+                  value={email}
+                  onChange={handleEmailChange}
+                  style={{ fontSize: "14px" }}
+                  required
+                />
               </Col>
             </Form.Group>
 
@@ -204,9 +237,20 @@ const SignUpBuyer: React.FC = () => {
                 Address<span style={{ color: "red" }}>*</span>
               </Form.Label>
               <Col sm="8">
-                <Form.Control type="text" name="line1" className="mb-3" value={formData.line1} onChange={handleInputChange}/>
-                <Form.Control type="text" name="line2" className="mb-3" value={formData.line2} onChange={handleInputChange}/>
-                <Form.Control type="text" name="city" value={formData.city} onChange={handleInputChange}/>
+                <Form.Control
+                  type="text"
+                  className="mb-3"
+                  value={address}
+                  onChange={handleAddressChange}
+                  style={{ fontSize: "14px" }}
+                  required
+                />
+                <Form.Control
+                  type="text"
+                  className="mb-3"
+                  style={{ fontSize: "14px" }}
+                />
+                <Form.Control type="text" style={{ fontSize: "14px" }} />
               </Col>
             </Form.Group>
           </Col>
@@ -222,10 +266,54 @@ const SignUpBuyer: React.FC = () => {
                 Mobile<span style={{ color: "red" }}>*</span>
               </Form.Label>
               <Col sm="8">
-                <Form.Control type="text" name="contactNo" className="mb-3" value={formData.contactNo} onChange={handleInputChange} />
+                <Form.Control
+                  type="text"
+                  className="mb-3"
+                  value={contactNo}
+                  onChange={handleContactNoChange}
+                  style={{ fontSize: "14px" }}
+                  required
+                />
               </Col>
             </Form.Group>
 
+            <Form.Group as={Row} className="mb-4" controlId="formPlaintextCode">
+              <Form.Label column sm="4">
+                Verification Code<span style={{ color: "red" }}>*</span>
+              </Form.Label>
+              <Col sm="8">
+                <div style={{ position: "relative" }}>
+                  <Form.Control
+                    type="text"
+                    className="mb-3"
+                    value={verificationCode}
+                    onChange={handleVerificationCodeChange}
+                    style={{ fontSize: "14px" }}
+                  />
+                  <Button
+                    variant="primary"
+                    style={{
+                      backgroundColor: "transparent",
+                      color: "black",
+                      fontSize: "12px",
+                      padding: "5px 0",
+                      position: "absolute",
+                      top: "50%",
+                      right: "10px",
+                      transform: "translateY(-50%)",
+                      cursor: isCodeSent ? "not-allowed" : "pointer",
+                      border: "none",
+                    }}
+                    onClick={
+                      isCodeSent ? undefined : handleSendVerificationCode
+                    }
+                    disabled={isCodeSent}
+                  >
+                    {isCodeSent ? "Sent" : "Send"}
+                  </Button>
+                </div>
+              </Col>
+            </Form.Group>
 
             <Form.Group
               as={Row}
@@ -236,14 +324,14 @@ const SignUpBuyer: React.FC = () => {
                 Password<span style={{ color: "red" }}>*</span>
               </Form.Label>
               <Col sm="8">
-                <div>
+                <div style={{ position: "relative" }}>
                   <Form.Control
-                    name="password"
                     type={showPassword ? "text" : "password"}
                     className="mb-3"
-                    style={{ paddingRight: "40px" }}
-                    value={formData.password} onChange={handleInputChange}
-                   
+                    style={{ paddingRight: "40px", fontSize: "14px" }}
+                    value={password}
+                    onChange={handlePasswordChange}
+                    required
                   />
                   <div
                     style={{
@@ -262,6 +350,56 @@ const SignUpBuyer: React.FC = () => {
                     )}
                   </div>
                 </div>
+                {password.length > 0 && (
+                  <div style={{ color: "red", fontSize: "12px" }}>
+                    {passwordErrors.map((error, index) => (
+                      <div key={index}>{error}</div>
+                    ))}
+                  </div>
+                )}
+              </Col>
+            </Form.Group>
+
+            <Form.Group
+              as={Row}
+              className="mb-4"
+              controlId="formPlaintextReEnterPassword"
+            >
+              <Form.Label column sm="4">
+                Re-enter Password<span style={{ color: "red" }}>*</span>
+              </Form.Label>
+              <Col sm="8">
+                <div style={{ position: "relative" }}>
+                  <Form.Control
+                    type={showPassword ? "text" : "password"}
+                    className="mb-3"
+                    style={{ paddingRight: "40px", fontSize: "14px" }}
+                    value={reEnteredPassword}
+                    onChange={handleReEnteredPasswordChange}
+                    required
+                  />
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "50%",
+                      right: "10px",
+                      transform: "translateY(-50%)",
+                      cursor: "pointer",
+                    }}
+                    onClick={togglePasswordVisibility}
+                  >
+                    {showPassword ? (
+                      <AiOutlineEyeInvisible />
+                    ) : (
+                      <AiOutlineEye />
+                    )}
+                  </div>
+                </div>
+                {reEnteredPassword.length > 0 && (
+                  <div style={{ color: "red", fontSize: "12px" }}>
+                    {passwordMatchError && <div>{passwordMatchError}</div>}
+                  </div>
+                )}
               </Col>
             </Form.Group>
 
@@ -283,6 +421,7 @@ const SignUpBuyer: React.FC = () => {
                   }
                   checked={termsChecked}
                   onChange={handleTermsChange}
+                  required
                 />
               </Col>
             </Form.Group>
@@ -295,8 +434,7 @@ const SignUpBuyer: React.FC = () => {
                   className="mb-3"
                   style={{
                     backgroundColor: "#00BA29",
-                    fontSize: "10px",
-                    marginBottom: "10px",
+                    fontSize: "16px",
                     border: "none",
                     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
                   }}

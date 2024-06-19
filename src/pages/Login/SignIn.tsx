@@ -7,7 +7,12 @@ import SignUpIcon from "../../assets/signup_icon.svg";
 import Button from "react-bootstrap/Button";
 import { Link, useNavigate } from "react-router-dom";
 import axios, { AxiosError } from "axios";
+import useSignIn from 'react-auth-kit/hooks/useSignIn';
 
+interface IUserData {
+  email: string;
+  
+ }
 
 function SignIn() {
   const [email, setEmail] = useState("");
@@ -15,7 +20,7 @@ function SignIn() {
   const [password, setPassword] = useState("");
   const [isPasswordValid, setIsPasswordValid] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
-
+  const signIn = useSignIn<IUserData>()
   const navigate = useNavigate();
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -41,19 +46,35 @@ function SignIn() {
       return;
     }
 
+
     try {
       // Include the full URL for the API endpoint
       const response = await axios.post("http://localhost:8080/signin", { email, password });
-      const { token, userType } = response.data;
+      const { token, userType, authUserState } = response.data;
+      
+      const expiresAt = new Date().getTime() + 24 * 60 * 60 * 1000;
+      const signInSuccess = signIn({
+        auth: {
+          token: response.data.token,
+          type: 'Bearer'
+      },
+      userState: {
+        ...authUserState,
+        expiresAt: expiresAt // Set expiration time in user state
+      }
+        
+      });
 
-      // Store the token in local storage or context
-      localStorage.setItem("token", token);
+      // Store the token and userEmail in local storage
+      // localStorage.setItem("token", token);
+      // localStorage.setItem("userEmail", userEmail);
 
       // Redirect based on userType
       if (userType === "buyer") {
         navigate("../HomePage");
+        console.log(response.data);
       } else if (userType === "seller") {
-        navigate("");
+        navigate("../sellerDashboard");
       }
     } catch (error) {
       if (error instanceof AxiosError) {

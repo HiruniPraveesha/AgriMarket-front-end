@@ -1,5 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
+import  AuthProvider  from "react-auth-kit";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import App from "./App";
 import "./index.css";
@@ -9,55 +10,59 @@ import SignUpBuyer from "./pages/Login/SignUpBuyer";
 import BecomeASeller from "./pages/Login/BecomeASeller";
 import ProductMap from "./pages/ProductMap";
 import HomePage from "./pages/HomePage";
-// import AddLogin from "./pages/Login/AddLogin";
-import AddProductWrapper from "./pages/Login/AddProductWrapper";
-// import VerifyBank from "./pages/Login/VerifyBank";
-// import ProductCalendar from "./pages/ProductCalendar";
-// import SignupSeller1 from "./pages/Login/SignupSeller1";
-// import SignupSeller2 from "./pages/Login/SignupSeller2";
 import SellerDashboard from "./pages/sellerDashboard";
 import TC from "./pages/T&C";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
-import AddProduct from "./pages/AddProduct2";
+import AddProduct from "./pages/Login/AddProduct";
 import TestComponent from "./components/TestComponent";
+import MyProducts from "./pages/MyProducts";
+import ShoppingCart from "./pages/ShoppingCart";
+import Login from "./pages/AdminLogin";
+import createStore from 'react-auth-kit/createStore';
+
+
+const store = createStore({
+  authName:'_auth',
+  authType:'cookie',
+  cookieDomain: window.location.hostname,
+  cookieSecure: window.location.protocol === 'https:',
+});
+
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
-    errorElement: <div>404 Not Found</div>, //put this into a page later
+    errorElement: <div>404 Not Found</div>,
   },
   {
     path: "/test",
     element: <TestComponent />,
   },
-  
-
-
+  {
+    path: "/ShoppingCart",
+    element: <ShoppingCart />,
+  },
+  {
+    path: "/adminLogin",
+    element: <Login />,
+  },
   {
     path: "/HomePage",
     element: <HomePage />,
-    errorElement: <div>404 Not Found</div>, //put this into a page later
+    errorElement: <div>404 Not Found</div>,
   },
   {
     path: "/signIn",
     element: <SignIn />,
   },
   {
-    path:"AddNewProduct",
-    element: <AddProduct/>,
-  },
-  // {
-  //   path: "/signupSeller1",
-  //   element: <SignupSeller1 />,
-  // },
-  // {
-  //   path: "/signupSeller2",
-  //   element: <SignupSeller2 />,
-  // },
-  {
     path: "/select",
     element: <SelectLogin />,
+  },
+  {
+    path: "/MyProducts",
+    element: <MyProducts />,
   },
   {
     path: "/signUpBuyer",
@@ -71,10 +76,6 @@ const router = createBrowserRouter([
     path: "/ProductMap",
     element: <ProductMap />,
   },
-  // {
-  //   path: "/ProductCalendar",
-  //   element: <ProductCalendar />,
-  // },
   {
     path: "/TC",
     element: <TC />,
@@ -85,24 +86,19 @@ const router = createBrowserRouter([
   },
   {
     path: "/sellerDashboard",
-    element: <SellerDashboard/>
+    element: <SellerDashboard />,
   },
-  // {
-  //   path: "/AddLogin",
-  //   element: <AddLogin />,
-  // },
   {
     path: "/AddProduct",
-    element: < AddProductWrapper/>,
-  }
-  // {
-  //   path: "/VerifyBank",
-  //   element: <VerifyBank />,
-  // },
+    element: <AddProduct />,
+  },
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <AuthProvider store={store}
+    >
+      <RouterProvider router={router} />
+    </AuthProvider>
   </React.StrictMode>
 );
