@@ -17,11 +17,15 @@ interface CartNotificationProps {
   cartItems: CartItem[];
 }
 
-const CartNotification: React.FC<CartNotificationProps> = ({ isVisible, onClose, cartItems }) => {
+const CartNotification: React.FC<CartNotificationProps> = ({
+  isVisible,
+  onClose,
+  cartItems,
+}) => {
   const navigate = useNavigate();
 
   const handleCheckout = () => {
-    navigate('/shopping-cart');
+    navigate("/shopping-cart");
   };
 
   return (
@@ -43,8 +47,13 @@ const CartNotification: React.FC<CartNotificationProps> = ({ isVisible, onClose,
     >
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h5>Your Cart</h5>
-        <button className="btn btn-link" onClick={onClose} style={{ color: '#00BA29' }}>
-          <i className="bi bi-x" style={{ fontSize: '1.5rem' }}></i> {/* Bootstrap Icons cross */}
+        <button
+          className="btn btn-link"
+          onClick={onClose}
+          style={{ color: "#00BA29" }}
+        >
+          <i className="bi bi-x" style={{ fontSize: "1.5rem" }}></i>{" "}
+          {/* Bootstrap Icons cross */}
         </button>
       </div>
       <div>
@@ -52,10 +61,12 @@ const CartNotification: React.FC<CartNotificationProps> = ({ isVisible, onClose,
           <p>Your cart is currently empty.</p>
         ) : (
           <div className="cart-items">
-            {cartItems.map(item => (
+            {cartItems.map((item) => (
               <div key={item.id} className="row mb-3">
                 <div className="col-8">
-                  <p className="mb-0"><strong>{item.name}</strong></p>
+                  <p className="mb-0">
+                    <strong>{item.name}</strong>
+                  </p>
                   <p className="mb-0">Qty: {item.quantity}</p>
                 </div>
                 <div className="col-4 text-end">
@@ -67,17 +78,17 @@ const CartNotification: React.FC<CartNotificationProps> = ({ isVisible, onClose,
         )}
       </div>
 
-      <div style={{ display: 'flex', justifyContent: 'center' }}>
+      <div style={{ display: "flex", justifyContent: "center" }}>
         <Button
           style={{
-            width: '200px',
-            height: '30px',
-            fontSize: '12px',
-            backgroundColor: '#01B928',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginTop: '15px'
+            width: "200px",
+            height: "30px",
+            fontSize: "12px",
+            backgroundColor: "#01B928",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            marginTop: "15px",
           }}
           onClick={handleCheckout}
         >
