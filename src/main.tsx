@@ -8,9 +8,21 @@ import SelectLogin from "./pages/Login/selectLogin";
 import SignUpBuyer from "./pages/Login/SignUpBuyer";
 import BecomeASeller from "./pages/BecomeASeller";
 import ProductMap from "./pages/ProductMap";
+import SignupSeller from "./pages/Login/SignupSeller";
+
+import StepProgressBar from "./pages/Login/StepProgressBar";
+import Verifybank from "./pages/Login/Verifybank";
+//import AddProduct from "./pages/Login/AddProduct";
+import Email2 from "./pages/Login/Email";
+import Verify from "./pages/Login/Verify";
+import NewPW from "./pages/Login/NewPW";
 // import HomePage from "./pages/HomePage";
 
 const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <App />,
+  },
   {
     path: "/",
     element: <SignIn />,
@@ -21,7 +33,7 @@ const router = createBrowserRouter([
     element: <SignIn />,
   },
   {
-    path: "/select",
+    path: "/selectLogin",
     element: <SelectLogin />,
   },
   {
@@ -35,6 +47,37 @@ const router = createBrowserRouter([
   {
     path: "/ProductMap",
     element: <ProductMap />,
+  },
+  {
+    path: "/signupSeller",
+    element: <SignupSeller/>,
+  },
+  
+  {
+    path: "/stepProgressBar",
+    element: <StepProgressBar currentStep={0}/>,
+  },
+  
+  {
+    path: "/verifybank",
+    element: <Verifybank currentStep={0} />,
+  },
+  /*
+  {
+    path: "/addProduct",
+    element: <AddProduct/>,
+  },*/
+  {
+    path: "/email",
+    element: <Email2/>,
+  },
+  {
+    path: "/verify",
+    element: <Verify/>,
+  },
+  {
+    path: "/newpw",
+    element: <NewPW/>,
   },
 ]);
 

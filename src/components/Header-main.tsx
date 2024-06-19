@@ -81,7 +81,7 @@ const HeaderNew = () => {
             </a>
             <span style={{ margin: "0 10px" }}></span>
             <Link
-              to="/signIn"
+              to="/selectLogin"
               className="text-decoration-none"
               style={{ color: "#00BA29", fontSize: "12px" }}
             >
@@ -258,3 +258,4 @@ const HeaderNew = () => {
 };
 
 export default HeaderNew;
+

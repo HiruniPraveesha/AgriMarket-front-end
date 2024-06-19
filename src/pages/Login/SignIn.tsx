@@ -1,38 +1,53 @@
 import React, { useState } from "react";
+
 import "bootstrap/dist/css/bootstrap.min.css";
 import Header from "../../components/Header-sub";
 import Footer from "../../components/Footer-sub";
 import signupImage from "../../assets/signupimage.png";
 import SignUpIcon from "../../assets/signup_icon.svg";
 import Button from "react-bootstrap/Button";
-import { Link } from "react-router-dom";
+import { BsEye, BsEyeSlash } from "react-icons/bs";
+import { Link} from "react-router-dom";
 
 function SignIn() {
-  const [email, setEmail] = useState("");
-  const [isEmailValid, setIsEmailValid] = useState(true);
+  const [identifier, setIdentifier] = useState("");
+  const [isIdentifierValid, setIsIdentifierValid] = useState(true);
   const [password, setPassword] = useState("");
   const [isPasswordValid, setIsPasswordValid] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  
 
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value);
-    setIsEmailValid(true); // Reset validation when the email changes
+
+
+  const handleIdentifierChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setIdentifier(e.target.value);
+    setIsIdentifierValid(true); // Reset validation when the identifier changes
+    setErrorMessage("");
   };
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
-    setIsPasswordValid(true); // Reset validation when the password changes
+    setIsPasswordValid(true);
+    setErrorMessage("");
   };
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+
+  const handleTogglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!email) {
-      setIsEmailValid(false);
+    if (!identifier) {
+      setIsIdentifierValid(false);
       return;
     }
     if (!password) {
       setIsPasswordValid(false);
       return;
     }
-    // Continue with form submission logic
+
+    
   };
 
   return (
@@ -52,47 +67,66 @@ function SignIn() {
             </div>
 
             <form onSubmit={handleSubmit}>
+              {errorMessage && (
+                <div className="alert alert-danger" role="alert">
+                  {errorMessage}
+                </div>
+              )}
               <div className="mb-3">
                 <label htmlFor="formControlLg" className="form-label">
-                  Email address / Username / Contact No
+                  Email address / Contact No
                 </label>
                 <input
                   id="formControlLg"
                   type="text"
                   className={`form-control form-control-lg ${
-                    isEmailValid ? "" : "is-invalid"
+                    isIdentifierValid ? "" : "is-invalid"
                   }`}
                   style={{ fontSize: "14px" }}
-                  value={email}
-                  onChange={handleEmailChange}
+                  value={identifier}
+                  onChange={handleIdentifierChange}
                 />
-                {!isEmailValid && (
+                {!isIdentifierValid && (
                   <div className="invalid-feedback">
-                    Please enter a valid email address/ username / contact no
+                    Please enter a valid email address/contact number.
                   </div>
                 )}
               </div>
 
               <div className="mb-3">
-                <label htmlFor="formControlLg" className="form-label">
+                <label htmlFor="passwordInput" className="form-label">
                   Password
                 </label>
-                <input
-                  id="formControlLg"
-                  type="password"
-                  className={`form-control form-control-lg ${
-                    isPasswordValid ? "" : "is-invalid"
-                  }`}
-                  style={{ fontSize: "14px" }}
-                  value={password}
-                  onChange={handlePasswordChange}
-                />
+                <div className="input-group">
+                  <input
+                    id="passwordInput"
+                    type={showPassword ? "text" : "password"}
+                    className={`form-control form-control-lg ${
+                      isPasswordValid ? "" : "is-invalid"
+                    }`}
+                    style={{ fontSize: "14px" }}
+                    value={password}
+                    onChange={handlePasswordChange}
+                  />
+                  <button
+                    type="button"
+                    className="btn btn-outline-secondary"
+                    onClick={handleTogglePasswordVisibility}
+                    style={{
+                      borderTopLeftRadius: "0",
+                      borderBottomLeftRadius: "0",
+                    }}
+                  >
+                    {showPassword ? <BsEyeSlash /> : <BsEye />}
+                  </button>
+                </div>
                 {!isPasswordValid && (
                   <div className="invalid-feedback">
                     Please enter a password.
                   </div>
                 )}
               </div>
+
 
               <div className="d-flex justify-content-between mx-4 mb-4">
                 <div className="form-check mb-0">
@@ -109,9 +143,9 @@ function SignIn() {
                     Remember me
                   </label>
                 </div>
-                <a href="!#" className="text-success">
+                <Link to="/email" className="text-success">
                   Forgot your password?
-                </a>
+                </Link>
               </div>
 
               <Button
@@ -180,7 +214,7 @@ function SignIn() {
                 </p>
               </div>
 
-              <Link to="/select">
+              <Link to="/selectLogin">
                 <Button
                   variant="primary"
                   className="mb-4 py-3"
