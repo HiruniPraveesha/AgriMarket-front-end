@@ -11,10 +11,8 @@ import { Link } from "react-router-dom";
 import Toast from "react-bootstrap/Toast";
 import axios from "axios"; // Make sure to install axios with npm install axios
 import { Navbar, Nav, Container } from "react-bootstrap";
-import useAuthUser from 'react-auth-kit/hooks/useAuthUser';
+import useAuthUser from "react-auth-kit/hooks/useAuthUser";
 // Define the type for the category
-
-
 
 interface Category {
   id: number;
@@ -32,7 +30,7 @@ interface HeaderProps {
 }
 
 interface AuthUser {
-  email: string ;
+  email: string;
   // Add other properties as needed
 }
 
@@ -41,9 +39,9 @@ const HeaderNew: React.FC = () => {
   const [isSticky, setIsSticky] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   // const auth = useAuthUser<AuthUser>;
-  const authUser = useAuthUser<AuthUser>()
+  const authUser = useAuthUser<AuthUser>();
   const userEmail = authUser?.email;
-  
+
   console.log("User Email:", userEmail);
   // const toggleNavbar = () => {
   //   setIsExpanded(!isExpanded);
@@ -257,9 +255,13 @@ const HeaderNew: React.FC = () => {
                 {notification ? notification.message : "Notification message"}
               </Toast.Body>
             </Toast>
-            <a href="#" className="nav-link" style={{ margin: "0 10px" }}>
+            <Link
+              to="/shopping-cart"
+              className="nav-link"
+              style={{ margin: "0 10px" }}
+            >
               <img src={Cart} alt="Cart" />
-            </a>
+            </Link>
           </div>
         </div>
       </div>
