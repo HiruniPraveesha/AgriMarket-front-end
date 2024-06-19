@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
-import BecomeASeller from "../BecomeASeller";
+import BecomeASeller from "./BecomeASeller";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -201,7 +201,7 @@ const SignupSeller2: React.FC = () => {
                         background: "none",
                         color: "#00BA29",
                       }}
-                      disabled={!email.trim() || emailError !== "" }
+                      disabled={!email.trim() || emailError !== ""}
                     >
                       {otpSent ? "Resend OTP" : "Send OTP"}
                     </Button>
@@ -306,13 +306,13 @@ const SignupSeller2: React.FC = () => {
                   )}
                 </Form.Group>
                 <div style={{ textAlign: "center", marginTop: "20px" }}>
-                    <Button
-                      variant="success"
-                      type="submit"
-                      disabled={!isFormValid()}
-                    >
-                      Create Account
-                    </Button>
+                  <Button
+                    variant="success"
+                    type="submit"
+                    disabled={!isFormValid()}
+                  >
+                    Create Account
+                  </Button>
                   <p style={{ marginTop: "12px", fontSize: "14px" }}>
                     By clicking 'Create account' you've read and agreed to our
                     terms and conditions.

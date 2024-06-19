@@ -384,4 +384,3 @@ const HeaderNew: React.FC = () => {
 };
 
 export default HeaderNew;
-

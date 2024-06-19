@@ -10,7 +10,6 @@ import SignUpBuyer from "./pages/Login/SignUpBuyer";
 import BecomeASeller from "./pages/Login/BecomeASeller";
 import ProductMap from "./pages/ProductMap";
 import SignupSeller from "./pages/Login/SignupSeller";
-
 import StepProgressBar from "./pages/Login/StepProgressBar";
 import Verifybank from "./pages/Login/Verifybank";
 //import AddProduct from "./pages/Login/AddProduct";
@@ -52,7 +51,16 @@ const store = createStore({
 });
 import CalendarBuyer from "./pages/CalendarBuyer";
 import Dashboard from "./pages/Dashbaord";
+import Email from "./pages/Login/ForgotPw/Email";
+import ItemDetails from "./pages/ItemDetails2";
+import ReviewRating from "./pages/ReviewRating";
+import Fruits from "./pages/Fruits";
+
 const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <App />,
+  },
   {
     path: "/",
     element: <App />,
@@ -80,6 +88,14 @@ const router = createBrowserRouter([
     element: <SignIn />,
   },
   {
+    path: "/Email",
+    element: <Email />,
+  },
+  {
+    path: "/Email",
+    element: <Email />,
+  },
+  {
     path: "/selectLogin",
     element: <SelectLogin />,
   },
@@ -94,6 +110,22 @@ const router = createBrowserRouter([
   {
     path: "/becomeASeller",
     element: <BecomeASeller />,
+  },
+  {
+    path: "/ItemDetails",
+    element: <ItemDetails productId={"1"} />,
+  },
+  {
+    path: "/ReviewRating",
+    element: <ReviewRating />,
+  },
+  {
+    path: "/Home",
+    element: <HomePage />,
+  },
+  {
+    path: "/Fruits",
+    element: <Fruits />,
   },
   {
     path: "/ProductMap",
@@ -194,14 +226,14 @@ const router = createBrowserRouter([
   },
   {
     path: "/signupSeller",
-    element: <SignupSeller/>,
+    element: <SignupSeller />,
   },
-  
+
   {
     path: "/stepProgressBar",
-    element: <StepProgressBar currentStep={0}/>,
+    element: <StepProgressBar currentStep={0} />,
   },
-  
+
   {
     path: "/verifybank",
     element: <Verifybank currentStep={0} />,
@@ -213,15 +245,15 @@ const router = createBrowserRouter([
   },*/
   {
     path: "/email",
-    element: <Email2/>,
+    element: <Email2 />,
   },
   {
     path: "/verify",
-    element: <Verify/>,
+    element: <Verify />,
   },
   {
     path: "/newpw",
-    element: <NewPW/>,
+    element: <NewPW />,
   },
 ]);
 
