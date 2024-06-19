@@ -251,9 +251,13 @@ const HeaderNew: React.FC = () => {
               <img src={Bell} alt="Bell" />
             </button>
             <ToastContainer />
-            <a href="#" className="nav-link" style={{ margin: "0 10px" }}>
+            <Link
+              to="/shopping-cart"
+              className="nav-link"
+              style={{ margin: "0 10px" }}
+            >
               <img src={Cart} alt="Cart" />
-            </a>
+            </Link>
 
             {/* Notifications Overlay */}
             {showNotifications && (
