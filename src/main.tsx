@@ -9,15 +9,14 @@ import SignUpBuyer from "./pages/Login/SignUpBuyer";
 import BecomeASeller from "./pages/Login/BecomeASeller";
 import ProductMap from "./pages/ProductMap";
 import HomePage from "./pages/HomePage";
-import AddLogin from "./pages/Login/AddLogin";
-import AddProduct from "./pages/Login/AddProduct";
-import VerifyBank from "./pages/Login/VerifyBank";
+// import AddLogin from "./pages/Login/AddLogin";
+// import AddProduct from "./pages/Login/AddProduct";
+// import VerifyBank from "./pages/Login/VerifyBank";
 import CalendarSeller from "./pages/CalendarSeller";
 import TC from "./pages/T&C";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import CalendarBuyer from "./pages/CalendarBuyer";
 import Dashboard from "./pages/Dashbaord";
-
 const router = createBrowserRouter([
   {
     path: "/",

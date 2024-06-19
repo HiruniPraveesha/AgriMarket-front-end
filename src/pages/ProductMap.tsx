@@ -1,4 +1,5 @@
 import React from "react";
+import { GoogleMap, useJsApiLoader, MarkerF } from "@react-google-maps/api";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Form from "react-bootstrap/Form";
 import MainHeader from "../components/Header-main";
@@ -9,11 +10,47 @@ import Icon3 from "../assets/icon3.svg";
 import Icon4 from "../assets/icon4.svg";
 
 export default function App() {
-  return (
+  const containerStyle = {
+    width: "1000px",
+    height: "550px",
+  };
+  const center = {
+    lat: 6.9271,
+    lng: 79.8612,
+  };
+
+  const points = [
+    { lat: 6.9271, lng: 79.8612, text: "Colombo" },
+    { lat: 7.2906, lng: 80.6337, text: "Kandy" },
+    { lat: 6.9278, lng: 79.8488, text: "Dehiwala" },
+    // Add more markers as needed
+  ];
+
+  const { isLoaded } = useJsApiLoader({
+    id: "google-map-script",
+    googleMapsApiKey: "AIzaSyAeISjci_t8f7qOvcYnEzJ4-iEiwfDwokA",
+  });
+
+  const [map, setMap] = React.useState<google.maps.Map | null>(null);
+
+  const onLoad = React.useCallback(
+    (map: google.maps.Map) => {
+      // This is just an example of getting and using the map instance!!! don't just blindly copy!
+      const bounds = new window.google.maps.LatLngBounds(center);
+      map.fitBounds(bounds);
+
+      setMap(map);
+    },
+    [center]
+  );
+
+  const onUnmount = React.useCallback((map: google.maps.Map) => {
+    setMap(null);
+  }, []);
+
+  return isLoaded ? (
     <div>
-      <div>
-        <MainHeader />
-      </div>
+      <MainHeader />
       <div className="container">
         <div className="row w-100">
           <div className="col-lg-4 my-4 align-items-center">
@@ -62,7 +99,7 @@ export default function App() {
               </div>
             </div>
             <div
-              className="p-2 mt-5 d-felx align-items-center justify-content-center"
+              className="p-2 mt-5 d-flex flex-column justify-content-center"
               style={{ backgroundColor: "#DFFFC0" }}
             >
               <div className="me-3 mt-2">
@@ -85,18 +122,30 @@ export default function App() {
           </div>
 
           <div className="col-lg-8 my-4">
-            <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3959.271597275592!2d80.70525401477377!3d7.873054094345983!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ae2480baef06707%3A0x255a1f345b0a3ba3!2sColombo%2C%20Sri%20Lanka!5e0!3m2!1sen!2sus!4v1644329821503!5m2!1sen!2sus"
-              className="w-100"
-              height="600"
-              loading="lazy"
-            ></iframe>
+            <GoogleMap
+              mapContainerStyle={containerStyle}
+              center={center}
+              zoom={10}
+              onLoad={onLoad}
+              onUnmount={onUnmount}
+              options={{
+                streetViewControl: false,
+                mapTypeControl: false,
+              }}
+            >
+              {points.map((point, i) => (
+                <MarkerF key={i} position={point}></MarkerF>
+              ))}
+
+              {/* Child components, such as markers, info windows, etc. */}
+              <></>
+            </GoogleMap>
           </div>
         </div>
       </div>
-      <div>
-        <MainFooter />
-      </div>
+      <MainFooter />
     </div>
+  ) : (
+    <></>
   );
 }
