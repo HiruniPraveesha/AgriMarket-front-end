@@ -9,7 +9,11 @@ import SignUpBuyer from "./pages/Login/SignUpBuyer";
 import BecomeASeller from "./pages/BecomeASeller";
 import ProductMap from "./pages/ProductMap";
 import Email from "./pages/Login/ForgotPw/Email";
-// import HomePage from "./pages/HomePage";
+import ItemDetails from "./pages/ItemDetails2";
+import ReviewRating from "./pages/ReviewRating";
+import HomePage from "./pages/Home2";
+import Fruits from "./pages/Fruits";
+
 
 const router = createBrowserRouter([
   {
@@ -40,6 +44,22 @@ const router = createBrowserRouter([
   {
     path: "/becomeASeller",
     element: <BecomeASeller />,
+  },
+  {
+    path: "/ItemDetails",
+    element: <ItemDetails productId={"1"} />,
+  },
+  {
+    path: "/ReviewRating",
+    element: <ReviewRating />,
+  },
+  {
+    path: "/Home",
+    element: <HomePage />,
+  },
+  {
+    path: "/Fruits",
+    element: <Fruits />,
   },
   {
     path: "/ProductMap",

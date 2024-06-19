@@ -11,6 +11,8 @@ import GrainImage from "../assets/Grains.png";
 import OtherImage from "../assets/Other.png";
 import Item1 from "../assets/Carrot.png";
 import ExampleCarouselImage from '../assets/Offers.png';
+import {Link} from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 
 
 
@@ -62,12 +64,13 @@ const Home: React.FC = () => {
     }
   };
 // Function to generate custom buttons with text and image
-  const generateButton = (text: string, image: string) => (
-    <Col md={3}>
+const generateButton = (text: string, image: string, link: string) => (
+  <Col md={3} key={text}>
+    <Link to={link} style={{ textDecoration: 'none' }}>
       <Button
         variant="outline-primary"
-        className="btn-custom" // Add a custom class for further styling
-        style={{ 
+        className="btn-custom"
+        style={{
           backgroundColor: 'white',
           fontFamily: 'Inter',
           color: 'black',
@@ -83,14 +86,16 @@ const Home: React.FC = () => {
         }}
         onMouseOver={(e) => (e.currentTarget.style.boxShadow = '2px 2px 3px 3px rgba(0, 0, 0, 0.1)')}
         onMouseOut={(e) => (e.currentTarget.style.boxShadow = '0 2px 15px rgba(0, 0, 0, 0.4)')}
-        onClick={() => handleButtonClick('scroll')}
       >
-        <img src={image} alt={text} style={{ height: '30px', padding: '5px' }}/>
+        <img src={image} alt={text} style={{ height: '30px', padding: '5px' }} />
         {text}
       </Button>
-    </Col>
-  );
-// tSX return
+    </Link>
+  </Col>
+);
+
+
+
   return (
 
     <div>
@@ -181,12 +186,11 @@ const Home: React.FC = () => {
       </Container>
 
       <Container fluid>
-       
         <Row className="d-flex justify-content-evenly mt-4 mb-4">
-        {/* Pass category name and corresponding image to generateButton */}
-    {categories.map((c, index) => (
-      generateButton(c, [FruitImage, VegeImage, GrainImage, OtherImage][index])
-    ))}
+          {/* Mapping categories to generate buttons with links */}
+          {categories.map((category, index) => (
+            generateButton(category, [FruitImage, VegeImage, GrainImage, OtherImage][index], `/${category}`)
+          ))}
         </Row>
       </Container>
 
@@ -223,10 +227,11 @@ const Home: React.FC = () => {
               <div className="d-flex justify-content-center align-items-center">
                 <Card.Img
                   variant="top"
-                  src={Item1} // Use the image from the fetched product data
+                  src={product.image} // Use the image from the fetched product data
                   style={{ height: '70%', width: '70%', alignItems: 'center' }}
                   onClick={(e) => {
                     e.preventDefault();
+                    
                     // Add any custom functionality you want here
                   }}
                 />
@@ -234,8 +239,8 @@ const Home: React.FC = () => {
             </Card.Link>
             <Card.Body>
               <Card.Text style={{ fontSize: '14px', lineHeight: '2' }}>
-                <span style={{ fontWeight: 'bold' }}>Rs. {product.price}</span><br /> {/* Use the price from the fetched product data */}
-                <span style={{ fontFamily: 'Sans-serif' }}>{product.name}</span><br /> {/* Use the name from the fetched product data */}
+                <span style={{ fontWeight: 'bold' }}>{product.name}</span><br /> {/* Use the name from the fetched product data */}
+                <span style={{ fontFamily: 'Sans-serif' }}>Rs. {product.price} - 1kg</span><br /> {/* Use the price from the fetched product data */}
                 <span style={{ fontFamily: 'Sans-serif' }}>{product.seller.store_name}</span><br />
                 <Button variant="primary"
                   style={{
@@ -245,6 +250,7 @@ const Home: React.FC = () => {
                   }}
                   onMouseOver={(e) => (e.currentTarget.style.boxShadow = '1px 1px 2px 2px rgba(0, 0, 0, 0.2)')}
                   onMouseOut={(e) => (e.currentTarget.style.boxShadow = '0 3px 7px rgba(0, 0, 0, 0.1)')}
+                  
                 >Add to Cart</Button>
               </Card.Text>
             </Card.Body>
