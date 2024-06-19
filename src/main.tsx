@@ -11,6 +11,10 @@ import BecomeASeller from "./pages/Login/BecomeASeller";
 import ProductMap from "./pages/ProductMap";
 import HomePage from "./pages/HomePage";
 import SellerDashboard from "./pages/sellerDashboard";
+// import AddLogin from "./pages/Login/AddLogin";
+// import AddProduct from "./pages/Login/AddProduct";
+// import VerifyBank from "./pages/Login/VerifyBank";
+import CalendarSeller from "./pages/CalendarSeller";
 import TC from "./pages/T&C";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import MyProducts from "./pages/MyProducts";
@@ -27,7 +31,6 @@ import RechargeWallet from "./pages/Buyer/RechargeWallet";
 import AddProduct from "./pages/Seller/AddProduct";
 import Sidebar from "./components/Seller-side-bar";
 import AdminLogin from "./pages/Admin/Admin-login";
-import Dashboard from "./pages/Admin/Dashboard";
 import AdminNavigation from "./components/Admin-bar";
 import Buyers from "./pages/Admin/Buyers";
 import Sellers from "./pages/Admin/Sellers";
@@ -39,7 +42,8 @@ const store = createStore({
   cookieDomain: window.location.hostname,
   cookieSecure: window.location.protocol === "https:",
 });
-
+import CalendarBuyer from "./pages/CalendarBuyer";
+import Dashboard from "./pages/Dashbaord";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -84,6 +88,18 @@ const router = createBrowserRouter([
     element: <ProductMap />,
   },
   {
+    path: "/CalendarSeller",
+    element: <CalendarSeller />,
+  },
+  {
+    path: "/CalendarBuyer",
+    element: <CalendarBuyer />,
+  },
+  {
+    path: "/Dashboard",
+    element: <Dashboard />,
+  },
+  {
     path: "/TC",
     element: <TC />,
   },
@@ -91,6 +107,7 @@ const router = createBrowserRouter([
     path: "/PrivacyPolicy",
     element: <PrivacyPolicy />,
   },
+
   {
     path: "/sellerDashboard",
     element: <SellerDashboard />,

@@ -8,8 +8,22 @@ import Search from "../assets/Search.svg";
 import language from "../assets/Languages.svg";
 import { Dropdown } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import Toast from "react-bootstrap/Toast";
 import axios from "axios"; // Make sure to install axios with npm install axios
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+// Define the type for the category
+interface Category {
+  id: number;
+  name: string;
+}
+
+interface Notification {
+  image: string;
+  title: string;
+  timestamp: string;
+  message: string;
+}
 import { Navbar, Nav, Container } from "react-bootstrap";
 import useAuthUser from "react-auth-kit/hooks/useAuthUser";
 // Define the type for the category
@@ -37,6 +51,8 @@ interface AuthUser {
 const HeaderNew: React.FC = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isSticky, setIsSticky] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   // const auth = useAuthUser<AuthUser>;
   const authUser = useAuthUser<AuthUser>();
@@ -68,7 +84,7 @@ const HeaderNew: React.FC = () => {
     const fetchCategories = async () => {
       try {
         const response = await axios.get<Category[]>(
-          "http://localhost:8000/CalendarEvent/category"
+          "http://localhost:8000/Category"
         ); // Replace with your backend endpoint
         setCategories(response.data);
       } catch (error) {
@@ -79,23 +95,24 @@ const HeaderNew: React.FC = () => {
     fetchCategories();
   }, []);
 
-  const [show, setShow] = useState(false);
-  const [notification, setNotification] = useState<Notification | null>(null);
-
-  const toggleShow = () => setShow(!show);
+  const fetchNotifications = async () => {
+    try {
+      const response = await axios.get<Notification[]>(
+        "http://localhost:8000/Notification"
+      );
+      setNotifications(response.data);
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchNotification = async () => {
-      try {
-        const response = await axios.get("your_api_endpoint_here");
-        setNotification(response.data);
-      } catch (error) {
-        console.error("Error fetching notification:", error);
-      }
-    };
-
-    fetchNotification();
+    fetchNotifications();
   }, []);
+
+  const toggleNotifications = () => {
+    setShowNotifications(!showNotifications);
+  };
 
   return (
     <header
@@ -225,43 +242,62 @@ const HeaderNew: React.FC = () => {
           </div>
 
           {/* Bell & Cart Icons */}
-          <div className="col-md-2 col-lg-2 col-xl-2 mb-md-0 mt-1 d-flex justify-content-center align-items-center">
+          <div className="col-md-2 col-lg-2 col-xl-2 mb-md-0 mt-1 d-flex justify-content-center align-items-center position-relative">
             <button
-              onClick={toggleShow}
+              onClick={toggleNotifications}
               className="nav-link"
-              style={{ margin: "0 10px" }}
+              style={{ margin: "0 10px", background: "none", border: "none" }}
             >
               <img src={Bell} alt="Bell" />
             </button>
-            <Toast show={show} onClose={toggleShow}>
-              <Toast.Header>
-                <img
-                  src={
-                    notification
-                      ? notification.image
-                      : "holder.js/20x20?text=%20"
-                  }
-                  className="rounded me-2"
-                  alt=""
-                />
-                <strong className="me-auto">
-                  {notification ? notification.title : "Notification Title"}
-                </strong>
-                <small>
-                  {notification ? notification.timestamp : "Just now"}
-                </small>
-              </Toast.Header>
-              <Toast.Body>
-                {notification ? notification.message : "Notification message"}
-              </Toast.Body>
-            </Toast>
-            <Link
-              to="/shopping-cart"
-              className="nav-link"
-              style={{ margin: "0 10px" }}
-            >
+            <ToastContainer />
+            <a href="#" className="nav-link" style={{ margin: "0 10px" }}>
               <img src={Cart} alt="Cart" />
-            </Link>
+            </a>
+
+            {/* Notifications Overlay */}
+            {showNotifications && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: "100%",
+                  right: "0",
+                  background: "white",
+                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                  zIndex: 1000,
+                  width: "300px",
+                  maxHeight: "400px",
+                  overflowY: "auto",
+                  borderRadius: "4px",
+                  padding: "10px",
+                }}
+              >
+                {notifications.map((notification, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      padding: "10px",
+                      borderBottom: "1px solid #e0e0e0",
+                    }}
+                  >
+                    <div className="d-flex align-items-center mb-2">
+                      <img
+                        src={notification.image}
+                        alt="Notification"
+                        style={{
+                          width: "20px",
+                          height: "20px",
+                          marginRight: "10px",
+                        }}
+                      />
+                      <strong>{notification.title}</strong>
+                    </div>
+                    <div>{notification.message}</div>
+                    <small>{notification.timestamp}</small>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
