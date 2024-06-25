@@ -34,7 +34,7 @@ const ItemDetails: React.FC<{ productId: string }> = ({ productId }) => {
 
   useEffect(() => {
     // Make an HTTP GET request to fetch data from the API endpoint
-    fetch(`http://localhost:8000/product/${productId}`)
+    fetch(`http://localhost:8080/product/${productId}`)
       .then(response => response.json())
       .then(data => {
         console.log('Fetched product:', data);
@@ -130,6 +130,9 @@ const ItemDetails: React.FC<{ productId: string }> = ({ productId }) => {
   };
 
   const addToCart = () => {
+    const currentCart = JSON.parse(sessionStorage.getItem('cart') || '[]');
+    const updatedCart = [...currentCart, { ...product, quantity }];
+    sessionStorage.setItem('cart', JSON.stringify(updatedCart));
     console.log("Item added to cart");
   };
 

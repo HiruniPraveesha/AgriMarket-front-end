@@ -44,7 +44,7 @@ export default function AddProduct() {
     });
 
     try {
-      const response = await axios.post('http://localhost:3000/products', formData, {
+      const response = await axios.post('http://localhost:8080/products', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }

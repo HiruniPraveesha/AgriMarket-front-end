@@ -7,10 +7,11 @@ import login from "../assets/Login.svg";
 import Search from "../assets/Search.svg";
 import language from "../assets/Languages.svg";
 import { Dropdown } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios"; // Make sure to install axios with npm install axios
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import useSignOut from 'react-auth-kit/hooks/useSignOut';
 
 // Define the type for the category
 interface Category {
@@ -57,11 +58,18 @@ const HeaderNew: React.FC = () => {
   // const auth = useAuthUser<AuthUser>;
   const authUser = useAuthUser<AuthUser>();
   const userEmail = authUser?.email;
+  const navigate = useNavigate();
+  const signOut = useSignOut()
 
   console.log("User Email:", userEmail);
   // const toggleNavbar = () => {
   //   setIsExpanded(!isExpanded);
   // };
+  const handleLogout = () => {
+    signOut();
+    localStorage.clear();
+    navigate("/"); // Redirect to the home page or login page after logout
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -160,6 +168,13 @@ const HeaderNew: React.FC = () => {
             >
               Help
             </a>
+             {userEmail ? (
+              <Nav.Link onClick={handleLogout} style={{ cursor: "pointer" }}>
+                Logout
+              </Nav.Link>
+            ) : (
+              <Nav.Link href="/">{userEmail ?? "Login / Register"}</Nav.Link>
+            )}
             <Nav.Link href="/">{userEmail ?? "Login / Register"}</Nav.Link>
             <span style={{ margin: "0 10px" }}></span>
             <Link

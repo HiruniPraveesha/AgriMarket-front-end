@@ -194,7 +194,7 @@ const SignUpBuyer: React.FC = () => {
           <Col md={6}>
             <Form.Group as={Row} className="mb-4" controlId="formPlaintextName">
               <Form.Label column sm="4">
-                Full Name<span style={{ color: "red" }}>*</span>
+                First Name<span style={{ color: "red" }}>*</span>
               </Form.Label>
               <Col sm="8">
                 <Form.Control
@@ -207,6 +207,23 @@ const SignUpBuyer: React.FC = () => {
                 />
               </Col>
             </Form.Group>
+
+            <Form.Group as={Row} className="mb-4" controlId="formPlaintextName">
+              <Form.Label column sm="4">
+                Last Name<span style={{ color: "red" }}>*</span>
+              </Form.Label>
+              <Col sm="8">
+                <Form.Control
+                  type="text"
+                  className="mb-3"
+                  value={name}
+                  onChange={handleNameChange}
+                  style={{ fontSize: "14px" }}
+                  required
+                />
+              </Col>
+            </Form.Group>
+
 
             <Form.Group
               as={Row}

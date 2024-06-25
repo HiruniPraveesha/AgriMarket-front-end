@@ -50,9 +50,9 @@ function SignIn() {
     try {
       // Include the full URL for the API endpoint
       const response = await axios.post("http://localhost:8080/signin", { email, password });
-      const { token, userType, authUserState } = response.data;
+      const { token, userType, authUserState, sellerId } = response.data;
       
-      const expiresAt = new Date().getTime() + 24 * 60 * 60 * 1000;
+      const expiresAt = new Date().getTime() + 1 * 60 * 60 * 1000;
       const signInSuccess = signIn({
         auth: {
           token: response.data.token,
@@ -66,8 +66,9 @@ function SignIn() {
       });
 
       // Store the token and userEmail in local storage
-      // localStorage.setItem("token", token);
-      // localStorage.setItem("userEmail", userEmail);
+      localStorage.setItem("token", token);
+      localStorage.setItem("userEmail", email);
+      localStorage.setItem("sellerId", sellerId);
 
       // Redirect based on userType
       if (userType === "buyer") {

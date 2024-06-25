@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Card, Col, Form, Row } from 'react-bootstrap';
-import axios from 'axios'; // Import axios for API requests
 import Header from "../components/Header-main";
 import Footer from "../components/Footer-main";
 
@@ -16,30 +15,29 @@ const ShoppingCart = () => {
     const [subtotal, setSubtotal] = useState(0);
     const [totalItemsCount, setTotalItemsCount] = useState(0);
 
-    // Function to fetch cart products from backend
-    const fetchCartProducts = async () => {
+    // Function to fetch cart products from session storage
+    const fetchCartProducts = () => {
         try {
-            const response = await axios.get<Product[]>('http://localhost:8080/getCartProducts'); // Replace with actual API endpoint
-            setCartProducts(response.data);
-            calculateSubtotal(response.data);
-            setTotalItemsCount(response.data.length);
+            const cartData = sessionStorage.getItem('cart');
+            if (cartData) {
+                const parsedCartData: Product[] = JSON.parse(cartData);
+                setCartProducts(parsedCartData);
+                calculateSubtotal(parsedCartData);
+                setTotalItemsCount(parsedCartData.length);
+            } else {
+                setCartProducts([]);
+                setTotalItemsCount(0);
+            }
         } catch (error) {
             console.error('Error fetching cart products:', error);
         }
     };
 
-    const removeProductFromCart = async (productId: 3) => {
+    const removeProductFromCart = (productId: number) => {
         try {
-            const buyerId = 1; // Replace with the actual buyerId
-    
-            const response = await axios.delete(`http://localhost:8080/removeProduct`, {
-                data: {
-                    buyerId: buyerId,
-                    productId: productId
-                }
-            });
-    
-            console.log(response.data); // Handle success
+            let cart = JSON.parse(sessionStorage.getItem('cart') || '[]');
+            cart = cart.filter((product: Product) => product.productId !== productId);
+            sessionStorage.setItem('cart', JSON.stringify(cart));
             fetchCartProducts(); // Refresh cart products after removal
         } catch (error) {
             console.error('Error removing product:', error); // Handle error
@@ -50,16 +48,15 @@ const ShoppingCart = () => {
     const calculateSubtotal = (products: Product[]) => {
         let total = 0;
         products.forEach((product) => {
-            total += product.price * product.quantity; // Assuming each product has price and quantity properties
+            total += product.price * product.quantity;
         });
         setSubtotal(total);
     };
+
     // Function to clear the shopping cart
-    const clearCart = async () => {
+    const clearCart = () => {
         try {
-            const response = await axios.post('/api/cart/clear', { buyerId: '123' }); // Replace '123' with actual buyerId
-            console.log(response.data); // Handle success
-            // Update UI or state accordingly
+            sessionStorage.removeItem('cart');
             setCartProducts([]); // Clear cart products in state
             setSubtotal(0); // Reset subtotal
             setTotalItemsCount(0); // Reset total items count
@@ -75,7 +72,7 @@ const ShoppingCart = () => {
 
     return (
         <>
-            <Header userEmail="zsdfgaer" />
+            <Header />
             <section className="h-100 h-custom" style={{ backgroundColor: 'white' }}>
                 <div className="py-5 h-100">
                     <Row className="justify-content-center align-items-center h-100 w-100">
@@ -141,8 +138,7 @@ const ShoppingCart = () => {
                                                                 <h6>{product.price * product.quantity}</h6>
                                                             </Col>
                                                             <Col md="1" lg="1" xl="1">
-                                                                {/* Optional: Add a remove button */}
-                                                                <Button variant="danger" size="sm" onClick={() => removeProductFromCart(3)}>Remove</Button>
+                                                                <Button variant="danger" size="sm" onClick={() => removeProductFromCart(product.productId)}>Remove</Button>
                                                             </Col>
                                                         </Row>
                                                         <hr style={{ marginBottom: '-20px' }} />

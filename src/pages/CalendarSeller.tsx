@@ -22,6 +22,7 @@ function ProductCalendar() {
   // State for categories and products
   const [categories, setCategories] = useState<any[]>([]);
   const [products, setProducts] = useState<any[]>([]);
+  const mySeller = localStorage.getItem("sellerId");
 
   // Fetch categories from the database
   useEffect(() => {
@@ -87,7 +88,7 @@ function ProductCalendar() {
     clearFormFields();
     toggleModal();
 
-    axios.delete(`http://localhost:8000/CalendarSeller/${selectedEvent.id}`);
+    axios.delete("http://localhost:8000/CalendarSeller/${selectedEvent.id}");
   };
 
   // Function to clear form fields
@@ -105,7 +106,7 @@ function ProductCalendar() {
         ? {
             ...event,
             productName: product,
-            title: `${product} - ${note}`,
+            title: "${product} - ${note}",
             categoryId: category_id,
             sellerId,
           }
@@ -115,7 +116,7 @@ function ProductCalendar() {
     toggleModal();
     clearFormFields();
 
-    axios.put(`http://localhost:8000/CalendarSeller/${selectedEvent.id}`, {
+    axios.put("http://localhost:8000/CalendarSeller/${selectedEvent.id}", {
       note,
       start: selectedEvent.start,
       productName: product,
@@ -123,6 +124,7 @@ function ProductCalendar() {
       sellerId,
     });
   };
+
 
   // Function to handle form submission
   const handleFormSubmit = () => {
@@ -136,7 +138,7 @@ function ProductCalendar() {
       setSelectedEvent(null);
       const newEvent = {
         id: events.length + 1,
-        title: `${product} - ${note}`,
+        title: "${product} - ${note}",
         start,
         end,
         categoryId: category_id,
@@ -177,6 +179,8 @@ function ProductCalendar() {
     clearFormFields();
     toggleModal();
   };
+
+  
 
   // Function to get event style based on category
   const getEventStyle = (event: any) => {
@@ -232,7 +236,8 @@ function ProductCalendar() {
               <Form.Label>Seller ID</Form.Label>
               <Form.Control
                 type="text"
-                placeholder="Enter seller ID"
+                placeholder={mySeller || ""}
+
                 value={sellerId}
                 onChange={(e) => setSellerId(e.target.value)}
                 required

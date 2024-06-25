@@ -22,6 +22,7 @@ import SellerDashboard from "./pages/sellerDashboard";
 // import AddProduct from "./pages/Login/AddProduct";
 // import VerifyBank from "./pages/Login/VerifyBank";
 import CalendarSeller from "./pages/CalendarSeller";
+import ProductCalendar from "./pages/CalendarSeller";
 import TC from "./pages/T&C";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import MyProducts from "./pages/MyProducts";
@@ -113,7 +114,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/ItemDetails",
-    element: <ItemDetails productId={"1"} />,
+    element: <ItemDetails productId={"3"} />,
   },
   {
     path: "/ReviewRating",
@@ -133,7 +134,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/CalendarSeller",
-    element: <CalendarSeller />,
+    element: <ProductCalendar />,
   },
   {
     path: "/CalendarBuyer",
