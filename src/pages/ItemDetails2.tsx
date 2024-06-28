@@ -1,15 +1,25 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Container, Row, Col, Button, Card, ProgressBar } from 'react-bootstrap';
 import { Rate } from 'antd';
-//import Carrot from "../assets/Carrot.png";
-import { Link } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import Item1 from '../assets/Carrot.png';
+import Header from "../components/Header-main";
+import Footer from "../components/Footer-main";
 
 
-
-const ItemDetails: React.FC<{ productId: string }> = ({ productId }) => {
+const ItemDetails: React.FC<{}> = ({}) => {
   const [quantity, setQuantity] = useState(1);
   const [cardCount, setCardCount] = useState(1);
   const leftContentRef = useRef<HTMLDivElement>(null);
+  const { productId } = useParams();
+  const navigate = useNavigate();
+
+  // Scroll to top when route changes
+  useEffect(() => {
+    setTimeout(() => {
+      window.scrollTo(0, 0);
+    }, 0);
+  }, [location]);
 
   useEffect(() => {
     const updateCardCount = () => {
@@ -107,8 +117,8 @@ const ItemDetails: React.FC<{ productId: string }> = ({ productId }) => {
   const [moreProducts, setMoreProducts] = useState<any[]>([]);
 
   useEffect(() => {
-    // Fetch more products excluding the current one
-    fetch(`http://localhost:8000/products/more/${productId}`)
+    // Fetch more products excluding the current one, limited by cardCount
+    fetch(`http://localhost:8000/products/more/${productId}?limit=${cardCount+1}`)
       .then(response => response.json())
       .then(data => {
         console.log('Fetched more products:', data);
@@ -117,15 +127,14 @@ const ItemDetails: React.FC<{ productId: string }> = ({ productId }) => {
       .catch(error => {
         console.error('Error fetching more products:', error);
       });
-  }, [productId,cardCount]);
-
+  }, [productId, cardCount]);
   const incrementQuantity = () => {
-    setQuantity(quantity + 0.5);
+    setQuantity(quantity + 1);
   };
 
   const decrementQuantity = () => {
     if (quantity > 1) {
-      setQuantity(quantity - 0.5);
+      setQuantity(quantity - 1);
     }
   };
 
@@ -135,38 +144,38 @@ const ItemDetails: React.FC<{ productId: string }> = ({ productId }) => {
 
   const buyNow = () => {
     console.log("Buying item now");
-  };
-
-  const addReviewAndRating = () => {
-    console.log("Add Reviews and Rating button clicked");
-  };
+  }; 
 
   const getProgressBar = (percentage: number | undefined) => (
     <ProgressBar
       now={percentage}
       variant="warning"
-      style={{ height: '20px', borderRadius: '10px' }}
+      style={{ height: '10px', borderRadius: '10px'}}
     />
   );
 
   return (
     <>
+    <Header/>
+    
       <Container className="mt-4" fluid style={{ paddingLeft: '30px', paddingRight: '30px' }}>
         <Row>
           <Col xs={12} md={6} className="d-flex justify-content-center align-items-center">
             <Card.Img
               variant="top"
-              src={product.name}
+              //src={product.image}
+              src={Item1}
               style={{ border: '1px solid', height: '85%', width: '55%' }}
             />
           </Col>
           <Col xs={12} md={6} className="d-flex align-items-center justify-content-center">
             <div>
-            <Card.Body>
+              <Card.Body>
                 <Card.Text style={{ fontSize: '16px', lineHeight: '2' }}>
                   <span style={{ fontFamily: 'Sans-serif', fontWeight: 'bold' }}>{product.name}</span><br />
                   <span style={{ fontFamily: 'Sans-serif' }}>Rs. {product.price}</span><br />
-                  <span style={{ fontFamily: 'Sans-serif' }}>{product.seller?.store_name}</span><br /><br />
+                  <span style={{ fontFamily: 'Sans-serif' }}>{product.seller?.store_name}</span><br />
+                  <span style={{ fontFamily: 'Sans-serif' }}>{product.description}</span><br /><br />
                 </Card.Text>
               </Card.Body>
               <div style={{ border: '2px solid #00BA29', borderRadius: '19px', display: 'inline-block', marginBottom: '10px', marginTop: '0px' }}>
@@ -202,7 +211,7 @@ const ItemDetails: React.FC<{ productId: string }> = ({ productId }) => {
           </Col>
         </Row>
       </Container>
-      <Container fluid className="mt-4" style={{ paddingLeft: '30px', paddingRight: '30px' }}>
+      <Container fluid className="mt-4">
         <div className="mt-4 ml-4" style={{ paddingLeft: '0', backgroundColor: '#F5F5F5' }}>
           <h3 style={{ fontSize: '16px', padding: '5px', margin: '0', marginLeft: '20px' }}>Reviews and Ratings</h3>
         </div>
@@ -211,46 +220,46 @@ const ItemDetails: React.FC<{ productId: string }> = ({ productId }) => {
         <Row noGutters>
           <Col xs={12} md={9} style={{ backgroundColor: 'white', padding: '20px' }} ref={leftContentRef}>
             {/* Left content goes here */}
-            
-            <div className="ml-4" style={{ padding: '10px' }}>
+
+            <div  style={{ padding: '60px', width: '75%', alignItems: 'center'}}>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <span><Rate disabled defaultValue={5} /></span>
-                <div style={{ flex: 3, marginLeft: '10px' }}>
-                {getProgressBar((ratingTotals.rating5 / reviewCount) * 100)}
+                <div style={{ flex: 1, marginLeft: '10px' }}>
+                  {getProgressBar((ratingTotals.rating5 / reviewCount) * 100)}
                 </div>
-                <span style={{ marginLeft: '10px' }}>{ratingTotals.rating5}</span>
+                <span style={{marginLeft: '10px' }}>{ratingTotals.rating5}</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', marginTop: '10px' }}>
                 <span><Rate disabled defaultValue={4} /></span>
-                <div style={{ flex: 3, marginLeft: '10px' }}>
+                <div style={{ flex: 1, marginLeft: '10px' }}>
                   {getProgressBar((ratingTotals.rating4 / reviewCount) * 100)}
                 </div>
-                <span style={{ marginLeft: '10px' }}>{ratingTotals.rating4}</span>
+                <span style={{marginLeft: '10px' }}>{ratingTotals.rating4}</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', marginTop: '10px' }}>
                 <span><Rate disabled defaultValue={3} /></span>
-                <div style={{ flex: 3, marginLeft: '10px' }}>
+                <div style={{ flex: 1, marginLeft: '10px' }}>
                   {getProgressBar((ratingTotals.rating3 / reviewCount) * 100)}
                 </div>
-                <span style={{ marginLeft: '10px' }}>{ratingTotals.rating3}</span>
+                <span style={{marginLeft: '10px' }}>{ratingTotals.rating3}</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', marginTop: '10px' }}>
                 <span><Rate disabled defaultValue={2} /></span>
-                <div style={{ flex: 3, marginLeft: '10px' }}>
+                <div style={{ flex: 1, marginLeft: '10px' }}>
                   {getProgressBar((ratingTotals.rating2 / reviewCount) * 100)}
                 </div>
-                <span style={{ marginLeft: '10px' }}>{ratingTotals.rating2}</span>
+                <span style={{marginLeft: '10px' }}>{ratingTotals.rating2}</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', marginTop: '10px' }}>
                 <span><Rate disabled defaultValue={1} /></span>
-                <div style={{ flex: 3, marginLeft: '10px' }}>
+                <div style={{ flex: 1, marginLeft: '10px'  }}>
                   {getProgressBar((ratingTotals.rating1 / reviewCount) * 100)}
                 </div>
-                <span style={{ marginLeft: '10px' }}>{ratingTotals.rating1}</span>
+                <span style={{marginLeft: '10px' }}>{ratingTotals.rating1}</span>
               </div>
               <div className="d-flex justify-content-center mt-4">
-                <Link to="/ReviewRating">
-                  <Button variant="outline-primary" onClick={addReviewAndRating}
+                
+                  <Button variant="outline-primary" 
                     style={{
                       border: 'none',
                       borderRadius: '19px',
@@ -258,68 +267,81 @@ const ItemDetails: React.FC<{ productId: string }> = ({ productId }) => {
                       color: 'white',
                       width: '200px',
                       fontWeight: 'semi-bold',
-                      fontSize: '15px'
-                    }}>
-                    Add Reviews and Rating
+                      fontSize: '13px'
+                    }}
+                      onClick={(e) => {e.preventDefault();
+                      console.log( product);
+                      navigate(`/ReviewRating/${product.product_id}`); 
+                    }}
+                    >
+                    Add Reviews and Ratings
                   </Button>
-                </Link>
+                
               </div>
-
-              <ul className="ml-4" style={{ padding: '10px' }}>
-              {reviews.map((review, index) => (
-                <li key={index} style={{ marginBottom: '10px' }}>
-                  <p><Rate disabled defaultValue={review.rating} /> {review.buyer.name}</p> {/* Assuming 'name' is the property of buyer */}
-                  <p>Date: {new Date(review.createdAt).toLocaleDateString()}</p>
-                  <p>{review.comment} </p>
+              </div>
+              <div>
+              <ul className="ml-4" style={{ padding: '10px', listStyleType: 'none',fontSize:'14px' }}>
+                {reviews.map((review, index) => (
+                  <li key={index} style={{ marginBottom: '10px', borderBottom: '1px solid #ccc', paddingBottom: '10px', position: 'relative' }}>
+                  <div>
+                    <Rate disabled defaultValue={review.rating} />
+                    <span style={{ position: 'absolute', top: 0, right: 0, color: '#808080' }}>{new Date(review.createdAt).toLocaleDateString()}</span>
+                  </div>
+                  <p>{review.buyer.name}</p>
+                  <p>{review.comment}</p>
                 </li>
-              ))}
-            </ul>
+                ))}
+              </ul>
             </div>
           </Col>
           <Col xs={12} md={3} style={{ backgroundColor: '#D3D3D3', padding: '20px' }}>
             <div className="d-flex flex-column align-items-center">
               <h5>More Products</h5>
               <Row>
-              {moreProducts.map((product, index) => (
-                <Col key={index} xs={12} sm={6} md={6} lg={12} className="mb-4">
-                  <Card style={{ width: '100%', border: '2px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)', borderRadius: '10px', padding: '20px' }}>
-                    <Card.Link href="#">
-                      <div className="d-flex justify-content-center align-items-center">
-                        <Card.Img
-                          variant="top"
-                          src={product.image}
-                          style={{ height: '70%', width: '70%', alignItems: 'center' }}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            // Add any custom functionality you want here
-                          }}
-                        />
-                      </div>
-                    </Card.Link>
-                    <Card.Body>
-                      <Card.Text style={{ fontSize: '14px', lineHeight: '1.5' }}>
-                        <span style={{ fontWeight: 'bold' }}>Rs. {product.price}</span><br />
-                        <span style={{ fontFamily: 'Sans-serif' }}>{product.name}</span><br />
-                        <span style={{ fontFamily: 'Sans-serif' }}>{product.seller.store_name}</span>
-                      </Card.Text>
-                      <Button
-                        variant="primary"
-                        style={{ backgroundColor: '#00BA29', border: 'none', fontSize: '12px' }}
-                        onMouseOver={(e) => (e.currentTarget.style.boxShadow = '1px 1px 2px 2px rgba(0, 0, 0, 0.2)')}
-                        onMouseOut={(e) => (e.currentTarget.style.boxShadow = '0 3px 7px rgba(0, 0, 0, 0.1)')}
-                        onClick={() => console.log(`Added product ${index} to cart`)}
-                      >
-                        Add to Cart
-                      </Button>
-                    </Card.Body>
-                  </Card>
-                </Col>
-              ))}
+                {moreProducts.map((product, index) => (
+                  <Col key={index} xs={12} sm={6} md={6} lg={12} className="mb-4">
+                    <Card style={{ width: '100%', border: '2px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)', borderRadius: '10px', padding: '20px' }}>
+                      <Card.Link href="#">
+                        <div className="d-flex justify-content-center align-items-center">
+                          <Card.Img
+                            variant="top"
+                            // src={product.image}
+                            src={Item1}
+                            style={{ height: '70%', width: '70%', alignItems: 'center' }}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              window.scrollTo(0, 0);
+                              navigate(`/ItemDetails/${product.product_id}`);
+                            }}
+                          />
+                        </div>
+                      </Card.Link>
+                      <Card.Body>
+                        <Card.Text style={{ fontSize: '14px', lineHeight: '1.5' }}>
+                          <span style={{ fontWeight: 'bold' }}>Rs. {product.price}</span><br />
+                          <span style={{ fontFamily: 'Sans-serif' }}>{product.name}</span><br />
+                          <span style={{ fontFamily: 'Sans-serif' }}>{product.seller.store_name}</span>
+                        </Card.Text>
+                        <Button
+                          variant="primary"
+                          style={{ backgroundColor: '#00BA29', border: 'none', fontSize: '12px' }}
+                          onMouseOver={(e) => (e.currentTarget.style.boxShadow = '1px 1px 2px 2px rgba(0, 0, 0, 0.2)')}
+                          onMouseOut={(e) => (e.currentTarget.style.boxShadow = '0 3px 7px rgba(0, 0, 0, 0.1)')}
+                          onClick={() => console.log(`Added product ${index} to cart`)}
+                        >
+                          Add to Cart
+                        </Button>
+                      </Card.Body>
+                    </Card>
+                  </Col>
+                ))}
               </Row>
             </div>
           </Col>
         </Row>
       </Container>
+      
+      < Footer />
     </>
   );
 };

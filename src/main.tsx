@@ -15,6 +15,7 @@ import HomePage from "./pages/Home2";
 import Fruits from "./pages/Fruits";
 
 
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -46,19 +47,20 @@ const router = createBrowserRouter([
     element: <BecomeASeller />,
   },
   {
-    path: "/ItemDetails",
-    element: <ItemDetails productId={"1"} />,
-  },
-  {
-    path: "/ReviewRating",
-    element: <ReviewRating />,
-  },
-  {
     path: "/Home",
     element: <HomePage />,
   },
   {
-    path: "/Fruits",
+    path: "/ItemDetails/:productId",
+    element: <ItemDetails  />,
+  },
+  {
+    path: "/ReviewRating/:productId",
+    element: <ReviewRating />,
+  },
+  
+  {
+    path: "/Fruits/:categoryId",
     element: <Fruits />,
   },
   {

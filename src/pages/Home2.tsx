@@ -11,39 +11,58 @@ import GrainImage from "../assets/Grains.png";
 import OtherImage from "../assets/Other.png";
 import Item1 from "../assets/Carrot.png";
 import ExampleCarouselImage from '../assets/Offers.png';
-import {Link} from "react-router-dom";
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate} from "react-router-dom";
 
 
 
+ 
 // Functional Component for Home Page
 const Home: React.FC = () => {
 
-    const [categories , setCategories] = useState([]);
-    useEffect(()=>{
-      fetch('http://localhost:8000/categories')
-      .then(function(response) {
-        return response.json();
-      }).then(function(response) {
-        setCategories(response.data);
-      });
-    },[])
+  const navigate = useNavigate();
+  // Scroll to top when route changes
+  useEffect(() => {
+    setTimeout(() => {
+      window.scrollTo(0, 0);
+    }, 0);
+  }, [location]);
 
-    const [products, setProducts] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
 
   useEffect(() => {
-    // Make an HTTP GET request to fetch data from the API endpoint
-    fetch('http://localhost:8000/products')
+    fetch('http://localhost:8000/categories')
       .then(response => response.json())
       .then(data => {
-        console.log('Fetched products:', data);
-        // Update the state with the fetched products data
-        setProducts(data.data);
+        // Assuming your API response returns an array directly
+        setCategories(data); 
       })
       .catch(error => {
-        console.error('Error fetching products:', error);
+        console.error('Error fetching categories:', error);
+        // Handle error state or logging as per your application's needs
       });
-  }, []); 
+  }, []); // Empty dependency array to run effect only once
+    const [products, setProducts] = useState<any[]>([]);
+    const [featuredProducts, setFeaturedProducts] = useState<any[]>([]);
+    const [recommendedProducts, setRecommendedProducts] = useState<any[]>([]);
+
+
+useEffect(() => {
+  fetch('http://localhost:8000/products')
+    .then(response => response.json())
+    .then(data => {
+      const products = data.data;
+      setProducts(products);
+
+      // Divide the products into featured and recommended lists
+      const half = Math.ceil(products.length / 2);
+      setFeaturedProducts(products.slice(0, half));
+      setRecommendedProducts(products.slice(half));
+    })
+    .catch(error => console.error('Error fetching products:', error));
+}, []);
+
+
+
 
  // useRef hook to reference the first container element
   const firstContainerRef = useRef<HTMLDivElement>(null);
@@ -59,47 +78,14 @@ const Home: React.FC = () => {
           behavior: 'smooth',
         });
       }
-    } else if (type === 'openNewWindow') {
-      window.open('https://example.com', '_blank');
-    }
+    } 
   };
-// Function to generate custom buttons with text and image
-const generateButton = (text: string, image: string, link: string) => (
-  <Col md={3} key={text}>
-    <Link to={link} style={{ textDecoration: 'none' }}>
-      <Button
-        variant="outline-primary"
-        className="btn-custom"
-        style={{
-          backgroundColor: 'white',
-          fontFamily: 'Inter',
-          color: 'black',
-          transition: 'box-shadow 0.3s',
-          fontWeight: 'bold',
-          borderRadius: '7px',
-          border: 'none',
-          boxShadow: '0 2px 15px rgba(0, 0, 0, 0.4)',
-          width: '100%',
-          height: '50px',
-          fontSize: '16px',
-          marginBottom: '15px',
-        }}
-        onMouseOver={(e) => (e.currentTarget.style.boxShadow = '2px 2px 3px 3px rgba(0, 0, 0, 0.1)')}
-        onMouseOut={(e) => (e.currentTarget.style.boxShadow = '0 2px 15px rgba(0, 0, 0, 0.4)')}
-      >
-        <img src={image} alt={text} style={{ height: '30px', padding: '5px' }} />
-        {text}
-      </Button>
-    </Link>
-  </Col>
-);
-
 
 
   return (
 
     <div>
-      
+      <Header />
       <Container fluid className="p-0 bg-light" ref={firstContainerRef}
         style={{ margin: 0, padding: 0, backgroundColor: '#DFFFC0', overflow: 'hidden' }}
       >
@@ -160,6 +146,7 @@ const generateButton = (text: string, image: string, link: string) => (
                 onMouseOver={(e) => (e.currentTarget.style.boxShadow = '1px 1px 2px 2px rgba(0, 0, 0, 0.2)')}
                 onMouseOut={(e) => (e.currentTarget.style.boxShadow = '0 3px 7px rgba(0, 0, 0, 0.1)')}
                 >Shop Now</Button>
+                <Link to="/BecomeASeller">
                 <Button variant="success" 
                 style={{
                   backgroundColor: '#00BA29',
@@ -172,10 +159,10 @@ const generateButton = (text: string, image: string, link: string) => (
                   height: '50px',
                   marginBottom: '10px', // Add this line to adjust the bottom margin in smaller screens
                 }}
-                onClick={() => handleButtonClick('openNewWindow')}
                 onMouseOver={(e) => (e.currentTarget.style.boxShadow = '1px 1px 2px 2px rgba(0, 0, 0, 0.2)')}
                 onMouseOut={(e) => (e.currentTarget.style.boxShadow = '0 3px 7px rgba(0, 0, 0, 0.1)')}
                 >Become a Seller</Button>
+                </Link>
               </div>
             </div>
           </Col>
@@ -186,13 +173,41 @@ const generateButton = (text: string, image: string, link: string) => (
       </Container>
 
       <Container fluid>
-        <Row className="d-flex justify-content-evenly mt-4 mb-4">
-          {/* Mapping categories to generate buttons with links */}
-          {categories.map((category, index) => (
-            generateButton(category, [FruitImage, VegeImage, GrainImage, OtherImage][index], `/${category}`)
-          ))}
-        </Row>
-      </Container>
+      <Row className="d-flex justify-content-evenly mt-4 mb-4">
+        {categories.map(category => (
+          <Col md={3} key={category.category_id}>
+            <Button
+              variant="outline-primary"
+              className="btn-custom"
+              style={{
+                backgroundColor: 'white',
+                fontFamily: 'Inter',
+                color: 'black',
+                transition: 'box-shadow 0.3s',
+                fontWeight: 'bold',
+                borderRadius: '7px',
+                border: 'none',
+                boxShadow: '0 2px 15px rgba(0, 0, 0, 0.4)',
+                width: '100%',
+                height: '50px',
+                fontSize: '16px',
+                marginBottom: '15px',
+              }}
+              onMouseOver={(e) => (e.currentTarget.style.boxShadow = '2px 2px 3px 3px rgba(0, 0, 0, 0.1)')}
+              onMouseOut={(e) => (e.currentTarget.style.boxShadow = '0 2px 15px rgba(0, 0, 0, 0.4)')}
+              onClick={(e) => {
+                e.preventDefault();
+                
+                navigate(`/Fruits/${category.category_id}`); 
+              }}
+            >
+              <img src={[FruitImage, VegeImage, GrainImage, OtherImage][category.category_id - 1]} alt={category.name} style={{ height: '30px', padding: '5px' }} />
+              {category.name}
+            </Button>
+          </Col>
+        ))}
+      </Row>
+    </Container>
 
       <Container className="mt-4" 
         style={{ 
@@ -215,49 +230,63 @@ const generateButton = (text: string, image: string, link: string) => (
                 backgroundClip: 'text',
                 textShadow: '2px 2px 4px rgba(0, 0, 0, 0.3)',
               }}
-            >Featured Products</h1>
+            >Products</h1>
           </Col>
         </Row>
 {/*Product list*/}
-        <Row className="mt-4 d-flex justify-content-center align-items-center">
-      {products.map(product => (
-        <Col key={product.id} xs={12} sm={6} md={6} lg={3} className="mb-4">
-          <Card style={{ width: '100%', border: '2px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)', borderRadius: '10px', padding: '20px' }}>
-            <Card.Link href="#">
-              <div className="d-flex justify-content-center align-items-center">
-                <Card.Img
-                  variant="top"
-                  src={product.image} // Use the image from the fetched product data
-                  style={{ height: '70%', width: '70%', alignItems: 'center' }}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    
-                    // Add any custom functionality you want here
-                  }}
-                />
-              </div>
-            </Card.Link>
-            <Card.Body>
-              <Card.Text style={{ fontSize: '14px', lineHeight: '2' }}>
-                <span style={{ fontWeight: 'bold' }}>{product.name}</span><br /> {/* Use the name from the fetched product data */}
-                <span style={{ fontFamily: 'Sans-serif' }}>Rs. {product.price} - 1kg</span><br /> {/* Use the price from the fetched product data */}
-                <span style={{ fontFamily: 'Sans-serif' }}>{product.seller.store_name}</span><br />
-                <Button variant="primary"
-                  style={{
-                    backgroundColor: '#00BA29',
-                    border: 'none',
-                    fontSize: '12px' // Adjust the font size here
-                  }}
-                  onMouseOver={(e) => (e.currentTarget.style.boxShadow = '1px 1px 2px 2px rgba(0, 0, 0, 0.2)')}
-                  onMouseOut={(e) => (e.currentTarget.style.boxShadow = '0 3px 7px rgba(0, 0, 0, 0.1)')}
-                  
-                >Add to Cart</Button>
-              </Card.Text>
-            </Card.Body>
-          </Card>
-        </Col>
-      ))}
-    </Row>
+<Row className="mt-4 d-flex justify-content-center align-items-center">
+  {featuredProducts.map(product => (
+    <Col key={product.id} xs={12} sm={6} md={6} lg={3} className="mb-4">
+      <Card style={{ width: '100%', border: '2px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)', borderRadius: '10px', padding: '20px' }}>
+        <Card.Link href="#">
+          <div className="d-flex justify-content-center align-items-center">
+            <Card.Img
+              variant="top"
+              src={product.image}
+              //src={Item1}
+              style={{ height: '70%', width: '70%', alignItems: 'center' }}
+              onClick={(e) => {e.preventDefault();
+                console.log( product);
+                navigate(`/ItemDetails/${product.product_id}`); 
+              }}
+              
+            />
+          </div>
+        </Card.Link>
+        <Card.Body>
+          <Card.Text style={{ fontSize: '14px', lineHeight: '2' }}>
+            <span style={{ fontWeight: 'bold' }}>{product.name}</span><br />
+            <span style={{ fontFamily: 'Sans-serif' }}>Rs. {product.price} - 1kg</span><br />
+            
+            <span 
+  style={{ fontFamily: 'Sans-serif', fontStyle:'italic', cursor: 'pointer' }}
+  onClick={(e) => {
+    e.preventDefault();
+    
+      navigate(`/SellerProfile/${product.seller.seller_id}`);
+    
+      
+    }}
+  
+>
+  {product.seller.store_name}
+</span><br />
+            <Button variant="primary"
+              style={{
+                backgroundColor: '#00BA29',
+                border: 'none',
+                fontSize: '12px'
+              }}
+              onMouseOver={(e) => (e.currentTarget.style.boxShadow = '1px 1px 2px 2px rgba(0, 0, 0, 0.2)')}
+              onMouseOut={(e) => (e.currentTarget.style.boxShadow = '0 3px 7px rgba(0, 0, 0, 0.1)')}
+            >Add to Cart</Button>
+          </Card.Text>
+        </Card.Body>
+      </Card>
+    </Col>
+  ))}
+</Row>
+
 
       </Container>
 
@@ -294,46 +323,47 @@ const generateButton = (text: string, image: string, link: string) => (
               textShadow: '2px 2px 4px rgba(0, 0, 0, 0.3)',
             
             }}
-            >Recommended Products</h1>
+            >Products</h1>
           </Col>
         </Row>
         <Row className="mt-4 d-flex justify-content-center align-items-center">
-  {[1, 2, 3, 4, 5, 6, 7, 8].map((index) => (
-    <Col key={index} xs={12} sm={6} md={6} lg={3} className="mb-4">
+  {recommendedProducts.map(product => (
+    <Col key={product.id} xs={12} sm={6} md={6} lg={3} className="mb-4">
       <Card style={{ width: '100%', border: '2px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)', borderRadius: '10px', padding: '20px' }}>
         <Card.Link href="#">
           <div className="d-flex justify-content-center align-items-center">
             <Card.Img
               variant="top"
-              src={Item1}
+              src={product.image}
               style={{ height: '70%', width: '70%', alignItems: 'center' }}
               onClick={(e) => {
                 e.preventDefault();
-                // Add any custom functionality you want here
+                navigate(`/ItemDetails/${product.product_id}`); 
               }}
             />
           </div>
         </Card.Link>
         <Card.Body>
           <Card.Text style={{ fontSize: '14px', lineHeight: '2' }}>
-            <span style={{ fontWeight: 'bold' }}>Rs.700.00</span><br />
-            <span style={{ fontFamily: 'Sans-serif' }}>Carrot - 1 Kg</span><br />
-            <span style={{ fontStyle: 'italic', color: '#555' }}>Sachee Stores</span><br />
-            <Button variant="primary" 
-        style={{ 
-          backgroundColor: '#00BA29', 
-          border: 'none', 
-          fontSize: '12px' // Adjust the font size here
-        }}
-         onMouseOver={(e) => (e.currentTarget.style.boxShadow = '1px 1px 2px 2px rgba(0, 0, 0, 0.2)')}
-         onMouseOut={(e) => (e.currentTarget.style.boxShadow = '0 3px 7px rgba(0, 0, 0, 0.1)')} 
-        >Add to Cart</Button>
+            <span style={{ fontWeight: 'bold' }}>{product.name}</span><br />
+            <span style={{ fontFamily: 'Sans-serif' }}>Rs. {product.price} - 1kg</span><br />
+            <span style={{ fontFamily: 'Sans-serif' }}>{product.seller.store_name}</span><br />
+            <Button variant="primary"
+              style={{
+                backgroundColor: '#00BA29',
+                border: 'none',
+                fontSize: '12px'
+              }}
+              onMouseOver={(e) => (e.currentTarget.style.boxShadow = '1px 1px 2px 2px rgba(0, 0, 0, 0.2)')}
+              onMouseOut={(e) => (e.currentTarget.style.boxShadow = '0 3px 7px rgba(0, 0, 0, 0.1)')}
+            >Add to Cart</Button>
           </Card.Text>
         </Card.Body>
       </Card>
     </Col>
   ))}
 </Row>
+
       </Container>
       <div>
         <Footer />

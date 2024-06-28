@@ -4,7 +4,11 @@ import HomePage2 from "./pages/Home2";
 
 import ItemDetails2 from "./pages/ItemDetails2";
 import ReviewRating from "./pages/ReviewRating" ;
-import Foods from "./pages/Fruits";
+import Fruits from "./pages/Fruits";
+
+import AddProduct2 from "./pages/AddProduct2";
+import ManageProducts from "./pages/ManageProducts";
+
 
 
 
@@ -12,7 +16,7 @@ import Foods from "./pages/Fruits";
 const App: React.FC = () => {
   return (
     <div>
-      <Foods/>
+      <HomePage2/>
     </div>
   );
 };
