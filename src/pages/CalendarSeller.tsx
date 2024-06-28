@@ -24,6 +24,7 @@ function ProductCalendar() {
   const [products, setProducts] = useState<any[]>([]);
   const mySeller = localStorage.getItem("sellerId");
 
+
   // Fetch categories from the database
   useEffect(() => {
     axios

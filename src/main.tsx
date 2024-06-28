@@ -38,12 +38,12 @@ import Wallet from "./pages/Buyer/Wallet";
 import RechargeWallet from "./pages/Buyer/RechargeWallet";
 import AddProduct from "./pages/Seller/AddProduct";
 import Sidebar from "./components/Seller-side-bar";
-import AdminLogin from "./pages/Admin/Admin-login";
+import AdminLogin from "./Admin/Admin-login";
 import AdminNavigation from "./components/Admin-bar";
-import Buyers from "./pages/Admin/Buyers";
-import Sellers from "./pages/Admin/Sellers";
-import Products from "./pages/Admin/Products";
-
+import Buyers from "./Admin/Buyers";
+import Sellers from "./Admin/Sellers";
+import Products from "./Admin/Products";
+import Sidebar1 from "./Admin/AdminSidebar";
 const store = createStore({
   authName: "_auth",
   authType: "cookie",
@@ -74,6 +74,10 @@ const router = createBrowserRouter([
   {
     path: "/ShoppingCart",
     element: <ShoppingCart />,
+  },
+  {
+    path: "/AdminSidebar",
+    element: <Sidebar1  />,
   },
   {
     path: "/adminLogin",

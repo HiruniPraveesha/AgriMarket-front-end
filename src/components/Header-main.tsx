@@ -175,7 +175,7 @@ const HeaderNew: React.FC = () => {
             ) : (
               <Nav.Link href="/">{userEmail ?? "Login / Register"}</Nav.Link>
             )}
-            <Nav.Link href="/">{userEmail ?? "Login / Register"}</Nav.Link>
+            {/* <Nav.Link href="/">{userEmail ?? "Login / Register"}</Nav.Link> */}
             <span style={{ margin: "0 10px" }}></span>
             <Link
               to="/selectLogin"
