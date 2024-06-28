@@ -1,4 +1,4 @@
-import { useState, useEffect, ChangeEvent } from "react";
+import React, { useState, useEffect, ChangeEvent } from "react";
 import { Button, Card, Col, Row, Form } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import MainHeader from "../../components/Header-main";
@@ -6,19 +6,174 @@ import MainFooter from "../../components/Footer-main";
 import Payment from "../Checkout/Payment";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import CartItem from "../Checkout/cart-row";
 import Avacado from "../../assets/Avocado.png";
+
+type CartItem = {
+  name: string;
+  quantity: number;
+  price: number;
+  store_name?: string;
+  imageUrl?: string;
+};
+
+type Seller = {
+  line1: string;
+  line2: string;
+  city: string;
+};
 
 export default function Checkout() {
   const [isPickup, setIsPickup] = useState(false);
+  const [autoFill, setAutoFill] = useState(false);
+  const [shippingCost, setShippingCost] = useState(0); // Initialize to 0
+  const [selectedOption, setSelectedOption] = useState("flexRadioDefault1"); 
+  const [sameStore, setSameStore] = useState(true); // New state for checking if all items are from the same store
+  const [storeAddress, setStoreAddress] = useState<Seller | null>(null); // State for store address
+  const [deliveryDetails, setDeliveryDetails] = useState({
+    contactInfo: "",
+    streetAddress: "",
+    streetAddress2: "",
+    city: "",
+    postalCode: "",
+    deliveryInstructions: "",
+  });
 
-  const handleOptionChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.id === "flexRadioDefault2") {
-      setIsPickup(true);
-    } else {
-      setIsPickup(false);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+
+  useEffect(() => {
+    const storedCart = sessionStorage.getItem("cart");
+    if (storedCart) {
+      const items = JSON.parse(storedCart);
+      setCartItems(items);
+      checkSameStore(items);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (sameStore && cartItems.length > 0) {
+      fetchSellerAddress(cartItems[0].store_name);
+    }
+  }, [sameStore, cartItems]);
+
+  const fetchSellerAddress = async (storeName?: string) => {
+    try {
+      const response = await axios.get(`http://localhost:8000/get-seller-address`, {
+        params: {
+          storeName: storeName,
+        },
+      });
+      console.log("Response from fetchSellerAddress:", response.data); // Log the response data
+      const data = response.data;
+      if (data) {
+        setStoreAddress({
+          line1: data.line1,
+          line2: data.line2,
+          city: data.city,
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching seller's address:", error);
     }
   };
+  
+
+  const checkSameStore = (items: CartItem[]) => {
+    if (items.length > 0) {
+      const storeName = items[0].store_name;
+      const allSameStore = items.every((item) => item.store_name === storeName);
+      setSameStore(allSameStore);
+      if (allSameStore) {
+        // Fetch and set store address if all items are from the same store
+        fetchSellerAddress(storeName);
+      } else {
+        setStoreAddress(null);
+      }
+    }
+  };
+
+  const handleOptionChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const isPickupOption = e.target.id === "flexRadioDefault2";
+    setIsPickup(isPickupOption);
+    setShippingCost(isPickupOption ? 0 : 300); // Update shipping cost
+    setSelectedOption(e.target.id); // Set selected option
+
+    // Disable and clear address fields if pickup is selected
+    if (isPickupOption) {
+      setDeliveryDetails((prevDetails) => ({
+        ...prevDetails,
+        streetAddress: "",
+        streetAddress2: "",
+        city: "",
+        postalCode: "",
+        deliveryInstructions: "",
+      }));
+    }
+  };
+
+  const handleAutoFillChange = async () => {
+    const shouldAutoFill = !autoFill;
+    setAutoFill(shouldAutoFill);
+
+    if (shouldAutoFill) {
+      try {
+        const response = await axios.get(
+          "http://localhost:8000/get-delivery-details",
+          {
+            params: {
+              id: 1, // Replace with actual user ID or logic to fetch user ID
+            },
+          }
+        );
+        const data = response.data.data;
+        setDeliveryDetails({
+          contactInfo: data.contactNo,
+          streetAddress: isPickup ? "" : data.addresses[0].line1,
+          streetAddress2: isPickup ? "" : data.addresses[0].line2,
+          city: isPickup ? "" : data.addresses[0].city,
+          postalCode: isPickup ? "" : "", // You need to add postalCode logic in backend and update here.
+          deliveryInstructions: "", // You need to add delivery instructions logic in backend and update here.
+        });
+      } catch (error) {
+        console.error("Error fetching delivery details:", error);
+      }
+    } else {
+      // Clear all fields
+      setDeliveryDetails({
+        contactInfo: "",
+        streetAddress: "",
+        streetAddress2: "",
+        city: "",
+        postalCode: "",
+        deliveryInstructions: "",
+      });
+    }
+  };
+
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setDeliveryDetails({
+      ...deliveryDetails,
+      [name]: value,
+    });
+  };
+
+  const calculateSubTotal = () => {
+    return cartItems.reduce(
+      (total, item) => total + item.price * item.quantity,
+      0
+    );
+  };
+
+  const calculateTotalItems = () => {
+    return cartItems.reduce((total, item) => total + item.quantity, 0);
+  };
+
+  useEffect(() => {
+    setIsPickup(false);
+    setShippingCost(300);
+  }, []);
+  
+  
 
   return (
     <>
@@ -50,6 +205,8 @@ export default function Checkout() {
                               type="checkbox"
                               label="Auto Fill"
                               className="ms-auto"
+                              checked={autoFill}
+                              onChange={handleAutoFillChange}
                             />
                           </Form.Group>
                         </div>
@@ -72,6 +229,9 @@ export default function Checkout() {
                                               name="flexRadioDefault"
                                               id="flexRadioDefault1"
                                               onChange={handleOptionChange}
+                                              checked={
+                                                selectedOption === "flexRadioDefault1"
+                                              }
                                             />
                                             <label
                                               className="form-check-label"
@@ -85,8 +245,7 @@ export default function Checkout() {
                                                 fontSize: "10px",
                                               }}
                                             >
-                                              Price may vary depending on the
-                                              item/destination.
+                                              The delivery charge will be Rs. 300 for all locations.
                                             </p>
                                           </div>
                                         </Col>
@@ -96,7 +255,7 @@ export default function Checkout() {
                                               className="text-end mb-0"
                                               style={{ fontWeight: "bold" }}
                                             >
-                                              Rs.300.00
+                                              Rs.300
                                             </p>
                                           </div>
                                         </Col>
@@ -116,6 +275,10 @@ export default function Checkout() {
                                               name="flexRadioDefault"
                                               id="flexRadioDefault2"
                                               onChange={handleOptionChange}
+                                              disabled={!sameStore} // Disable if items are not from the same store
+                                              checked={
+                                                selectedOption === "flexRadioDefault2"
+                                              }
                                             />
                                             <label
                                               className="form-check-label"
@@ -123,16 +286,33 @@ export default function Checkout() {
                                             >
                                               Pickup from Store
                                             </label>
-                                            <p
-                                              style={{
-                                                color: "#666666",
-                                                fontSize: "10px",
-                                              }}
-                                            >
-                                              <span>
-                                                No.240, Katubedda, Moratuwa
-                                              </span>
-                                            </p>
+                                            {sameStore ? (
+                                              <p
+                                                style={{
+                                                  color: "#666666",
+                                                  fontSize: "10px",
+                                                }}
+                                              >
+                                                {storeAddress ? (
+                                                  <>
+                                                    <span>{storeAddress.line1}</span>,
+                                                    <span>{storeAddress.line2}</span>,
+                                                    <span>{storeAddress.city}</span>
+                                                  </>
+                                                ) : (
+                                                  "Fetching store address..."
+                                                )}
+                                              </p>
+                                            ) : (
+                                              <p
+                                                style={{
+                                                  color: "red",
+                                                  fontSize: "10px",
+                                                }}
+                                              >
+                                                All items in the cart are not from the same store.
+                                              </p>
+                                            )}
                                           </div>
                                         </Col>
                                         <Col md={3}>
@@ -141,7 +321,7 @@ export default function Checkout() {
                                               className="text-end mb-0"
                                               style={{ fontWeight: "bold" }}
                                             >
-                                              Rs.0.00
+                                              Rs.0
                                             </p>
                                           </div>
                                         </Col>
@@ -175,7 +355,10 @@ export default function Checkout() {
                             </Form.Label>
                             <Form.Control
                               type="text"
+                              name="contactInfo"
+                              value={deliveryDetails.contactInfo}
                               style={{ width: "100%", marginBottom: "8px" }}
+                              onChange={handleInputChange}
                             />
                           </Form.Group>
 
@@ -190,22 +373,32 @@ export default function Checkout() {
                             <Form.Control
                               disabled={isPickup}
                               type="text"
+                              name="streetAddress"
+                              value={deliveryDetails.streetAddress}
                               style={{ width: "100%", marginBottom: "8px" }}
+                              onChange={handleInputChange}
                             />
                             <Form.Control
                               disabled={isPickup}
                               type="text"
-                              style={{ width: "100%", marginBottom: "8px" }}
+                              name="streetAddress2"
+                              value={deliveryDetails.streetAddress2}
+                              style={{ width: "100%", marginBottom: "18px" }}
+                              onChange={handleInputChange}
                             />
                           </Form.Group>
 
                           <Form.Label>
-                            City<span style={{ color: "red" }}>*</span>
+                            City
+                            <span style={{ color: "red" }}>*</span>
                           </Form.Label>
                           <Form.Control
                             disabled={isPickup}
                             type="text"
+                            name="city"
+                            value={deliveryDetails.city}
                             style={{ width: "100%", marginBottom: "18px" }}
+                            onChange={handleInputChange}
                           />
 
                           <Form.Group
@@ -213,13 +406,16 @@ export default function Checkout() {
                             style={{ display: "flex", flexDirection: "column" }}
                           >
                             <Form.Label>
-                              Zip/Postal Code
+                              Postal Code
                               <span style={{ color: "red" }}>*</span>
                             </Form.Label>
                             <Form.Control
                               disabled={isPickup}
                               type="text"
+                              name="postalCode"
+                              value={deliveryDetails.postalCode}
                               style={{ width: "100%", marginBottom: "8px" }}
+                              onChange={handleInputChange}
                             />
                           </Form.Group>
 
@@ -229,12 +425,15 @@ export default function Checkout() {
                           >
                             <Form.Control
                               as="textarea"
+                              name="deliveryInstructions"
                               placeholder="Add Delivery instructions here"
                               style={{
                                 width: "100%",
                                 marginBottom: "8px",
                                 height: "100px",
                               }}
+                              value={deliveryDetails.deliveryInstructions}
+                              onChange={handleInputChange}
                             />
                           </Form.Group>
                         </Form>
@@ -262,102 +461,84 @@ export default function Checkout() {
                             </h5>
                           </Col>
                           <Col xs={6} className="text-end">
-                            <h5 style={{ fontSize: "15px" }}>2 Items</h5>
+                            <h5 style={{ fontSize: "15px" }}>
+                              {calculateTotalItems()} Items
+                            </h5>
                           </Col>
                         </Row>
                         <hr />
 
                         <Card.Body>
-                          <Row
-                            className="align-items-center"
-                            style={{ marginBottom: "15px", marginTop: "-15px" }}
-                          >
-                            <Col xs="2" className="mb-4 mb-lg-0">
-                              <div className="bg-image rounded hover-zoom hover-overlay">
-                                <img
-                                  src={Avacado}
-                                  className="w-100"
-                                  style={{ maxWidth: "80px" }}
-                                />
-                              </div>
-                            </Col>
-                            <Col xs="6" className="mb-4 mb-lg-0">
-                              <div style={{ paddingRight: "5px" }}>
-                                <p style={{ fontSize: "12px", margin: "0" }}>
-                                  Avocado - 1 Kg
-                                </p>
-                                <p style={{ fontSize: "10px", margin: "0" }}>
-                                  Qty <span>1</span>
-                                </p>
-                                <p style={{ fontSize: "12px", margin: "0" }}>
-                                  ABC Store
-                                </p>
-                              </div>
-                            </Col>
-                            <Col xs="4" className="mb-4 mb-lg-0">
-                              <strong>
-                                <p
-                                  className="text-start text-md-center"
-                                  style={{ fontSize: "12px" }}
-                                >
-                                  Rs.450
-                                </p>
-                              </strong>
-                            </Col>
-                          </Row>
-
-                          <Row className="align-items-center">
-                            <Col xs="2" className="mb-4 mb-lg-0">
-                              <div className="bg-image rounded hover-zoom hover-overlay">
-                                <img
-                                  src={Avacado}
-                                  className="w-100"
-                                  style={{ maxWidth: "80px" }}
-                                />
-                              </div>
-                            </Col>
-                            <Col xs="6" className="mb-4 mb-lg-0">
-                              <div style={{ paddingRight: "5px" }}>
-                                <p style={{ fontSize: "12px", margin: "0" }}>
-                                  Avocado - 1 Kg
-                                </p>
-                                <p style={{ fontSize: "10px", margin: "0" }}>
-                                  Qty <span>1</span>
-                                </p>
-                                <p style={{ fontSize: "12px", margin: "0" }}>
-                                  ABC Store
-                                </p>
-                              </div>
-                            </Col>
-                            <Col xs="4" className="mb-4 mb-lg-0">
-                              <strong>
-                                <p
-                                  className="text-start text-md-center"
-                                  style={{ fontSize: "12px" }}
-                                >
-                                  Rs.450
-                                </p>
-                              </strong>
-                            </Col>
-                          </Row>
+                          {cartItems.map((item, index) => (
+                            <Row
+                              key={index}
+                              className="align-items-center"
+                              style={{
+                                marginBottom: "15px",
+                                marginTop: index === 0 ? "-15px" : "0",
+                              }}
+                            >
+                              <Col xs="2" className="mb-4 mb-lg-0">
+                                <div className="bg-image rounded hover-zoom hover-overlay">
+                                  <img
+                                    className="w-100"
+                                    src={item.imageUrl || Avacado}
+                                    alt={item.name}
+                                    style={{
+                                      maxWidth: "80px",
+                                      border: "2px solid #ccc",
+                                    }}
+                                  />
+                                </div>
+                              </Col>
+                              <Col xs="6" className="mb-4 mb-lg-0">
+                                <div style={{ paddingRight: "5px" }}>
+                                  <p style={{ fontSize: "12px", margin: "0" }}>
+                                    {item.name}
+                                  </p>
+                                  <p style={{ fontSize: "10px", margin: "0" }}>
+                                    Qty <span>{item.quantity}</span>
+                                  </p>
+                                  <p style={{ fontSize: "12px", margin: "0" }}>
+                                    {item.store_name}{" "}
+                                    {/* Add the store name if available */}
+                                  </p>
+                                </div>
+                              </Col>
+                              <Col xs="4" className="mb-4 mb-lg-0">
+                                <strong>
+                                  <p
+                                    className="text-start text-md-center"
+                                    style={{ fontSize: "12px" }}
+                                  >
+                                    Rs.{item.price * item.quantity}
+                                  </p>
+                                </strong>
+                              </Col>
+                            </Row>
+                          ))}
 
                           <hr />
 
                           <div className="d-flex justify-content-between mb-2">
                             <h5 style={{ fontSize: "12px" }}>Sub-total</h5>
-                            <h5 style={{ fontSize: "12px" }}>Rs.500</h5>
+                            <h5 style={{ fontSize: "12px" }}>
+                              Rs.{calculateSubTotal()}
+                            </h5>
                           </div>
 
                           <div className="d-flex justify-content-between mb-2">
                             <h5 style={{ fontSize: "12px" }}>Shipping</h5>
-                            <h5 style={{ fontSize: "12px" }}>Rs.300</h5>
+                            <h5 style={{ fontSize: "12px" }}>
+                              {`Rs.${shippingCost}`}
+                            </h5>
                           </div>
 
                           <div className="d-flex justify-content-between mb-2">
                             <h5 style={{ fontSize: "12px" }}>
                               Promo code discount
                             </h5>
-                            <h5 style={{ fontSize: "12px" }}>-Rs.50</h5>
+                            <h5 style={{ fontSize: "12px" }}>-Rs.0</h5>
                           </div>
 
                           <hr />
@@ -371,7 +552,7 @@ export default function Checkout() {
                                 fontWeight: "bold",
                               }}
                             >
-                              Rs.750
+                              {`Rs.${calculateSubTotal() + shippingCost}`}
                             </h5>
                           </div>
                         </Card.Body>

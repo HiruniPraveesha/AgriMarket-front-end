@@ -669,34 +669,6 @@ export default function BuyerProfile() {
                   marginBottom: "5px",
                 }}
               >
-                Track your Orders
-              </p>
-              <hr style={{ marginBottom: "5px", marginTop: "0" }} />
-              <Row>
-                <Form.Group>
-                  <Link to="/ongoing-orders">
-                    <Button
-                      variant="link"
-                      style={{
-                        padding: "0",
-                        color: "#00BA29",
-                        fontSize: "11px",
-                        marginBottom: "20px",
-                      }}
-                    >
-                      View your ongoing Orders
-                    </Button>
-                  </Link>
-                </Form.Group>
-              </Row>
-
-              <p
-                style={{
-                  fontSize: "13px",
-                  fontWeight: "bold",
-                  marginBottom: "5px",
-                }}
-              >
                 View your order history
               </p>
               <hr style={{ marginBottom: "5px", marginTop: "0" }} />

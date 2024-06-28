@@ -49,7 +49,7 @@ function SignIn() {
 
     try {
       // Include the full URL for the API endpoint
-      const response = await axios.post("http://localhost:8080/signin", { email, password });
+      const response = await axios.post("http://localhost:8000/signin", { email, password });
       const { token, userType, authUserState, sellerId } = response.data;
       
       const expiresAt = new Date().getTime() + 1 * 60 * 60 * 1000;

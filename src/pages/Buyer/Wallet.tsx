@@ -1,79 +1,88 @@
-import { useState } from 'react';
-import { Container, Row, Col, Card, Form, Button, Modal } from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
+import Table from 'react-bootstrap/Table';
+import More from '../../assets/more.svg';
 import MainHeader from '../../components/Header-main';
-import MainFooter from "../../components/Footer-main";
-import ProPic from "../../assets/ProPic.png";
-import axios from "axios";
+import Footer2 from '../../components/Footer-main';
+import { Link } from 'react-router-dom';
 
-export default function Wallet() {
-  const [showModal, setShowModal] = useState(false);
-  const [rechargeAmount, setRechargeAmount] = useState("");
-
-  const toggleModal = () => {
-    setShowModal(!showModal);
+interface Order {
+  orderId: number;
+  orderedDate: string;
+  product: {
+    name: string;
+    quantity: string;
   };
-
-  const handleRecharge = (e: { preventDefault: () => void; }) => {
-    e.preventDefault();
-    // Here you can handle the recharge functionality, such as sending a request to the server
-    console.log("Recharge amount:", rechargeAmount);
-    // After handling the recharge, you can close the modal
-    toggleModal();
-
-    axios.post("http://localhost:8000/wallet")
+  seller: {
+    store_name: string;
   };
+  totalAmount: number;
+}
+
+function OrderHistory() {
+  const [orders, setOrders] = useState<Order[]>([]);
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        // Replace with actual API endpoint
+        const response = await fetch('http://localhost:8000/order-history?buyerId=1');
+        if (!response.ok) {
+          throw new Error('Failed to fetch orders');
+        }
+        const ordersData = await response.json();
+        if (Array.isArray(ordersData)) {
+          setOrders(ordersData);
+        } else {
+          throw new Error('Invalid data format');
+        }
+      } catch (error) {
+        console.error('Error fetching orders:', error);
+        // Handle error, e.g., show error message
+      }
+    };
+
+    fetchOrders();
+  }, []);
 
   return (
     <>
       <MainHeader />
-      <div>
-        <Container className="container py-5 h-100">
-          <Row className="justify-content-center align-items-center h-100">
-            <Col md="12" xl="4">
-              <Card style={{ borderRadius: '15px' }}>
-                <Card.Body className="text-center">
-                  <div className="mt-3 mb-4">
-                    <img src={ProPic} alt="Profile Picture" style={{ width: '200px', borderRadius: '50%' }} />
-                  </div>
-                  <h4>Nehan Perera</h4>
-                  <p className="text-muted mb-4">Pereranehan51@gmail.com</p>
-
-                  <div className="d-flex justify-content-between text-center mt-5 mb-2">
-                    <div className="d-flex flex-grow-1 align-items-center flex-column">
-                      <p className="mb-1 h5">{rechargeAmount}</p>
-                      <p className="small text-muted mb-0">Wallets Balance</p>
-                    </div>
-                    
-                    <div className="d-flex flex-grow-1 align-items-center flex-column">
-                    <Button  onClick={handleRecharge} style={{ height: '27px', width: '27px', padding: '0', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '14px', backgroundColor:'#00BA29' }}>
-                     +
-                    </Button>
-                    <p className="small text-muted mb-0">Recharge</p>
-                    </div>
-
-                  </div>
-                </Card.Body>
-              </Card>
-            </Col>
-          </Row>
-        </Container>
+      <div style={{ margin: '0 20%' }}>
+        <div>
+          <p style={{ fontSize: '17px', fontWeight: 'bold', marginTop: '50px' }}>Order History</p>
+        </div>
+        <Table responsive>
+          <thead>
+            <tr>
+              <th style={{ width: '10%', textAlign: 'center' }}>Order No</th>
+              <th style={{ width: '15%', textAlign: 'center' }}>Ordered Date</th>
+              <th style={{ width: '20%', textAlign: 'center' }}>Product</th>
+              <th style={{ width: '20%', textAlign: 'center' }}>Seller</th>
+              <th style={{ width: '15%', textAlign: 'center' }}>Total</th>
+              <th style={{ width: '5%', textAlign: 'center' }}></th>
+            </tr>
+          </thead>
+          <tbody>
+            {orders.map((order) => (
+              <tr key={order.orderId}>
+                <td style={{ textAlign: 'center' }}>{`#${order.orderId}`}</td>
+                <td style={{ textAlign: 'center' }}>{order.orderedDate}</td>
+                <td style={{ textAlign: 'center' }}>{`${order.product.name} - ${order.product.quantity}`}</td>
+                <td style={{ textAlign: 'center' }}>{order.seller.store_name}</td>
+                <td style={{ textAlign: 'center' }}>{`Rs.${order.totalAmount.toFixed(2)}`}</td>
+                <td style={{ textAlign: 'center' }}>
+                  <Link to="/order-details">
+                    <img src={More} alt="More" style={{ width: '20px', height: '20px', transform: 'rotate(-90deg)' }} />
+                  </Link>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
       </div>
-      <MainFooter />
-      <Modal show={showModal} onHide={toggleModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Add Recharge Amount</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form onSubmit={handleRecharge}>
-            <Form.Group controlId="rechargeAmount">
-              <Form.Label>Recharge Amount:</Form.Label>
-              <Form.Control type="text" value={rechargeAmount} onChange={(e) => setRechargeAmount(e.target.value)} />
-            </Form.Group>
-            <Button style={{backgroundColor:'#00BA29', marginRight:'3%', marginTop:'2%'}} type="submit">Recharge</Button>
-            <Button variant="secondary" onClick={toggleModal} style={{marginTop:'2%'}}>Close</Button>
-          </Form>
-        </Modal.Body>
-      </Modal>
+      <Footer2 />
     </>
   );
 }
+
+export default OrderHistory;

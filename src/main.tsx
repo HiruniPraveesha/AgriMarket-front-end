@@ -32,10 +32,8 @@ import createStore from "react-auth-kit/createStore";
 import OrderHistory from "./pages/Buyer/OrderHistory";
 import OrderDetails from "./pages/Buyer/OrderDetails";
 import BuyerProfile from "./pages/Buyer/BuyerProfile";
-import OngoingOrders from "./pages/Buyer/OngoingOrders";
 import Checkout from "./pages/Checkout/Checkout";
 import Wallet from "./pages/Buyer/Wallet";
-import RechargeWallet from "./pages/Buyer/RechargeWallet";
 import AddProduct from "./pages/Seller/AddProduct";
 import Sidebar from "./components/Seller-side-bar";
 import AdminLogin from "./pages/Admin/Admin-login";
@@ -114,7 +112,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/ItemDetails",
-    element: <ItemDetails productId={"3"} />,
+    element: <ItemDetails productId={"1"} />,
   },
   {
     path: "/ReviewRating",
@@ -174,10 +172,6 @@ const router = createBrowserRouter([
     element: <OrderDetails />,
   },
   {
-    path: "/ongoing-orders",
-    element: <OngoingOrders />,
-  },
-  {
     path: "/shopping-cart",
     element: <ShoppingCart />,
   },
@@ -192,10 +186,6 @@ const router = createBrowserRouter([
   {
     path: "/signup-buyer",
     element: <SignUpBuyer />,
-  },
-  {
-    path: "/recharge-wallet",
-    element: <RechargeWallet />,
   },
   // {
   //   path: "/seller-dashboard",
