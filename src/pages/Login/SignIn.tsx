@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-
 import "bootstrap/dist/css/bootstrap.min.css";
 import Header from "../../components/Header-sub";
 import Footer from "../../components/Footer-sub";
@@ -214,7 +213,7 @@ function SignIn() {
                 </p>
               </div>
 
-              <Link to="/selectLogin">
+              
                 <Button
                   variant="primary"
                   className="mb-4 py-3"
@@ -229,7 +228,7 @@ function SignIn() {
                 >
                   Register Now
                 </Button>
-              </Link>
+              
             </div>
           </div>
         </div>

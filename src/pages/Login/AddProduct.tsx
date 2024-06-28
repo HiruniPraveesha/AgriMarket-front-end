@@ -1,8 +1,8 @@
 import React from 'react';
 import { Row, Col, Form, Button } from 'react-bootstrap';
-import Back from '../../assets/Back.svg';
 import AddProd from '../../assets/AddProduct.svg';
 import HeaderSub from "../../components/Header-sub";
+import { Link} from "react-router-dom";
 
 interface StepProgressBarProps {
   currentStep: number;
@@ -11,7 +11,7 @@ interface StepProgressBarProps {
 const AddProduct: React.FC<StepProgressBarProps> = ({ currentStep }) => {
   return (
     <div > 
-      <div style={{margin:'0 20%'}}><HeaderSub/></div>
+      <div style={{margin: "0 20%" }}><HeaderSub/></div>
       <Row className="justify-content-between align-items-center">
         <Col xs={3} md={3}></Col>
         <Col xs={6} md={6} className="d-flex justify-content-between align-items-center">
@@ -68,30 +68,21 @@ const AddProduct: React.FC<StepProgressBarProps> = ({ currentStep }) => {
       <Row className="justify-content-between align-items-center">
         <Col md={3}></Col>
         <Col md={6}>
+          
           {/* Form */}
           <Form style={{ marginTop: '100px', position: 'relative' }}>
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
               <img src={AddProd} alt="Add Product" style={{ height: '75px', width: '75px' }} />
             </div>
+            <p style={{textAlign:"center",paddingTop:"20px"}}><strong style={{color:"green"}}>Congratulations!</strong> Your Store is Now Active<br/>Add Your first products to start selling !</p>
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '60px' }}>
+              <Link to="addproductpage">
               <Button type="submit" style={{ backgroundColor: '#00BA29', height: '50px', width: '400px' }}>
                 Add New Product
               </Button>
+              </Link>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '35px' }}>
-              <Button type="submit" style={{ backgroundColor: '#00BA29', height: '50px', width: '400px' }}>
-                Bulk Upload Products
-              </Button>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '35px' }}>
-              <Button type="submit" style={{ backgroundColor: '#00BA29', height: '50px', width: '400px' }}>
-                Manage Products
-              </Button>
-            </div>
-            <Button type="button" variant="light" style={{ height: '50px', width: '150px', position: 'absolute', right: '20px', marginTop: '40px' }}>
-              <img src={Back} alt="Back" style={{ marginRight: '10px', height: '20px' }} />
-              Back
-            </Button>
+            
           </Form>
         </Col>
         <Col md={3}></Col>

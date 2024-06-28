@@ -113,9 +113,10 @@ const StepProgressBar: React.FC<StepProgressBarProps> = ({ currentStep }) => {
         );
 
         // Handle successful response
+        const sellerId = response.data.data.seller_id;
         console.log("Response:", response.data);
 
-        navigate("/Verifybank");
+        navigate('/Verifybank"/${sellerId}');
 
         // Reset form fields
         setFormData({

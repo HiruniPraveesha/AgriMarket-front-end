@@ -9,9 +9,19 @@ import language from "../assets/Languages.svg";
 import { Dropdown } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
+interface Product {
+  id: number;
+  name: string;
+  // Add more properties as needed
+}
+
 const HeaderNew = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isSticky, setIsSticky] = useState(false);
+  const [searchQuery, setSearchQuery] = useState(""); // State to hold search query
+  const [searchResults, setSearchResults] = useState<Product[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
   const toggleNavbar = () => {
     setIsExpanded(!isExpanded);
@@ -32,6 +42,29 @@ const HeaderNew = () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+
+  const handleSearch = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:8001/search?category=${selectedCategory}&searchQuery=${encodeURIComponent(searchQuery)}`
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch search results");
+      }
+      const data = await response.json();
+      setSearchResults(data); // Assuming data is an array of search results
+      setError(null); // Clear any previous error
+    } catch (error: any) {
+      // Specify 'any' type for error
+      console.error("Error searching:", error);
+      setSearchResults([]); // Clear search results on error
+      setError(error.message); // Set error state
+    }
+  };
+
+  const handleCategorySelect = (category: React.SetStateAction<string>) => {
+    setSelectedCategory(category);
+  };
 
   return (
     <header
@@ -126,13 +159,28 @@ const HeaderNew = () => {
                   fontSize: "14px",
                 }}
               >
-                All categories
+                {selectedCategory || "All categories"}
               </Dropdown.Toggle>
               <Dropdown.Menu>
-                <Dropdown.Item style={{ padding: "4px 8px" }}>1</Dropdown.Item>
-                <Dropdown.Item style={{ padding: "4px 8px" }}>2</Dropdown.Item>
-                <Dropdown.Item style={{ padding: "4px 8px" }}>3</Dropdown.Item>
-                <Dropdown.Item style={{ padding: "4px 8px" }}>4</Dropdown.Item>
+              <Dropdown.Item onClick={() => handleCategorySelect("All Categories")}>
+                  All Categories
+                </Dropdown.Item>
+                <Dropdown.Item onClick={() => handleCategorySelect("Fruits")}>
+                  Fruits
+                </Dropdown.Item>
+                <Dropdown.Item onClick={() => handleCategorySelect("Vegetables")}>
+                  Vegetables
+                </Dropdown.Item>
+                <Dropdown.Item
+                  onClick={() => handleCategorySelect("Grains")}
+                >
+                  Grain
+                </Dropdown.Item>
+                <Dropdown.Item
+                  onClick={() => handleCategorySelect("Others")}
+                >
+                  Others
+                </Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
             <input
@@ -140,6 +188,8 @@ const HeaderNew = () => {
               type="search"
               aria-label="Search"
               style={{ borderRadius: "0", width: "200px", fontSize: "0.7rem" }}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
             <button
               className="btn btn-success my-2 my-sm-0"
@@ -150,11 +200,11 @@ const HeaderNew = () => {
                 borderRadius: "0",
                 padding: "3px 8px",
               }}
+              onClick={handleSearch}
             >
               <img src={Search} alt="Search" />
             </button>
           </div>
-
           {/* Bell & Cart Icons */}
           <div className="col-md-2 col-lg-2 col-xl-2 mb-md-0 mt-1 d-flex justify-content-center align-items-center">
             <a href="#" className="nav-link" style={{ margin: "0 10px" }}>
@@ -253,9 +303,37 @@ const HeaderNew = () => {
           </div>
         </div>
       </div>
+
+      {/* Display Search Results */}
+      {searchResults.length > 0 && (
+        <div className="bg-light">
+          <div className="row">
+            <div className="col-md-12">
+              <h5>Search Results</h5>
+              <ul>
+                {searchResults.map((result) => (
+                  <li key={result.id}>
+                    <Link to={`/product/${result.id}`}>{result.name}</Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Display Error Message */}
+      {error && (
+        <div className="bg-light">
+          <div className="row">
+            <div className="col-md-12">
+              <p>Error: {error}</p>
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 };
 
 export default HeaderNew;
-

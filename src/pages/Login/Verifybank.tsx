@@ -4,9 +4,13 @@ import { FaTimes } from "react-icons/fa";
 import UploadImage from "../../assets/uploadImage.svg";
 import Back from "../../assets/Back.svg";
 import HeaderSub from "../../components/Header-sub";
-import { Link } from "react-router-dom";
+import { Link,NavigateFunction,useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import axios from "axios";
 
 const Verifybank: React.FC<{ currentStep: number }> = ({ currentStep }) => {
+  const { sellerId } = useParams<{ sellerId: string }>();
+  const navigate: NavigateFunction | ((arg0: RegExp) => void) = useNavigate();
   const [selectedFile, setSelectedFile] = useState<{
     [key: string]: File | null;
   }>({
@@ -56,8 +60,9 @@ const Verifybank: React.FC<{ currentStep: number }> = ({ currentStep }) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    console.log("Submitting form...");
     // Form validation
     const newErrors: { [key: string]: string } = {};
     if (!formData.idNumber.trim()) {
@@ -86,12 +91,51 @@ const Verifybank: React.FC<{ currentStep: number }> = ({ currentStep }) => {
     }
     setErrors(newErrors);
 
+    // Validate ID number
+  const idNumberRegex = /^(?:\d{12}|\d{9}V)$/;
+  if (!formData.idNumber.trim() || !idNumberRegex.test(formData.idNumber.trim())) {
+    newErrors.idNumber = "ID number must be 12 digits or 9 digits followed by 'V'";
+  }
+
     // Proceed with submission if there are no errors
     if (Object.keys(newErrors).length === 0) {
-      // Handle form submission here
-      console.log("Form submitted successfully:", formData, selectedFile);
+      try {
+        const formDataToSend = new FormData();
+        formDataToSend.append("sellerId", sellerId ?? ''); // Ensure sellerId is defined and correct
+      if (selectedFile.idFront instanceof File) {
+        formDataToSend.append("idFrontPhoto", selectedFile.idFront);
+      }
+      if (selectedFile.idBack instanceof File) {
+        formDataToSend.append("idBackPhoto", selectedFile.idBack);
+      }
+      if (selectedFile.bankDocument instanceof File) {
+        formDataToSend.append("bankBookPhoto", selectedFile.bankDocument);
+      }
+        formDataToSend.append("bankName", formData.bankName);
+        formDataToSend.append("accountHolder", formData.holderName);
+        formDataToSend.append("bankCode", formData.bankCode);
+        formDataToSend.append("accountNumber", formData.accountNumber);
+
+        const response = await axios.post(`http://localhost:8001/api/verify-bank`, formDataToSend, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+
+        console.log("Response from server:", response.data);
+        alert("Registration is successfull!")
+        // Handle success scenario (redirect, show success message, etc.)
+        navigate("/AddProduct");
+      } catch (error) {
+        console.error("Error submitting form:", error);
+        alert("Form can not be submitting");
+        // Handle error scenario (show error message to user, retry option, etc.)
+      }
     }
   };
+
+
+  
 
   const handleClick = (field: string) => {
     const fileInput = document.getElementById(field) as HTMLInputElement;
@@ -99,8 +143,8 @@ const Verifybank: React.FC<{ currentStep: number }> = ({ currentStep }) => {
   };
 
   return (
-    <div>
-      <div style={{ margin: "0 20%" }}>
+    <div className="container">
+      <div style={{margin: "0 20%" }}>
         <HeaderSub />
       </div>
       <Row className="justify-content-between align-items-center">
