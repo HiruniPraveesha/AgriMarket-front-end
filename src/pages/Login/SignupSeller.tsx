@@ -1,24 +1,167 @@
-import React from "react";
-import MainHeader from "../components/Header-main";
-import MainFooter from "../components/Footer-main";
-import NoFee from "../assets/NoFee.svg";
-import Delivery from "../assets/Delivery.svg";
-import Payment from "../assets/Payment.svg";
-import Farmer from "../assets/Farmer.png";
-import Ellipse1 from "../assets/Ellipse1.svg";
-import Ellipse2 from "../assets/Ellipse2 .svg";
-import Ellipse3 from "../assets/Ellipse3 .svg";
-import Ellipse4 from "../assets/Ellipse4 .svg";
-import Ellipse5 from "../assets/Ellipse5 .svg";
-import Farmer1 from "../assets/Farmer1.png";
-import One from "../assets/One.svg";
-import Two from "../assets/Two.svg";
-import Three from "../assets/Three.svg";
-import Farmer2 from "../assets/Farmer2.png";
+import React, { useState } from "react";
+import MainHeader from "../../components/Header-main";
+import MainFooter from "../../components/Footer-main";
+import NoFee from "../../assets/NoFee.svg";
+import Delivery from "../../assets/Delivery.svg";
+import Payment from "../../assets/Payment.svg";
+import Farmer from "../../assets/Farmer.png";
+import Ellipse1 from "../../assets/Ellipse1.svg";
+import Ellipse2 from "../../assets/Ellipse2 .svg";
+import Ellipse3 from "../../assets/Ellipse3 .svg";
+import Ellipse4 from "../../assets/Ellipse4 .svg";
+import Ellipse5 from "../../assets/Ellipse5 .svg";
+import Farmer1 from "../../assets/Farmer1.png";
+import One from "../../assets/One.svg";
+import Two from "../../assets/Two.svg";
+import Three from "../../assets/Three.svg";
+import Farmer2 from "../../assets/Farmer2.png";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { Modal, Button, Form } from "react-bootstrap";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import axios from "axios";
 
 const BecomeASeller: React.FC = () => {
+  const [show, setShow] = useState(false);
+  const [email, setEmail] = useState("");
+  const [otp, setOtp] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [confirmPasswordError, setConfirmPasswordError] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpVerified, setOtpVerified] = useState(false);
+
+  const handleShow = () => setShow(true);
+  const handleClose = () => setShow(false);
+  const navigate = useNavigate();
+  const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setEmail(value);
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(value)) {
+      setEmailError("Please enter a valid email address.");
+    } else {
+      setEmailError("");
+    }
+  };
+
+  const handleOtpChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setOtp(event.target.value);
+  };
+
+  const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setPassword(value);
+    const passwordPattern = /^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[@#$]).{8,}$/;
+    if (!passwordPattern.test(value)) {
+      setPasswordError(
+        "Password must be at least 8 characters long and contain at least one letter, one number, and one of the special characters '@', '#', '$'."
+      );
+    } else {
+      setPasswordError("");
+    }
+  };
+
+  const handleConfirmPasswordChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setConfirmPassword(event.target.value);
+    if (event.target.value !== password) {
+      setConfirmPasswordError("Passwords do not match");
+    } else {
+      setConfirmPasswordError("");
+    }
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const handleSendOtp = async () => {
+    try {
+      const response = await axios.post("http://localhost:8000/become-seller", {
+        email,
+        action: "sendOtp",
+      });
+
+      if (response.status === 201) {
+        console.log(response.data.message);
+        setOtpSent(true);
+        alert("OTP sent Succesfully");
+      } else {
+        console.error("Error sending OTP. Status:", response.status);
+        if (response.data && response.data.error) {
+          console.error("Error message:", response.data.error);
+        }
+      }
+    } catch (error) {
+      alert("Error sending OTP. Please try again later");
+      console.error("Error sending OTP:", error);
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    try {
+      const response = await axios.post("http://localhost:8000/become-seller", {
+        email,
+        otp,
+        action: "verifyOtp",
+      });
+
+      if (response.status === 200) {
+        setOtpVerified(true);
+        console.log(response.data.message);
+      } else {
+        console.error(response.data.error);
+      }
+    } catch (error) {
+      console.error("Error verifying OTP:", error);
+    }
+  };
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    try {
+      const response = await axios.post("http://localhost:8000/become-seller", {
+        email,
+        otp,
+        password,
+        action: "completeRegistration",
+      });
+
+      if (response.status === 201) {
+        alert("Create Account Successful!");
+        console.log(response.data.message);
+        navigate("/StepProgressBar");
+        // Handle successful registration completion
+      } else {
+        console.error(response.data.error);
+      }
+    } catch (error) {
+      console.error("Error completing registration:", error);
+    }
+  };
+
+  const isFormValid = () => {
+    console.log("Email Error:", emailError);
+    console.log("Password Error:", passwordError);
+    console.log("Confirm Password Error:", confirmPasswordError);
+    console.log("OTP Verified:", otpVerified);
+    return (
+      otpVerified &&
+      passwordError === "" &&
+      confirmPasswordError === "" &&
+      emailError === "" &&
+      password !== "" &&
+      confirmPassword !== "" &&
+      email.trim() !== ""
+    );
+  };
+
   return (
     <div>
       <div>
@@ -29,7 +172,7 @@ const BecomeASeller: React.FC = () => {
         style={{
           cursor: "default",
           userSelect: "none",
-          overflowX: "hidden", // hide x-scroll
+          overflowX: "hidden",
         }}
       >
         <div className="container">
@@ -54,8 +197,8 @@ const BecomeASeller: React.FC = () => {
                   Embark on Your Seller Journey Today! Sign Up and Sell Online!
                 </p>
                 <div className="signbtn">
-                  <Link
-                    to="#"
+                  <Button
+                    onClick={handleShow}
                     className="btn btn-success btn-lg"
                     style={{
                       fontFamily: "'Poppins', sans-serif",
@@ -67,8 +210,8 @@ const BecomeASeller: React.FC = () => {
                       borderRadius: "22px",
                     }}
                   >
-                    SignUp
-                  </Link>
+                    Sign Up
+                  </Button>
                 </div>
               </div>
             </div>
@@ -143,7 +286,7 @@ const BecomeASeller: React.FC = () => {
               <p
                 className="text-white text-center"
                 style={{
-                  fontSize: "min(6vw, 45px)", // Dynamic font size based on screen width, with a maximum size of 45px
+                  fontSize: "min(6vw, 45px)",
                   padding: "10px",
                   fontFamily: "'Poppins', sans-serif",
                 }}
@@ -186,13 +329,13 @@ const BecomeASeller: React.FC = () => {
               style={{
                 margin: "10px",
                 padding: "10px",
-                transition: "transform 0.2s", // Add transition for smooth effect
+                transition: "transform 0.2s",
               }}
               onMouseOver={(e) => {
-                e.currentTarget.style.transform = "scale(1.1)"; // Zoom in on hover
+                e.currentTarget.style.transform = "scale(1.1)";
               }}
               onMouseOut={(e) => {
-                e.currentTarget.style.transform = "scale(1)"; // Return to normal size on mouse out
+                e.currentTarget.style.transform = "scale(1)";
               }}
             >
               <img
@@ -213,13 +356,13 @@ const BecomeASeller: React.FC = () => {
               style={{
                 margin: "10px",
                 padding: "10px",
-                transition: "transform 0.2s", // Add transition for smooth effect
+                transition: "transform 0.2s",
               }}
               onMouseOver={(e) => {
-                e.currentTarget.style.transform = "scale(1.1)"; // Zoom in on hover
+                e.currentTarget.style.transform = "scale(1.1)";
               }}
               onMouseOut={(e) => {
-                e.currentTarget.style.transform = "scale(1)"; // Return to normal size on mouse out
+                e.currentTarget.style.transform = "scale(1)";
               }}
             >
               <img
@@ -229,10 +372,10 @@ const BecomeASeller: React.FC = () => {
                 style={{ width: "100px", height: "auto", marginBottom: "10px" }}
               />
               <h4
-                className="convenient-delivery"
+                className="trusted-delivery"
                 style={{ fontSize: "18px", margin: 0 }}
               >
-                Convenient Delivery Methods
+                Trusted Delivery Partners
               </h4>
             </div>
             <div
@@ -240,13 +383,13 @@ const BecomeASeller: React.FC = () => {
               style={{
                 margin: "10px",
                 padding: "10px",
-                transition: "transform 0.2s", // Add transition for smooth effect
+                transition: "transform 0.2s",
               }}
               onMouseOver={(e) => {
-                e.currentTarget.style.transform = "scale(1.1)"; // Zoom in on hover
+                e.currentTarget.style.transform = "scale(1.1)";
               }}
               onMouseOut={(e) => {
-                e.currentTarget.style.transform = "scale(1)"; // Return to normal size on mouse out
+                e.currentTarget.style.transform = "scale(1)";
               }}
             >
               <img
@@ -256,15 +399,14 @@ const BecomeASeller: React.FC = () => {
                 style={{ width: "100px", height: "auto", marginBottom: "10px" }}
               />
               <h4
-                className="easy-payment"
+                className="secure-payment"
                 style={{ fontSize: "18px", margin: 0 }}
               >
-                Easy Payment method
+                Secure Payment
               </h4>
             </div>
           </div>
         </div>
-
         <div
           className="container text-white py-5"
           style={{
@@ -346,8 +488,8 @@ const BecomeASeller: React.FC = () => {
                 </div>
               </div>
               <div className="container mt-4 text-center">
-                <a
-                  href="#"
+                <Button
+                  onClick={handleShow}
                   className="btn btn-outline-dark btn-lg"
                   style={{
                     fontSize: "17px",
@@ -360,7 +502,7 @@ const BecomeASeller: React.FC = () => {
                   }}
                 >
                   Be a Seller Now!
-                </a>
+                </Button>
                 <style>
                   {`
       @keyframes tada {
@@ -376,7 +518,6 @@ const BecomeASeller: React.FC = () => {
             </div>
           </div>
         </div>
-
         <div
           className="container mt-5 text-white text-center"
           style={{
@@ -471,13 +612,12 @@ const BecomeASeller: React.FC = () => {
             </div>
           </div>
         </div>
-
         <div className="container mt-4">
           <div className="row justify-content-center">
             <div className="col-md-6 text-center">
               <div className="signbtn">
-                <a
-                  href="#"
+                <Button
+                  onClick={handleShow}
                   className="btn btn-success btn-lg"
                   style={{
                     margin: "25px",
@@ -490,12 +630,193 @@ const BecomeASeller: React.FC = () => {
                   }}
                 >
                   Join AgriMarket Now
-                </a>
+                </Button>
               </div>
             </div>
           </div>
         </div>
       </div>
+      <Modal
+        show={show}
+        onHide={handleClose}
+        backdrop="static"
+        keyboard={false}
+        centered
+      >
+        <Modal.Body>
+          <div style={{ border: "1px solid", padding: "20px" }}>
+            <Modal.Header style={{ borderBottom: "none" }}>
+              <Modal.Title
+                style={{
+                  fontFamily: "'Poppins', sans-serif",
+                  margin: "-2px 62px",
+                }}
+              >
+                Create An Account
+              </Modal.Title>
+              <button
+                className="close"
+                style={{
+                  background: "none",
+                  border: "none",
+                  position: "absolute",
+                  right: "50px",
+                  top: "30px",
+                  fontSize: "30px",
+                }}
+                onClick={handleClose}
+              >
+                <span>&times;</span>
+              </button>
+            </Modal.Header>
+
+            <p style={{ textAlign: "center", fontSize: "14px" }}>
+              Welcome! Agrimarket users are waiting to buy your product.
+            </p>
+            <Form onSubmit={handleSubmit} style={{ fontSize: "14px" }}>
+              <Form.Group controlId="email" style={{ marginTop: "10px" }}>
+                <Form.Label>Email</Form.Label>
+                <div style={{ position: "relative" }}>
+                  <Form.Control
+                    type="email"
+                    placeholder="Enter your email"
+                    value={email}
+                    onChange={handleEmailChange}
+                    style={{ fontSize: "10px", padding: "10px" }}
+                  />
+                  <Button
+                    variant="outline-secondary"
+                    size="sm"
+                    onClick={handleSendOtp}
+                    style={{
+                      position: "absolute",
+                      bottom: "-30px",
+                      right: "0",
+                      border: "none",
+                      background: "none",
+                      color: "#00BA29",
+                    }}
+                    disabled={!email.trim() || emailError !== ""}
+                  >
+                    {otpSent ? "Resend OTP" : "Send OTP"}
+                  </Button>
+                </div>
+                {emailError && (
+                  <p
+                    style={{
+                      color: "red",
+                      marginTop: "5px",
+                      fontSize: "10px",
+                    }}
+                  >
+                    {emailError}
+                  </p>
+                )}
+              </Form.Group>
+
+              <Form.Group controlId="otp" style={{ marginTop: "30px" }}>
+                <Form.Label>Verification Code</Form.Label>
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <Form.Control
+                    type="text"
+                    placeholder="Enter OTP"
+                    value={otp}
+                    onChange={handleOtpChange}
+                    style={{ fontSize: "10px", padding: "10px" }}
+                    disabled={!otpSent}
+                  />
+                  {otpSent && !otpVerified && (
+                    <Button
+                      variant="outline-secondary"
+                      size="sm"
+                      onClick={handleVerifyOtp}
+                      style={{ marginLeft: "10px" }}
+                      disabled={!otp.trim()}
+                    >
+                      Verify
+                    </Button>
+                  )}
+                </div>
+              </Form.Group>
+
+              <Form.Group controlId="password" style={{ marginTop: "10px" }}>
+                <Form.Label>Password</Form.Label>
+                <div style={{ position: "relative" }}>
+                  <Form.Control
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Enter password"
+                    value={password}
+                    onChange={handlePasswordChange}
+                    style={{ fontSize: "10px", padding: "10px" }}
+                  />
+                  <span
+                    className="eye-icon"
+                    style={{
+                      position: "absolute",
+                      top: "50%",
+                      right: "10px",
+                      transform: "translateY(-50%)",
+                      cursor: "pointer",
+                    }}
+                    onClick={togglePasswordVisibility}
+                  >
+                    {showPassword ? <FaEyeSlash /> : <FaEye />}
+                  </span>
+                </div>
+                {passwordError && (
+                  <p
+                    style={{
+                      color: "red",
+                      marginTop: "5px",
+                      fontSize: "10px",
+                    }}
+                  >
+                    {passwordError}
+                  </p>
+                )}
+              </Form.Group>
+
+              <Form.Group
+                controlId="confirmPassword"
+                style={{ marginTop: "10px" }}
+              >
+                <Form.Label>Confirm Password</Form.Label>
+                <Form.Control
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Confirm password"
+                  value={confirmPassword}
+                  onChange={handleConfirmPasswordChange}
+                  style={{ fontSize: "10px", padding: "10px" }}
+                />
+                {confirmPasswordError && (
+                  <p
+                    style={{
+                      color: "red",
+                      marginTop: "5px",
+                      fontSize: "10px",
+                    }}
+                  >
+                    {confirmPasswordError}
+                  </p>
+                )}
+              </Form.Group>
+              <div style={{ textAlign: "center", marginTop: "20px" }}>
+                <Button
+                  variant="success"
+                  type="submit"
+                  disabled={!isFormValid()}
+                >
+                  Create Account
+                </Button>
+                <p style={{ marginTop: "12px", fontSize: "14px" }}>
+                  By clicking 'Create account' you've read and agreed to our
+                  terms and conditions.
+                </p>
+              </div>
+            </Form>
+          </div>
+        </Modal.Body>
+      </Modal>
       <div>
         <MainFooter />
       </div>

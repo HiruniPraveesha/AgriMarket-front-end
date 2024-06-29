@@ -30,7 +30,7 @@ const SelectLogin: React.FC = () => {
               BUYER
             </button>
           </Link>
-          <Link to="/becomeASeller">
+          <Link to="/signupSeller">
             <button
               type="button"
               className="btn btn-seller py-4 px-5 mx-5 "

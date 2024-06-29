@@ -3,22 +3,49 @@ import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Button from "react-bootstrap/Button";
-import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai"; // Import eye icons
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import Header from "../../components/Header-sub";
 import Footer from "../../components/Footer-sub";
+import axios from "axios";
+import { useNavigate, Link } from "react-router-dom";
 
 const SignUpBuyer: React.FC = () => {
   const [verificationCode, setVerificationCode] = useState("");
   const [isCodeSent, setIsCodeSent] = useState(false);
-  const [fullName, setFullName] = useState("");
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [address, setAddress] = useState("");
-  const [mobile, setMobile] = useState("");
+  const [contactNo, setContactNo] = useState("");
   const [password, setPassword] = useState("");
+  const [reEnteredPassword, setReEnteredPassword] = useState("");
   const [termsChecked, setTermsChecked] = useState(false);
+  const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
+  const [passwordMatchError, setPasswordMatchError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [phoneError, setPhoneError] = useState("");
+  const [emailError, setEmailError] = useState("");
+
+  const navigate = useNavigate();
 
   const handleSendVerificationCode = () => {
-    setIsCodeSent(true);
+    axios
+      .post("http://localhost:8000/send-otp", { email, contactNo })
+      .then((res) => {
+        if (res.status === 200) {
+          setIsCodeSent(true);
+          alert("Verification code sent successfully.");
+        } else {
+          alert("Error sending verification code.");
+        }
+      })
+      .catch((err) => {
+        console.error("Error response from backend:", err.response);
+        if (err.response && err.response.data && err.response.data.error) {
+          alert(err.response.data.error); // Display the specific error message
+        } else {
+          alert("An error occurred while sending the verification code.");
+        }
+      });
   };
 
   const handleVerificationCodeChange = (
@@ -27,63 +54,146 @@ const SignUpBuyer: React.FC = () => {
     setVerificationCode(e.target.value);
   };
 
-  const handleFullNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFullName(e.target.value);
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setName(e.target.value);
   };
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value);
+    const value = e.target.value;
+    setEmail(value);
+    if (!validateEmail(value)) {
+      setEmailError("Please enter a valid email address.");
+    } else {
+      setEmailError("");
+    }
+  };
+  const validateEmail = (email: string): boolean => {
+    // Basic email validation regex
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
   };
 
   const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAddress(e.target.value);
   };
 
-  const handleMobileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setMobile(e.target.value);
+  const validatePhoneNumber = (phoneNumber: string): boolean => {
+    const regex = /^\d{10}$/;
+    return regex.test(phoneNumber);
+  };
+
+  const handleContactNoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setContactNo(value);
+
+    if (!validatePhoneNumber(value)) {
+      setPhoneError("Please enter a valid 10-digit phone number.");
+    } else {
+      setPhoneError("");
+    }
   };
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(e.target.value);
+    const newPassword = e.target.value;
+    setPassword(newPassword);
+    setPasswordErrors(validatePassword(newPassword));
+    if (reEnteredPassword && newPassword !== reEnteredPassword) {
+      setPasswordMatchError("Passwords do not match.");
+    } else {
+      setPasswordMatchError("");
+    }
+  };
+
+  const handleReEnteredPasswordChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const newReEnteredPassword = e.target.value;
+    setReEnteredPassword(newReEnteredPassword);
+    if (newReEnteredPassword !== password) {
+      setPasswordMatchError("Passwords do not match.");
+    } else {
+      setPasswordMatchError("");
+    }
   };
 
   const handleTermsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTermsChecked(e.target.checked);
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const validatePassword = (password: string): string[] => {
+    const errors: string[] = [];
+    if (password.length < 7)
+      errors.push("Password must be at least 7 characters long.");
+    if (!/[a-z]/.test(password))
+      errors.push("Password must include at least one lowercase letter.");
+    if (!/[A-Z]/.test(password))
+      errors.push("Password must include at least one uppercase letter.");
+    if (!/\d/.test(password))
+      errors.push("Password must include at least one number.");
+    if (!/[@!#]/.test(password))
+      errors.push(
+        "Password must include at least one special character (@, !, #)."
+      );
+    return errors;
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Add your validation logic here
     if (
-      !fullName ||
-      !email ||
-      !address ||
-      !mobile ||
-      !password ||
-      !termsChecked
+      passwordErrors.length > 0 ||
+      passwordMatchError ||
+      phoneError ||
+      emailError
     ) {
-      alert("Please fill out all required fields.");
+      alert("Please fix the errors in the form before submitting.");
       return;
     }
 
-    // Continue with your form submission logic here
+    if (!termsChecked) {
+      alert("Please accept the terms and conditions before signing up.");
+      return;
+    }
+
+    axios
+      .post("http://localhost:8000/signup", {
+        name,
+        email,
+        address,
+        contactNo,
+        password,
+        otp: verificationCode,
+      })
+      .then((res) => {
+        if (res.status === 201) {
+          alert("Sign up successful!");
+          navigate("/signIn");
+        } else {
+          alert("Error signing up.");
+        }
+      })
+      .catch((err) => {
+        console.error("Error response from backend:", err.response);
+        if (err.response && err.response.data && err.response.data.error) {
+          alert(err.response.data.error); // Display the specific error message
+        } else {
+          alert("An error occurred during sign up.");
+        }
+      });
   };
-
-  const [showPassword, setShowPassword] = useState(false);
-
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
   return (
     <div style={{ margin: "0 20%" }}>
-      <div>
-        <Header />
-      </div>
+      <Header />
       <div style={{ fontSize: "18px", textAlign: "center" }}>
         <p style={{ fontWeight: "Bold" }}>SIGN UP</p>
       </div>
+      <p style={{ textAlign: "right" }}>
+        Already member?<Link to="/SignIn">Login</Link> here
+      </p>
       <Form
         style={{
           backgroundColor: "#D9D9D9",
@@ -104,8 +214,8 @@ const SignUpBuyer: React.FC = () => {
                 <Form.Control
                   type="text"
                   className="mb-3"
-                  value={fullName}
-                  onChange={handleFullNameChange}
+                  value={name}
+                  onChange={handleNameChange}
                   style={{ fontSize: "14px" }}
                   required
                 />
@@ -129,6 +239,11 @@ const SignUpBuyer: React.FC = () => {
                   style={{ fontSize: "14px" }}
                   required
                 />
+                {emailError && (
+                  <div style={{ color: "red", fontSize: "12px" }}>
+                    {emailError}
+                  </div>
+                )}
               </Col>
             </Form.Group>
 
@@ -173,11 +288,16 @@ const SignUpBuyer: React.FC = () => {
                 <Form.Control
                   type="text"
                   className="mb-3"
-                  value={mobile}
-                  onChange={handleMobileChange}
+                  value={contactNo}
+                  onChange={handleContactNoChange}
                   style={{ fontSize: "14px" }}
                   required
                 />
+                {phoneError && (
+                  <div style={{ color: "red", fontSize: "12px" }}>
+                    {phoneError}
+                  </div>
+                )}
               </Col>
             </Form.Group>
 
@@ -232,7 +352,7 @@ const SignUpBuyer: React.FC = () => {
                   <Form.Control
                     type={showPassword ? "text" : "password"}
                     className="mb-3"
-                    style={{ paddingRight: "40px", fontSize: "14px" }} // Adjust padding to accommodate the icon
+                    style={{ paddingRight: "40px", fontSize: "14px" }}
                     value={password}
                     onChange={handlePasswordChange}
                     required
@@ -254,13 +374,20 @@ const SignUpBuyer: React.FC = () => {
                     )}
                   </div>
                 </div>
+                {password.length > 0 && (
+                  <div style={{ color: "red", fontSize: "12px" }}>
+                    {passwordErrors.map((error, index) => (
+                      <div key={index}>{error}</div>
+                    ))}
+                  </div>
+                )}
               </Col>
             </Form.Group>
 
             <Form.Group
               as={Row}
               className="mb-4"
-              controlId="formPlaintextPassword"
+              controlId="formPlaintextReEnterPassword"
             >
               <Form.Label column sm="4">
                 Re-enter Password<span style={{ color: "red" }}>*</span>
@@ -270,9 +397,9 @@ const SignUpBuyer: React.FC = () => {
                   <Form.Control
                     type={showPassword ? "text" : "password"}
                     className="mb-3"
-                    style={{ paddingRight: "40px", fontSize: "14px" }} // Adjust padding to accommodate the icon
-                    value={password}
-                    onChange={handlePasswordChange}
+                    style={{ paddingRight: "40px", fontSize: "14px" }}
+                    value={reEnteredPassword}
+                    onChange={handleReEnteredPasswordChange}
                     required
                   />
                   <div
@@ -292,6 +419,11 @@ const SignUpBuyer: React.FC = () => {
                     )}
                   </div>
                 </div>
+                {reEnteredPassword.length > 0 && (
+                  <div style={{ color: "red", fontSize: "12px" }}>
+                    {passwordMatchError && <div>{passwordMatchError}</div>}
+                  </div>
+                )}
               </Col>
             </Form.Group>
 

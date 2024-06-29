@@ -5,13 +5,22 @@ import Footer from "../../components/Footer-sub";
 import signupImage from "../../assets/signupimage.png";
 import SignUpIcon from "../../assets/signup_icon.svg";
 import Button from "react-bootstrap/Button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios, { AxiosError } from "axios";
+import useSignIn from "react-auth-kit/hooks/useSignIn";
+
+interface IUserData {
+  email: string;
+}
 
 function SignIn() {
   const [email, setEmail] = useState("");
   const [isEmailValid, setIsEmailValid] = useState(true);
   const [password, setPassword] = useState("");
   const [isPasswordValid, setIsPasswordValid] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
+  const signIn = useSignIn<IUserData>();
+  const navigate = useNavigate();
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
@@ -22,8 +31,11 @@ function SignIn() {
     setPassword(e.target.value);
     setIsPasswordValid(true); // Reset validation when the password changes
   };
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setErrorMessage("");
+
     if (!email) {
       setIsEmailValid(false);
       return;
@@ -32,7 +44,49 @@ function SignIn() {
       setIsPasswordValid(false);
       return;
     }
-    // Continue with form submission logic
+
+    try {
+      // Include the full URL for the API endpoint
+      const response = await axios.post("http://localhost:8000/signin", {
+        email,
+        password,
+      });
+      const { token, userType, authUserState, sellerId } = response.data;
+
+      const expiresAt = new Date().getTime() + 1 * 60 * 60 * 1000;
+      const signInSuccess = signIn({
+        auth: {
+          token: response.data.token,
+          type: "Bearer",
+        },
+        userState: {
+          ...authUserState,
+          expiresAt: expiresAt, // Set expiration time in user state
+        },
+      });
+
+      // Store the token and userEmail in local storage
+      localStorage.setItem("token", token);
+      localStorage.setItem("userEmail", email);
+      localStorage.setItem("sellerId", sellerId);
+
+      // Redirect based on userType
+      if (userType === "buyer") {
+        navigate("/");
+        console.log(response.data);
+      } else if (userType === "seller") {
+        navigate("../sellerDashboard");
+      }
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        const errorResponse = error.response?.data;
+        setErrorMessage(
+          errorResponse?.error || "An error occurred during sign-in"
+        );
+      } else {
+        setErrorMessage("An error occurred during sign-in");
+      }
+    }
   };
 
   return (
@@ -68,7 +122,7 @@ function SignIn() {
                 />
                 {!isEmailValid && (
                   <div className="invalid-feedback">
-                    Please enter a valid email address/ username / contact no
+                    Please enter a valid email address/username/contact no.
                   </div>
                 )}
               </div>
@@ -93,6 +147,12 @@ function SignIn() {
                   </div>
                 )}
               </div>
+
+              {errorMessage && (
+                <div className="alert alert-danger" role="alert">
+                  {errorMessage}
+                </div>
+              )}
 
               <div className="d-flex justify-content-between mx-4 mb-4">
                 <div className="form-check mb-0">
@@ -180,7 +240,7 @@ function SignIn() {
                 </p>
               </div>
 
-              <Link to="/select">
+              <Link to="/selectLogin">
                 <Button
                   variant="primary"
                   className="mb-4 py-3"
