@@ -57,6 +57,9 @@ import CalendarBuyer from "./pages/CalendarBuyer";
 import ItemDetails from "./pages/ItemDetails2";
 import ReviewRating from "./pages/ReviewRating";
 import Fruits from "./pages/Fruits";
+import Email from "./pages/Login/Email";
+import Verify from "./pages/Login/Verify";
+import NewPW from "./pages/Login/NewPW";
 
 const router = createBrowserRouter([
   {
@@ -68,10 +71,18 @@ const router = createBrowserRouter([
     path:"/MyProducts",
     element:<MyProducts/>
   },
-  // {
-  //   path: "/adminLogin",
-  //   element: <Login />,
-  // },
+  {
+    path: "/Email",
+    element: <Email/>,
+  },
+  {
+    path: "/Verify",
+    element: <Verify/>,
+  },
+  {
+    path: "/NewPw",
+    element: <NewPW/>,
+  },
   {
     path: "/signIn",
     element: <SignIn />,

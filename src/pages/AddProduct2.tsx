@@ -11,6 +11,7 @@ export default function AddProduct() {
   const [productAdded, setProductAdded] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
+  const mySeller = localStorage.getItem("sellerId");
   const [formData, setFormData] = useState({
     sellerName: '',
     productName: '',
@@ -23,6 +24,9 @@ export default function AddProduct() {
 
   useEffect(() => {
     fetchCategories();
+    if (mySeller) {
+      fetchSellerDetails(mySeller);
+    }
   }, []);
 
   const fetchCategories = async () => {
@@ -31,6 +35,19 @@ export default function AddProduct() {
       setCategories(response.data);
     } catch (error) {
       console.error('Error fetching categories:', error);
+    }
+  };
+
+  const fetchSellerDetails = async (sellerId: string) => {
+    try {
+      const response = await axios.get(`http://localhost:8000/sellers/${mySeller}`);
+      const sellerData = response.data;
+      setFormData(prevState => ({
+        ...prevState,
+        sellerName: sellerData.store_name
+      }));
+    } catch (error) {
+      console.error('Error fetching seller details:', error);
     }
   };
 
@@ -155,7 +172,7 @@ export default function AddProduct() {
             <hr />
 
             <Form style={{ fontSize: '12px' }} onSubmit={handleSubmit}>
-              <Form.Group className="mb-3" style={{ display: 'flex', flexDirection: 'column' }}>
+            <Form.Group className="mb-3" style={{ display: 'flex', flexDirection: 'column' }}>
                 <Form.Label>SELLER NAME<span style={{ color: 'red' }}>*</span></Form.Label>
                 <Form.Control
                   type="text"
