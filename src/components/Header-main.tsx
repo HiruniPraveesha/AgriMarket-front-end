@@ -9,19 +9,15 @@ import language from "../assets/Languages.svg";
 import { Dropdown } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
-interface Product {
-  id: number;
-  name: string;
-  // Add more properties as needed
-}
+
 
 const HeaderNew = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isSticky, setIsSticky] = useState(false);
   const [searchQuery, setSearchQuery] = useState(""); // State to hold search query
-  const [searchResults, setSearchResults] = useState<Product[]>([]);
+  
   const [selectedCategory, setSelectedCategory] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  
 
   const toggleNavbar = () => {
     setIsExpanded(!isExpanded);
@@ -43,24 +39,7 @@ const HeaderNew = () => {
     };
   }, []);
 
-  const handleSearch = async () => {
-    try {
-      const response = await fetch(
-        `http://localhost:8001/search?category=${selectedCategory}&searchQuery=${encodeURIComponent(searchQuery)}`
-      );
-      if (!response.ok) {
-        throw new Error("Failed to fetch search results");
-      }
-      const data = await response.json();
-      setSearchResults(data); // Assuming data is an array of search results
-      setError(null); // Clear any previous error
-    } catch (error: any) {
-      // Specify 'any' type for error
-      console.error("Error searching:", error);
-      setSearchResults([]); // Clear search results on error
-      setError(error.message); // Set error state
-    }
-  };
+  
 
   const handleCategorySelect = (category: React.SetStateAction<string>) => {
     setSelectedCategory(category);
@@ -200,7 +179,7 @@ const HeaderNew = () => {
                 borderRadius: "0",
                 padding: "3px 8px",
               }}
-              onClick={handleSearch}
+             
             >
               <img src={Search} alt="Search" />
             </button>
@@ -304,34 +283,8 @@ const HeaderNew = () => {
         </div>
       </div>
 
-      {/* Display Search Results */}
-      {searchResults.length > 0 && (
-        <div className="bg-light">
-          <div className="row">
-            <div className="col-md-12">
-              <h5>Search Results</h5>
-              <ul>
-                {searchResults.map((result) => (
-                  <li key={result.id}>
-                    <Link to={`/product/${result.id}`}>{result.name}</Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-      )}
+      
 
-      {/* Display Error Message */}
-      {error && (
-        <div className="bg-light">
-          <div className="row">
-            <div className="col-md-12">
-              <p>Error: {error}</p>
-            </div>
-          </div>
-        </div>
-      )}
     </header>
   );
 };

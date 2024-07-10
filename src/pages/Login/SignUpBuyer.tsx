@@ -8,6 +8,7 @@ import Header from "../../components/Header-sub";
 import Footer from "../../components/Footer-sub";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
+import Modal from "react-bootstrap/Modal";
 
 const SignUpBuyer: React.FC = () => {
   const [verificationCode, setVerificationCode] = useState("");
@@ -24,8 +25,17 @@ const SignUpBuyer: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [phoneError, setPhoneError] = useState("");
   const [emailError, setEmailError] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
   
   const navigate = useNavigate();
+  
+  const handleCloseModal = () => setShowModal(false);
+  const handleShowModal = (message: string) => {
+    setModalMessage(message);
+    setShowModal(true);
+  };
+
 
   const handleSendVerificationCode = () => {
     axios
@@ -33,17 +43,17 @@ const SignUpBuyer: React.FC = () => {
       .then((res) => {
         if (res.status === 200) {
           setIsCodeSent(true);
-          alert("Verification code sent successfully.");
+          handleShowModal("Verification code sent successfully.")
         } else {
-          alert("Error sending verification code.");
+          handleShowModal("Error sending verification code.");
         }
       })
       .catch((err) => {
         console.error("Error response from backend:", err.response);
         if (err.response && err.response.data && err.response.data.error) {
-          alert(err.response.data.error); // Display the specific error message
+          handleShowModal(err.response.data.error); // Display the specific error message
         } else {
-          alert("An error occurred while sending the verification code.");
+          handleShowModal("An error occurred while sending the verification code.");
         }
       });
   };
@@ -146,12 +156,12 @@ const SignUpBuyer: React.FC = () => {
       phoneError ||
       emailError
     ) {
-      alert("Please fix the errors in the form before submitting.");
+      handleShowModal("Please fix the errors in the form before submitting.");
       return;
     }
 
     if (!termsChecked) {
-      alert("Please accept the terms and conditions before signing up.");
+      handleShowModal("Please accept the terms and conditions before signing up.")
       return;
     }
 
@@ -166,18 +176,18 @@ const SignUpBuyer: React.FC = () => {
       })
       .then((res) => {
         if (res.status === 201) {
-          alert("Sign up successful!");
+          handleShowModal("Sign up successful!");
           navigate("/login");
         } else {
-          alert("Error signing up.");
+          handleShowModal("Error signing up.");
         }
       })
       .catch((err) => {
         console.error("Error response from backend:", err.response);
         if (err.response && err.response.data && err.response.data.error) {
-          alert(err.response.data.error); // Display the specific error message
+          handleShowModal(err.response.data.error); // Display the specific error message
         } else {
-          alert("An error occurred during sign up.");
+          handleShowModal("An error occurred during sign up.");
         }
       });
   };
@@ -264,6 +274,7 @@ const SignUpBuyer: React.FC = () => {
                   style={{ fontSize: "14px" }}
                   required
                 />
+                
                 <Form.Control
                   type="text"
                   className="mb-3"
@@ -472,6 +483,18 @@ const SignUpBuyer: React.FC = () => {
       </Form>
       <div style={{ marginTop: "10px" }}>
         <Footer />
+        
+        <Modal show={showModal} onHide={handleCloseModal} >
+         <Modal.Header closeButton>
+          <Modal.Title >Notification</Modal.Title>
+        </Modal.Header>
+        <Modal.Body style={{fontSize:"13px"}}>{modalMessage}</Modal.Body>
+        <Modal.Footer >
+          <Button variant="secondary" onClick={handleCloseModal}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
       </div>
     </div>
   );

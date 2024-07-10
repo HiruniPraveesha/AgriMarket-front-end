@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Row, Col, Form, Button } from "react-bootstrap";
+import { Row, Col, Form, Button, Dropdown, DropdownButton } from "react-bootstrap";
 import axios from "axios";
 import Back from "../../assets/Back.svg";
 import HeaderSub from "../../components/Header-sub";
@@ -18,8 +18,8 @@ interface FormData {
   addressLine2: string;
 }
 
-
 const StepProgressBar: React.FC<StepProgressBarProps> = ({ currentStep }) => {
+  
   const navigate = useNavigate();
   const [formData, setFormData] = useState<FormData>({
     storeName: "",
@@ -55,7 +55,6 @@ const StepProgressBar: React.FC<StepProgressBarProps> = ({ currentStep }) => {
     "Matale",
     "Matara",
     "Moneragala",
-    "Mullaitivu",
     "Nuwara Eliya",
     "Polonnaruwa",
     "Puttalam",
@@ -77,11 +76,10 @@ const StepProgressBar: React.FC<StepProgressBarProps> = ({ currentStep }) => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     // Validate the form fields
     const newErrors: { [key: string]: string } = {};
-    if (!formData.storeName.trim()) {
-      newErrors.storeName = "Store name is required";
-    }
+    if (!formData.storeName.trim()) newErrors.storeName = "Store name is required";
     if (!formData.email.trim()) {
       newErrors.email = "Email is required";
     } else if (!/^\S+@\S+\.\S+$/.test(formData.email)) {
@@ -92,31 +90,28 @@ const StepProgressBar: React.FC<StepProgressBarProps> = ({ currentStep }) => {
     } else if (!/^\+?\d{8,14}$/.test(formData.phoneNumber)) {
       newErrors.phoneNumber = "Invalid phone number";
     }
-    if (!formData.district.trim()) {
-      newErrors.district = "District is required";
-    }
-    if (!formData.addressLine1.trim()) {
-      newErrors.addressLine1 = "Address line 1 is required";
-    }
-    if (!formData.addressLine2.trim()) {
-      newErrors.addressLine2 = "Address line 2 is required";
-    }
+    if (!formData.district.trim()) newErrors.district = "District is required";
+    if (!formData.addressLine1.trim()) newErrors.addressLine1 = "Address line 1 is required";
+    if (!formData.addressLine2.trim()) newErrors.addressLine2 = "Address line 2 is required";
+
     setErrors(newErrors);
 
     // If there are no errors, you can proceed with form submission
     if (Object.keys(newErrors).length === 0) {
       try {
         const response = await axios.post(
-          "http://localhost:8001/completeSellerRegistration",
-          formData
-          
+          "http://localhost:8001/api/completeSellerRegistration",
+          formData,
+          { 
+            withCredentials: true ,
+          }
         );
 
         // Handle successful response
         const sellerId = response.data.data.seller_id;
         console.log("Response:", response.data);
 
-        navigate('/Verifybank"/${sellerId}');
+        navigate(`/Verifybank/${sellerId}`);
 
         // Reset form fields
         setFormData({
@@ -135,31 +130,29 @@ const StepProgressBar: React.FC<StepProgressBarProps> = ({ currentStep }) => {
             // The request was made and the server responded with a status code
             // that falls out of the range of 2xx
             console.error("Error:", err.response.data);
-            if (err.response.status === 404) {
-              // Handle 'Seller not found with the provided email' error
-              setBackendErrors({
-                email: "Seller not found with the provided email",
-              });
-            } else if (err.response.status === 400) {
+            if (err.response.status === 400) {
+              const errorData = err.response.data;
               // Handle 'Phone number is already in use by another seller' error
-              setBackendErrors({
-                phoneNumber: "Phone number is already in use by another seller",
-              });
+              if (errorData.error === 'Phone number is already in use by another seller') {
+                setBackendErrors({ phoneNumber: errorData.error });
+              } else if (errorData.error === 'Entered email does not match the verified email') {
+                setBackendErrors({ email: errorData.error });
+              } else if (errorData.error === 'Invalid input format') {
+                setBackendErrors({ form: errorData.error });
+              } else {
+                setServerError("Server Error: Please try again later");
+              }
             } else {
-              // Handle other server errors
               setServerError("Server Error: Please try again later");
             }
           } else if (err.request) {
-            // The request was made but no response was received
             console.error("Request Error:", err.request);
             setServerError("Request Error: Please try again later");
           } else {
-            // Something happened in setting up the request that triggered an Error
             console.error("Error:", err.message);
             setServerError("Error: Please try again later");
           }
         } else {
-          // Handle non-Axios errors
           console.error("Unexpected Error:", err);
           setServerError("Unexpected Error: Please try again later");
         }
@@ -184,8 +177,8 @@ const StepProgressBar: React.FC<StepProgressBarProps> = ({ currentStep }) => {
             <div style={{ marginLeft: "20px" }}>
               <div
                 style={{
-                  width: "25px",
-                  height: "25px",
+                  width: "20px",
+                  height: "20px",
                   borderRadius: "50%",
                   border: "5px solid #D9D9D9",
                   backgroundColor: currentStep >= 1 ? "#00BA29" : "#fff",
@@ -211,8 +204,8 @@ const StepProgressBar: React.FC<StepProgressBarProps> = ({ currentStep }) => {
             ></div>
             <div
               style={{
-                width: "25px",
-                height: "25px",
+                width: "20px",
+                height: "20px",
                 borderRadius: "50%",
                 border: "5px solid #D9D9D9",
                 backgroundColor: currentStep >= 2 ? "#00BA29" : "#fff",
@@ -229,7 +222,7 @@ const StepProgressBar: React.FC<StepProgressBarProps> = ({ currentStep }) => {
                   marginTop: "50px",
                 }}
               >
-                Verify ID & Bank
+                Verify ID & Bank Details
               </p>
             </div>
             <div
@@ -237,8 +230,8 @@ const StepProgressBar: React.FC<StepProgressBarProps> = ({ currentStep }) => {
             ></div>
             <div
               style={{
-                width: "25px",
-                height: "25px",
+                width: "20px",
+                height: "20px",
                 borderRadius: "50%",
                 border: "5px solid #D9D9D9",
                 backgroundColor: currentStep >= 3 ? "#00BA29" : "#fff",
@@ -277,8 +270,8 @@ const StepProgressBar: React.FC<StepProgressBarProps> = ({ currentStep }) => {
                   value={formData.storeName}
                   style={{
                     borderRadius: "0px",
-                    borderWidth: "3px",
-                    height: "50px",
+                    borderWidth: "2px",
+                    height: "40px",
                   }}
                   isInvalid={!!errors.storeName}
                   onChange={handleInputChange}
@@ -295,8 +288,8 @@ const StepProgressBar: React.FC<StepProgressBarProps> = ({ currentStep }) => {
                   value={formData.email}
                   style={{
                     borderRadius: "0px",
-                    borderWidth: "3px",
-                    height: "50px",
+                    borderWidth: "2px",
+                    height: "40px",
                   }}
                   isInvalid={!!errors.email}
                   onChange={handleInputChange}
@@ -317,8 +310,8 @@ const StepProgressBar: React.FC<StepProgressBarProps> = ({ currentStep }) => {
                   value={formData.phoneNumber}
                   style={{
                     borderRadius: "0px",
-                    borderWidth: "3px",
-                    height: "50px",
+                    borderWidth: "2px",
+                    height: "40px",
                   }}
                   isInvalid={!!errors.phoneNumber}
                   onChange={handleInputChange}
@@ -338,25 +331,31 @@ const StepProgressBar: React.FC<StepProgressBarProps> = ({ currentStep }) => {
                 style={{ marginTop: "25px" }}
               >
                 <Form.Label>Address</Form.Label>
+                
                 <Form.Select
                   name="district"
                   value={formData.district}
-                  onChange={
-                    handleSelectChange as React.ChangeEventHandler<HTMLSelectElement>
-                  }
+                  onChange={handleSelectChange}
                   style={{
                     marginBottom: "20px",
                     borderRadius: "0px",
-                    borderWidth: "3px",
-                    height: "50px",
+                    borderWidth: "2px",
+                    height: "auto",
+                    maxHeight: "120px",
+                    overflowY: "auto",
+                    position: "relative",
+                   
                   }}
+                 
                   isInvalid={!!errors.district}
-                >
+                > 
                   <option>Select District</option>
                   {districts.map((district, index) => (
                     <option key={index}>{district}</option>
-                  ))}
-                </Form.Select>
+                   
+                  ))}  
+                  </Form.Select>
+               
                 <Form.Control
                   type="text"
                   name="addressLine1"
@@ -365,22 +364,23 @@ const StepProgressBar: React.FC<StepProgressBarProps> = ({ currentStep }) => {
                   style={{
                     marginBottom: "20px",
                     borderRadius: "0px",
-                    borderWidth: "3px",
-                    height: "50px",
+                    borderWidth: "2px",
+                    height: "40px",
                   }}
                   isInvalid={!!errors.addressLine1}
                   onChange={handleInputChange}
                 />
+                
                 <Form.Control
                   type="text"
                   name="addressLine2"
                   value={formData.addressLine2}
                   placeholder="Enter Your address"
                   style={{
-                    marginBottom: "20px",
+                    marginBottom: "25px",
                     borderRadius: "0px",
-                    borderWidth: "3px",
-                    height: "50px",
+                    borderWidth: "2px",
+                    height: "40px",
                   }}
                   isInvalid={!!errors.addressLine2}
                   onChange={handleInputChange}
@@ -398,11 +398,12 @@ const StepProgressBar: React.FC<StepProgressBarProps> = ({ currentStep }) => {
                   type="submit"
                   style={{
                     backgroundColor: "#00BA29",
-                    height: "50px",
-                    width: "400px",
+                    height: "40px",
+                    width: "200px",
+                    border: "none",
                   }}
                 >
-                  Next
+                  Submit
                 </Button>
               </div>
               <Link to="/signupSeller">

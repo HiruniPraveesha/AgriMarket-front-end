@@ -5,40 +5,43 @@ import Footer from "../../components/Footer-sub";
 import signupImage from "../../assets/signupimage.png";
 import SignUpIcon from "../../assets/signup_icon.svg";
 import Button from "react-bootstrap/Button";
-import { BsEye, BsEyeSlash } from "react-icons/bs";
-import { Link} from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios, { AxiosError } from "axios";
+import useSignIn from "react-auth-kit/hooks/useSignIn";
+
+interface IUserData {
+  email: string;
+}
 
 function SignIn() {
-  const [identifier, setIdentifier] = useState("");
-  const [isIdentifierValid, setIsIdentifierValid] = useState(true);
+  const [email, setEmail] = useState("");
+  const [isEmailValid, setIsEmailValid] = useState(true);
   const [password, setPassword] = useState("");
   const [isPasswordValid, setIsPasswordValid] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  
+  const [rememberMe, setRememberMe] = useState(false);
+  const signIn = useSignIn<IUserData>();
+  const navigate = useNavigate();
 
-
-
-  const handleIdentifierChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setIdentifier(e.target.value);
-    setIsIdentifierValid(true); // Reset validation when the identifier changes
-    setErrorMessage("");
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+    setIsEmailValid(true); // Reset validation when the email changes
   };
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
-    setIsPasswordValid(true);
-    setErrorMessage("");
+    setIsPasswordValid(true); // Reset validation when the password changes
   };
-
-  const handleTogglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
+  const handleRememberMeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setRememberMe(e.target.checked);
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!identifier) {
-      setIsIdentifierValid(false);
+    setErrorMessage("");
+
+    if (!email) {
+      setIsEmailValid(false);
       return;
     }
     if (!password) {
@@ -46,7 +49,51 @@ function SignIn() {
       return;
     }
 
-    
+    try {
+      // Include the full URL for the API endpoint
+      const response = await axios.post("http://localhost:8001/signin", {
+        email,
+        password,
+        rememberMe,
+      });
+      const { token, userType, authUserState, sellerId } = response.data;
+
+      const expiresAt = rememberMe
+        ? new Date().getTime() + 30 * 24 * 60 * 60 * 1000 // 30 days
+        : new Date().getTime() + 1 * 60 * 60 * 1000;
+        signIn({
+          auth: {
+            token: response.data.token,
+            type: "Bearer",
+          },
+          userState: {
+            ...authUserState,
+            expiresAt: expiresAt, // Set expiration time in user state
+          },
+        });
+
+      // Store the token and userEmail in local storage
+      localStorage.setItem("token", token);
+      localStorage.setItem("userEmail", email);
+      localStorage.setItem("sellerId", sellerId);
+
+      // Redirect based on userType
+      if (userType === "buyer") {
+        navigate(`/Verifybank`);
+        console.log(response.data);
+      } else if (userType === "seller") {
+        navigate("../sellerDashboard");
+      }
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        const errorResponse = error.response?.data;
+        setErrorMessage(
+          errorResponse?.error || "An error occurred during sign-in"
+        );
+      } else {
+        setErrorMessage("An error occurred during sign-in");
+      }
+    }
   };
 
   return (
@@ -66,59 +113,41 @@ function SignIn() {
             </div>
 
             <form onSubmit={handleSubmit}>
-              {errorMessage && (
-                <div className="alert alert-danger" role="alert">
-                  {errorMessage}
-                </div>
-              )}
               <div className="mb-3">
                 <label htmlFor="formControlLg" className="form-label">
-                  Email address / Contact No
+                  Email address / Username / Contact No
                 </label>
                 <input
                   id="formControlLg"
                   type="text"
                   className={`form-control form-control-lg ${
-                    isIdentifierValid ? "" : "is-invalid"
+                    isEmailValid ? "" : "is-invalid"
                   }`}
                   style={{ fontSize: "14px" }}
-                  value={identifier}
-                  onChange={handleIdentifierChange}
+                  value={email}
+                  onChange={handleEmailChange}
                 />
-                {!isIdentifierValid && (
+                {!isEmailValid && (
                   <div className="invalid-feedback">
-                    Please enter a valid email address/contact number.
+                    Please enter a valid email address/username/contact no.
                   </div>
                 )}
               </div>
 
               <div className="mb-3">
-                <label htmlFor="passwordInput" className="form-label">
+                <label htmlFor="formControlLg" className="form-label">
                   Password
                 </label>
-                <div className="input-group">
-                  <input
-                    id="passwordInput"
-                    type={showPassword ? "text" : "password"}
-                    className={`form-control form-control-lg ${
-                      isPasswordValid ? "" : "is-invalid"
-                    }`}
-                    style={{ fontSize: "14px" }}
-                    value={password}
-                    onChange={handlePasswordChange}
-                  />
-                  <button
-                    type="button"
-                    className="btn btn-outline-secondary"
-                    onClick={handleTogglePasswordVisibility}
-                    style={{
-                      borderTopLeftRadius: "0",
-                      borderBottomLeftRadius: "0",
-                    }}
-                  >
-                    {showPassword ? <BsEyeSlash /> : <BsEye />}
-                  </button>
-                </div>
+                <input
+                  id="formControlLg"
+                  type="password"
+                  className={`form-control form-control-lg ${
+                    isPasswordValid ? "" : "is-invalid"
+                  }`}
+                  style={{ fontSize: "14px" }}
+                  value={password}
+                  onChange={handlePasswordChange}
+                />
                 {!isPasswordValid && (
                   <div className="invalid-feedback">
                     Please enter a password.
@@ -126,12 +155,19 @@ function SignIn() {
                 )}
               </div>
 
+              {errorMessage && (
+                <div className="alert alert-danger" role="alert">
+                  {errorMessage}
+                </div>
+              )}
 
               <div className="d-flex justify-content-between mx-4 mb-4">
                 <div className="form-check mb-0">
                   <input
                     className="form-check-input me-2"
                     type="checkbox"
+                    checked={rememberMe}
+                    onChange={handleRememberMeChange}
                     value=""
                     id="flexCheckDefault"
                   />
@@ -142,9 +178,10 @@ function SignIn() {
                     Remember me
                   </label>
                 </div>
-                <Link to="/email" className="text-success">
+                 
+                <a href="!#" className="text-success">
                   Forgot your password?
-                </Link>
+                </a>
               </div>
 
               <Button
@@ -213,7 +250,7 @@ function SignIn() {
                 </p>
               </div>
 
-              
+              <Link to="/select">
                 <Button
                   variant="primary"
                   className="mb-4 py-3"
@@ -228,7 +265,7 @@ function SignIn() {
                 >
                   Register Now
                 </Button>
-              
+              </Link>
             </div>
           </div>
         </div>

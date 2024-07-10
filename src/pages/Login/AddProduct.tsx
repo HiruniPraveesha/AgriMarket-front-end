@@ -20,8 +20,8 @@ const AddProduct: React.FC<StepProgressBarProps> = ({ currentStep }) => {
           <div style={{ marginLeft: '20px' }}>
             <div
               style={{
-                width: '25px',
-                height: '25px',
+                width: '20px',
+                height: '20px',
                 borderRadius: '50%',
                 border: '5px solid #D9D9D9',
                 backgroundColor: currentStep >= 1 ? 'white' : '#fff',
@@ -36,8 +36,8 @@ const AddProduct: React.FC<StepProgressBarProps> = ({ currentStep }) => {
           <div style={{ width: '70%', height: '1px', backgroundColor: '#000' }}></div>
           <div
             style={{
-              width: '25px',
-              height: '25px',
+              width: '20px',
+              height: '20px',
               borderRadius: '50%',
               border: '5px solid #D9D9D9',
               backgroundColor: currentStep >= 2 ? 'white' : '#fff',
@@ -45,14 +45,14 @@ const AddProduct: React.FC<StepProgressBarProps> = ({ currentStep }) => {
               justifyContent: 'center',
               alignItems: 'center'
             }}>
-            <p style={{ margin: 0, whiteSpace: 'nowrap', fontSize: '14px', marginTop: '50px' }}>Verify ID & Bank</p>
+            <p style={{ margin: 0, whiteSpace: 'nowrap', fontSize: '14px', marginTop: '50px' }}>Verify ID & Bank Details</p>
           </div>
           {/* Step 3 */}
           <div style={{ width: '70%', height: '1px', backgroundColor: '#000' }}></div>
           <div
             style={{
-              width: '25px',
-              height: '25px',
+              width: '20px',
+              height: '20px',
               borderRadius: '50%',
               border: '5px solid #D9D9D9',
               backgroundColor: currentStep >= 3 ? '#00BA29' : '#fff',
@@ -77,7 +77,7 @@ const AddProduct: React.FC<StepProgressBarProps> = ({ currentStep }) => {
             <p style={{textAlign:"center",paddingTop:"20px"}}><strong style={{color:"green"}}>Congratulations!</strong> Your Store is Now Active<br/>Add Your first products to start selling !</p>
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '60px' }}>
               <Link to="addproductpage">
-              <Button type="submit" style={{ backgroundColor: '#00BA29', height: '50px', width: '400px' }}>
+              <Button type="submit" style={{ backgroundColor: '#00BA29', height: '40px', width: '200px',border:"none" }}>
                 Add New Product
               </Button>
               </Link>
