@@ -36,12 +36,14 @@ import BuyerProfile from "./pages/Buyer/BuyerProfile";
 // import RechargeWallet from "./pages/Buyer/RechargeWallet";
 // import AddProduct from "./pages/Seller/AddProduct";
 import Sidebar from "./components/Seller-side-bar";
+import Cal2 from "./pages/Cal";
 // import AdminLogin from "./pages/Admin/Admin-login";
 // import AdminNavigation from "./components/Admin-bar";
 // import Buyers from "./pages/Admin/Buyers";
 // import Sellers from "./pages/Admin/Sellers";
 // import Products from "./pages/Admin/Products";
 import SellerProfile from "./pages/SellerProfile";
+import NotificationSeller from "./pages/AddNotifications";
 
 const store = createStore({
   authName: "_auth",
@@ -116,6 +118,10 @@ const router = createBrowserRouter([
   {
     path: "/CalendarBuyer",
     element: <CalendarBuyer />,
+  },
+  {
+    path: "/Cal",
+    element: <Cal2 />,
   },
   // {
   //   path: "/Dashboard",
@@ -233,6 +239,11 @@ const router = createBrowserRouter([
   //   path: "/newpw",
   //   element: <NewPW />,
   // },
+
+  {
+    path: "/SellerNotification",
+    element: <NotificationSeller />,
+  },
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")!).render(

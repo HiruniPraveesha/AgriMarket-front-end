@@ -11,21 +11,20 @@ function ProductCalendar() {
   const [events, setEvents] = useState<any[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState<any>(null);
-  const [product_id, setProduct] = useState("");
+  const [product, setProduct] = useState("");
   const [note, setNote] = useState("");
   const [category_id, setCategory] = useState("");
   const [sellerId, setSellerId] = useState(
     localStorage.getItem("sellerId") || ""
   );
+
   const [categories, setCategories] = useState<any[]>([]);
   const [products, setProducts] = useState<any[]>([]);
-  const [selectedEvent, setSelectedEvent] = useState<any>(null);
-  const [showAlert, setShowAlert] = useState(false);
 
-  // Fetch categories from the database
+  // Fetch categories from the backend
   useEffect(() => {
     axios
-      .get("http://localhost:8000/Category")
+      .get("http://localhost:8000/categories")
       .then((response) => {
         setCategories(response.data);
       })
@@ -34,11 +33,13 @@ function ProductCalendar() {
       });
   }, []);
 
-  // Fetch products based on seller ID
+  // Fetch products based on seller ID and selected category
   useEffect(() => {
-    if (sellerId) {
+    if (sellerId && category_id) {
       axios
-        .get(`http://localhost:8000/productsCal/seller/${sellerId}`)
+        .get(
+          `http://localhost:8000/products?sellerId=${sellerId}&categoryId=${category_id}`
+        )
         .then((response) => {
           setProducts(response.data);
         })
@@ -46,30 +47,28 @@ function ProductCalendar() {
           console.error("Error fetching products:", error);
         });
     }
-  }, [sellerId]);
+  }, [sellerId, category_id]);
 
   // Fetch events from the backend
   useEffect(() => {
     axios
-      .get(`http://localhost:8000/calendar/${sellerId}`)
+      .get("http://localhost:8000/events")
       .then((response) => {
-        const formattedEvents = response.data.map((event: any) => ({
-          id: event.event_id,
-          title: `${event.productId} - ${event.note}`,
+        const fetchedEvents = response.data.map((event: any) => ({
+          ...event,
           start: new Date(event.start),
-          end: new Date(event.start), // Adjust if you have an en d time
-          description: event.note,
-          category: event.categoryId,
-          color: getCategoryColor(event.categoryId),
+          end: new Date(event.end),
         }));
-        setEvents(formattedEvents);
+        setEvents(fetchedEvents);
       })
       .catch((error) => {
         console.error("Error fetching events:", error);
       });
-  }, [sellerId]);
+  }, []);
 
   const toggleModal = () => setShowModal(!showModal);
+
+  const [showAlert, setShowAlert] = useState(false);
 
   const handleSelectSlot = ({ start, end }: { start: Date; end: Date }) => {
     const today = new Date();
@@ -77,29 +76,20 @@ function ProductCalendar() {
       start.setHours(0, 0, 0, 0);
       setSelectedSlot({ start, end });
       setSelectedEvent(null);
-      setProduct("");
-      setNote("");
-      setCategory("");
       toggleModal();
     } else {
       setShowAlert(true);
     }
   };
 
+  const [selectedEvent, setSelectedEvent] = useState<any>(null);
+
   const handleEventClick = (event: any) => {
-    axios
-      .get(`http://localhost:8000/calendar/event/${event.id}`)
-      .then((response) => {
-        const eventData = response.data;
-        setProduct(eventData.productId);
-        setNote(eventData.note);
-        setCategory(eventData.categoryId);
-        setSelectedEvent(event);
-        toggleModal();
-      })
-      .catch((error) => {
-        console.error("Error fetching event details:", error);
-      });
+    setSelectedEvent(event);
+    setProduct(event.productName);
+    setNote(event.note);
+    setCategory(event.categoryId);
+    toggleModal();
   };
 
   const handleDeleteEvent = () => {
@@ -110,14 +100,7 @@ function ProductCalendar() {
     clearFormFields();
     toggleModal();
 
-    axios
-      .delete(`http://localhost:8000/calendar/delete/${selectedEvent.id}`)
-      .then((response) => {
-        console.log("Event deleted successfully:", response.data);
-      })
-      .catch((error) => {
-        console.error("Error deleting event:", error);
-      });
+    axios.delete(`http://localhost:8000/events/${selectedEvent.id}`);
   };
 
   const clearFormFields = () => {
@@ -127,15 +110,20 @@ function ProductCalendar() {
   };
 
   const handleEditEvent = () => {
+    const categoryColor = getCategoryColor(category_id);
+    console.log(
+      `Editing Event: categoryColor for categoryId ${category_id} is ${categoryColor}`
+    );
+
     const updatedEvents = events.map((event) =>
       event.id === selectedEvent.id
         ? {
             ...event,
-            productId: product_id,
-            title: `${product_id}- ${note}`,
+            productName: product,
+            title: `${product} - ${note}`,
             categoryId: category_id,
             sellerId,
-            color: getCategoryColor(category_id), // Update color based on edited category
+            categoryColor,
           }
         : event
     );
@@ -143,28 +131,26 @@ function ProductCalendar() {
     toggleModal();
     clearFormFields();
 
-    axios
-      .put(`http://localhost:8000/calendar/update/${selectedEvent.id}`, {
-        categoryId: category_id,
-        productId: product_id,
-        note,
-        start: selectedEvent.start,
-        sellerId,
-      })
-      .then((response) => {
-        console.log("Event updated successfully:", response.data);
-      })
-      .catch((error) => {
-        console.error("Error updating event:", error);
-      });
+    axios.put(`http://localhost:8000/events/${selectedEvent.id}`, {
+      note,
+      start: selectedEvent.start,
+      productName: product,
+      categoryId: category_id,
+      sellerId,
+    });
   };
 
   const handleFormSubmit = () => {
     const { start, end } = selectedSlot || {};
     const selectedProduct = products.find(
-      (prod) => prod.product_id === product_id
+      (prod) => prod.product_id === product
     );
     const productId = selectedProduct ? selectedProduct.product_id : null;
+    const categoryColor = getCategoryColor(category_id);
+
+    console.log(
+      `Creating Event: categoryColor for categoryId ${category_id} is ${categoryColor}`
+    );
 
     if (selectedEvent) {
       handleEditEvent();
@@ -172,25 +158,27 @@ function ProductCalendar() {
       setSelectedEvent(null);
       const newEvent = {
         id: events.length + 1,
-        title: `${product_id} - ${note}`,
+        title: `${product} - ${note}`,
         start,
         end,
         categoryId: category_id,
         sellerId,
-        productId: product_id,
-        color: getCategoryColor(category_id),
+        productId,
+        categoryColor,
       };
       setEvents([...events, newEvent]);
       toggleModal();
       clearFormFields();
 
       axios
-        .post("http://localhost:8000/calendar/create", {
+        .post("http://localhost:8000/events", {
           categoryId: category_id,
-          productId: product_id,
+          productName: product,
           note,
           start,
           sellerId,
+          productId,
+          categoryColor,
         })
         .then((response) => {
           console.log("Event saved successfully:", response.data);
@@ -211,28 +199,24 @@ function ProductCalendar() {
     toggleModal();
   };
 
-  // Giving colors to different categories
-  const getCategoryColor = (categoryId: string) => {
-    const categoryColors: { [key: string]: string } = {
-      "1": "green",
-      "2": "#FF5733",
-      "3": "#C4A484",
-      // Add more categories and colors as needed
-    };
-
-    const defaultColor = "blue";
-
-    // Get the color for the current event's category_id
-    return categoryColors[categoryId] || defaultColor;
-  };
-
   const getEventStyle = (event: any) => {
     return {
       style: {
-        backgroundColor: event.color,
+        backgroundColor: event.categoryColor || "blue",
         color: "#FFF", // Text color for contrast
       },
     };
+  };
+
+  // Function to get category color based on category_id
+  const getCategoryColor = (categoryId: string) => {
+    const categoryColors: { [key: string]: string } = {
+      "1": "green", // Category ID 1
+      "2": "#FF5733", // Category ID 2
+      "3": "#C4A484", // Category ID 3
+      // Add more category_id and color mappings as needed
+    };
+    return categoryColors[categoryId] || "";
   };
 
   return (
@@ -293,7 +277,7 @@ function ProductCalendar() {
               <Form.Label>Product Name</Form.Label>
               <Form.Control
                 as="select"
-                value={product_id}
+                value={product}
                 onChange={(e) => setProduct(e.target.value)}
                 required
               >
@@ -338,7 +322,7 @@ function ProductCalendar() {
             <Button
               variant="success"
               onClick={handleFormSubmit}
-              disabled={!category_id || !product_id || !sellerId}
+              disabled={!category_id || !product || !sellerId}
               style={{ backgroundColor: "#00BA29", borderColor: "#00BA29" }}
             >
               Save

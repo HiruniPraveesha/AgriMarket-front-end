@@ -74,7 +74,7 @@ const Sidebar: React.FC<SidebarProps> = ({ defaultSelected }) => {
 
           <div className="mb-5">
             <a
-              href="/ProductCalendar"
+              href="/CalendarSeller"
               className="text-decoration-none"
               style={linkStyle("Calendar")}
               onClick={() => setSelectedMenuItem("Calendar")}

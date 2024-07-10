@@ -63,6 +63,7 @@ const HeaderNew: React.FC = () => {
   const toggleCart = () => setIsCartVisible(!isCartVisible); // Toggle cart notification
 
   const [keyword, setKeyword] = useState("");
+
   const searchHandler = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
@@ -284,6 +285,7 @@ const HeaderNew: React.FC = () => {
               placeholder="Enter product name ..."
               aria-label="Search"
               style={{ borderRadius: "0", width: "300px", fontSize: "0.7rem" }}
+              value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
             />
             <button

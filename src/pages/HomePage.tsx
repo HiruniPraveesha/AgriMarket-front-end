@@ -310,7 +310,7 @@ const Home: React.FC = () => {
             </h1>
           </Col>
         </Row>
-        {"/Product list/"}
+        {/* {"/Product list/"} */}
         <Row className="mt-4 d-flex justify-content-center align-items-center">
           {featuredProducts.map((product) => (
             <Col key={product.id} xs={12} sm={6} md={6} lg={3} className="mb-4">
