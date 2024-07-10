@@ -9,12 +9,20 @@ import SignUpBuyer from "./pages/Login/SignUpBuyer";
 import BecomeASeller from "./pages/BecomeASeller";
 import ProductMap from "./pages/ProductMap";
 import Email from "./pages/Login/ForgotPw/Email";
-import ItemDetails from "./pages/ItemDetails2";
+import ItemDetails from "./pages/ItemDetails";
 import ReviewRating from "./pages/ReviewRating";
-import HomePage from "./pages/Home2";
-import Fruits from "./pages/Fruits";
-
-
+import HomePage from "./pages/Home";
+import Category from "./pages/Category";
+import AddProduct from "./pages/AddProduct";
+import ManageProduct from "./pages/ManageProducts";
+import AuthProvider from "react-auth-kit";
+import createStore from "react-auth-kit/createStore";
+const store = createStore({
+  authName: "_auth",
+  authType: "cookie",
+  cookieDomain: window.location.hostname,
+  cookieSecure: window.location.protocol === "https:",
+});
 
 const router = createBrowserRouter([
   {
@@ -60,17 +68,27 @@ const router = createBrowserRouter([
   },
   
   {
-    path: "/Fruits/:categoryId",
-    element: <Fruits />,
+    path: "/Category/:categoryId",
+    element: <Category />,
   },
   {
     path: "/ProductMap",
     element: <ProductMap />,
   },
+  {
+    path: "/AddYourProducts",
+    element: <AddProduct />,
+  },
+  {
+    path: "/ManageYourProducts",
+    element: <ManageProduct />,
+  },
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <AuthProvider store={store}>
+      <RouterProvider router={router} />
+    </AuthProvider>
   </React.StrictMode>
 );
