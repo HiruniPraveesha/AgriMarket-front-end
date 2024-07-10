@@ -21,6 +21,7 @@ import { Modal, Button, Form } from "react-bootstrap";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import axios from "axios";
 
+
 const BecomeASeller: React.FC = () => {
   const [show, setShow] = useState(false);
   const [email, setEmail] = useState("");
@@ -33,10 +34,19 @@ const BecomeASeller: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
   const [otpVerified, setOtpVerified] = useState(false);
-
+  const [showModal, setShowModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
   const handleShow = () => setShow(true);
   const handleClose = () => setShow(false);
   const navigate = useNavigate();
+
+  
+
+  const handleCloseModal = () => setShowModal(false);
+  const handleShowModal = (message: string) => {
+    setModalMessage(message);
+    setShowModal(true);
+  };
   const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     setEmail(value);
@@ -81,76 +91,117 @@ const BecomeASeller: React.FC = () => {
   };
 
   const handleSendOtp = async () => {
+    
     try {
-      const response = await axios.post("http://localhost:8000/become-seller", {
+      const response = await axios.post("http://localhost:8080/become-seller", {
         email,
         action: "sendOtp",
+      }, {
+        withCredentials: true,
       });
 
       if (response.status === 201) {
         console.log(response.data.message);
         setOtpSent(true);
-        alert("OTP sent Succesfully");
+        handleShowModal("OTP sent Succesfully");
       } else {
+        handleShowModal("Error sending OTP. Status");
         console.error("Error sending OTP. Status:", response.status);
+
         if (response.data && response.data.error) {
           console.error("Error message:", response.data.error);
         }
       }
     } catch (error) {
-      alert("Error sending OTP. Please try again later");
-      console.error("Error sending OTP:", error);
+      if (axios.isAxiosError(error)) {
+        // Error is an Axios error
+        if (error.response && error.response.data && error.response.data.error) {
+          console.error("Error message:", error.response.data.error);
+          handleShowModal(error.response.data.error); // Display the error message from the backend
+        } else {
+          handleShowModal("Error sending OTP. Please try again later");
+          console.error("Error sending OTP:", error);
+        }
+      } else {
+        // Error is not an Axios error
+        handleShowModal("An unexpected error occurred. Please try again later");
+        console.error("Unexpected error:", error);
+      }
     }
   };
 
   const handleVerifyOtp = async () => {
+    console.log("Verifying OTP with:", email, otp); // Verify email and otp values are correctly set
     try {
-      const response = await axios.post("http://localhost:8000/become-seller", {
-        email,
-        otp,
-        action: "verifyOtp",
-      });
+        const response = await axios.post(
+            "http://localhost:8080/become-seller",
+            {
+                email,
+                otp,
+                action: "verifyOtp",
+            },
+            {
+                withCredentials: true, // Include credentials in the request if needed
+            }
+        );
 
-      if (response.status === 200) {
-        setOtpVerified(true);
-        console.log(response.data.message);
-      } else {
-        console.error(response.data.error);
-      }
+        console.log("Verify OTP Response:", response); // Log full response for debugging
+
+        if (response.status === 200) {
+            setOtpVerified(true); // Update state to reflect OTP verification success
+            console.log("OTP verified successfully:", response.data.message);
+            handleShowModal("OTP verified successfully");
+        } else {
+            console.error("Error verifying OTP. Status:", response.status);
+            handleShowModal("Error verifying OTP. Please try again.");
+
+            if (response.data && response.data.error) {
+                console.error("Error message:", response.data.error);
+            }
+        }
     } catch (error) {
-      console.error("Error verifying OTP:", error);
+        console.error("Error verifying OTP:", error); // Log any caught errors during request
+        handleShowModal("Error verifying OTP. Please try again later");
     }
-  };
+};
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
 
-    try {
-      const response = await axios.post("http://localhost:8000/become-seller", {
+
+const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  event.preventDefault();
+
+  try {
+    const response = await axios.post(
+      "http://localhost:8080/become-seller",
+      {
         email,
         otp,
         password,
         action: "completeRegistration",
-      });
-
-      if (response.status === 201) {
-        alert("Create Account Successful!");
-        console.log(response.data.message);
-        navigate("/StepProgressBar");
-        // Handle successful registration completion
-      } else {
-        console.error(response.data.error);
+      },
+      {
+        withCredentials: true,
       }
-    } catch (error) {
-      console.error("Error completing registration:", error);
+    );
+
+    if (response.status === 200 || response.status === 201) {
+      handleShowModal("Create Account Successful!");
+      console.log(response.data.message); // Ensure response structure matches backend
+      navigate("/StepProgressBar");
+    } else {
+      console.error(response.data.error);
     }
-  };
+  } catch (error) {
+    console.error("Error completing registration:", error);
+  }
+};
+
 
   const isFormValid = () => {
-    console.log("Email Error:", emailError);
-    console.log("Password Error:", passwordError);
-    console.log("Confirm Password Error:", confirmPasswordError);
-    console.log("OTP Verified:", otpVerified);
+    // console.log("Email Error:", emailError);
+    // console.log("Password Error:", passwordError);
+    // console.log("Confirm Password Error:", confirmPasswordError);
+    // console.log("OTP Verified:", otpVerified);
     return (
       otpVerified &&
       passwordError === "" &&
@@ -805,8 +856,9 @@ const BecomeASeller: React.FC = () => {
                   variant="success"
                   type="submit"
                   disabled={!isFormValid()}
+                  style={{padding:"8px 90px"}}
                 >
-                  Create Account
+                  Next
                 </Button>
                 <p style={{ marginTop: "12px", fontSize: "14px" }}>
                   By clicking 'Create account' you've read and agreed to our
@@ -819,6 +871,17 @@ const BecomeASeller: React.FC = () => {
       </Modal>
       <div>
         <MainFooter />
+        <Modal show={showModal} onHide={handleCloseModal} >
+         <Modal.Header closeButton>
+          <Modal.Title >Notification</Modal.Title>
+        </Modal.Header>
+        <Modal.Body style={{fontSize:"13px"}}>{modalMessage}</Modal.Body>
+        <Modal.Footer >
+          <Button variant="secondary" onClick={handleCloseModal}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
       </div>
     </div>
   );
