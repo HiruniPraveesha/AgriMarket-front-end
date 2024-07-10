@@ -260,6 +260,8 @@ export default function AddProduct() {
 
               <Form.Group className="mb-3">
                 <Form.Label>PRODUCT IMAGES<span style={{ color: 'red' }}>*</span></Form.Label>
+                <p>Add files in type of jpeg, jpg, png.</p>
+                <p>Width = 271 px, Height = 186 px</p>
                 <div className="image-rectangle" style={{ display: 'flex', flexDirection: 'row', gap: '5px' }}>
                   {filePreviews.map((preview, index) => (
                     <div key={index} style={{ position: 'relative', width: '120px', height: '120px', border: '1px solid black', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '5px', overflow: 'hidden', backgroundColor: '#f0f0f0' }}>

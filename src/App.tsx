@@ -2,7 +2,7 @@ import React from "react";
 
 
 import HomePage from "./pages/Home";
-
+import AddProduct from "./pages/AddProduct";
 
 
 
@@ -12,7 +12,7 @@ import HomePage from "./pages/Home";
 const App: React.FC = () => {
   return (
     <div>
-      <HomePage />
+      <AddProduct />
     </div>
   );
 };
