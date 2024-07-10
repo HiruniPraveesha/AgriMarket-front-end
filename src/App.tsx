@@ -12,7 +12,7 @@ import AddProduct from "./pages/AddProduct";
 const App: React.FC = () => {
   return (
     <div>
-      <AddProduct />
+      <HomePage />
     </div>
   );
 };
