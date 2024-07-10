@@ -11,13 +11,13 @@ import ProductMap from "./pages/ProductMap";
 import SignupSeller from "./pages/Login/SignupSeller";
 import StepProgressBar from "./pages/Login/StepProgressBar";
 import Verifybank from "./pages/Login/Verifybank";
-//import AddProduct from "./pages/Login/AddProduct";
+import AddProduct from "./pages/AddProduct2";
 // import Email2 from "./pages/Login/Email";
 // import Verify from "./pages/Login/Verify";
 // import NewPW from "./pages/Login/NewPW";
 import HomePage from "./pages/HomePage";
 import SellerDashboard from "./pages/sellerDashboard";
-// import AddLogin from "./pages/Login/AddLogin";
+
 // import AddProduct from "./pages/Login/AddProduct";
 // import VerifyBank from "./pages/Login/VerifyBank";
 import ProductCalendar from "./pages/CalendarSeller";
@@ -42,6 +42,8 @@ import Sidebar from "./components/Seller-side-bar";
 // import Sellers from "./pages/Admin/Sellers";
 // import Products from "./pages/Admin/Products";
 import SellerProfile from "./pages/SellerProfile";
+import MyProducts from "./pages/MyProducts";
+
 
 const store = createStore({
   authName: "_auth",
@@ -62,6 +64,10 @@ const router = createBrowserRouter([
     element: <App />,
     errorElement: <div>404 Not Found</div>,
   },
+  {
+    path:"/MyProducts",
+    element:<MyProducts/>
+  },
   // {
   //   path: "/adminLogin",
   //   element: <Login />,
@@ -69,6 +75,10 @@ const router = createBrowserRouter([
   {
     path: "/signIn",
     element: <SignIn />,
+  },
+  {
+    path: "/AddYourProducts",
+    element: <AddProduct/>
   },
   {
     path: "/SellerProfile/:sellerId",

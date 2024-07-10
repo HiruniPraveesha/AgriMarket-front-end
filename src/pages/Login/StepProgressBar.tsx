@@ -248,7 +248,7 @@ const StepProgressBar: React.FC<StepProgressBarProps> = ({ currentStep }) => {
                   marginTop: "50px",
                 }}
               >
-                Add Product
+                Dashboard 
               </p>
             </div>
           </Col>

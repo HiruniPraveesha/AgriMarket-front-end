@@ -146,7 +146,7 @@ const Verifybank: React.FC<{ currentStep: number }> = ({ currentStep }) => {
         console.log("Response from server:", response.data);
         handleShowModal("Registration is successfull!");
         // Handle success scenario (redirect, show success message, etc.)
-        navigate("/AddProduct");
+        navigate("/sellerDashboard");
       } catch (error) {
         console.error("Error submitting form:", error);
         handleShowModal("Form can not be submitting");
