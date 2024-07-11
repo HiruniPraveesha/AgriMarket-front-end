@@ -35,7 +35,7 @@ const Sidebar: React.FC<SidebarProps> = ({defaultSelected}) => {
       <Col className="bg-light sidebar" style={{display:'flex',borderRadius: '20px',}} >
       <div className="p-4" style={{ maxHeight: "100%", overflowY: "auto" }}>
         <div className="mb-4 mt-2">
-          <a href="#">
+          <a href="/">
             <img
               src={Logo}
               style={{ height: "110px", width: "130px" }}

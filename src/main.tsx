@@ -17,7 +17,7 @@ import Email2 from "./pages/Login/Email";
 import Verify from "./pages/Login/Verify";
 import NewPW from "./pages/Login/NewPW";
 import HomePage from "./pages/HomePage";
-import SellerDashboard from "./pages/sellerDashboard";
+import SellerDashboard from "./pages/Seller/sellerDashboard";
 // import AddLogin from "./pages/Login/AddLogin";
 // import AddProduct from "./pages/Login/AddProduct";
 // import VerifyBank from "./pages/Login/VerifyBank";
@@ -37,13 +37,20 @@ import Checkout from "./pages/Checkout/Checkout";
 import Wallet from "./pages/Buyer/Wallet";
 import RechargeWallet from "./pages/Buyer/RechargeWallet";
 import AddProduct from "./pages/Seller/AddProduct";
-import Sidebar from "./components/Seller-side-bar";
 import AdminLogin from "./Admin/Admin-login";
 import AdminNavigation from "./components/Admin-bar";
 import Buyers from "./Admin/Buyers";
 import Sellers from "./Admin/Sellers";
 import Products from "./Admin/Products";
 import Sidebar1 from "./Admin/AdminSidebar";
+import { ThemeProvider } from '@mui/material/styles';
+import customTheme from './customTheme'; 
+import AdminDashboard from "./Admin/AdminDashboard";
+import SellerProfile
+ from "./pages/Seller/SellerProfile";
+
+
+
 const store = createStore({
   authName: "_auth",
   authType: "cookie",
@@ -56,11 +63,21 @@ import Email from "./pages/Login/ForgotPw/Email";
 import ItemDetails from "./pages/ItemDetails2";
 import ReviewRating from "./pages/ReviewRating";
 import Fruits from "./pages/Fruits";
+import SellerSideBar from "./pages/Seller/SellerSideBar";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
+  },
+  {
+    path: "/sellerPanel/profile",
+    element:<SellerProfile/>
+  },
+  {
+    path:"/admin/AdminDashboard",
+    element:<AdminDashboard/>
+
   },
   {
     path: "/",
@@ -201,10 +218,10 @@ const router = createBrowserRouter([
     path: "/recharge-wallet",
     element: <RechargeWallet />,
   },
-  // {
-  //   path: "/seller-dashboard",
-  //   element: <Sidebar/>,
-  // },
+  {
+    path: "/sellerSidebar",
+    element: <SellerSideBar/>,
+  },
   {
     path: "/admin-page",
     element: <AdminNavigation />,
@@ -260,12 +277,18 @@ const router = createBrowserRouter([
     path: "/newpw",
     element: <NewPW />,
   },
+  {
+    path: "/seller-side-bar",
+    element: <SellerSideBar/>
+  }
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <AuthProvider store={store}>
-      <RouterProvider router={router} />
-    </AuthProvider>
+   <ThemeProvider theme={customTheme}>
+      <AuthProvider store={store}>
+        <RouterProvider router={router} />
+      </AuthProvider>
+    </ThemeProvider>
   </React.StrictMode>
 );

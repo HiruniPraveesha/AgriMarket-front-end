@@ -5,6 +5,7 @@ import Item1 from "../assets/Farmer.png"
 import Header from "../components/Header-main";
 import Footer from "../components/Footer-main";
 import Sidebar from '../components/Seller-side-bar';
+import SellerLayout from './Seller/SellerLayout';
 
 // Mock data array
 const mockProducts = [
@@ -22,6 +23,7 @@ const mockProducts = [
 // Functional Component for Home Page
 const MyProducts: React.FC = () => {
   return (
+    <SellerLayout>
     <div style={{
       background: 'linear-gradient(to bottom, #E5F4D7, #F5FBEF)',
       minHeight: '100vh',
@@ -30,10 +32,10 @@ const MyProducts: React.FC = () => {
       {/* <Header /> */}
       <Container fluid className="mt-4" style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start' }}>
         <Row style={{ width: '100%' }}>
-          <Col md={2} className="order-first" style={{ background: '#eaeaea', padding: '0' }}>
+          {/* <Col md={2} className="order-first" style={{ background: '#eaeaea', padding: '0' }}>
             <Sidebar defaultSelected="My Products" />
-          </Col>
-          <Col md={10} style={{
+          </Col> */}
+          <Col md={12} style={{
             // background: '#fff',
             // borderRadius: '20px',
             background: 'linear-gradient(to bottom, #E5F4D7, #F5FBEF)',
@@ -119,6 +121,7 @@ const MyProducts: React.FC = () => {
       </Container>
       <Footer />
     </div>
+    </SellerLayout>
   );
 };
 

@@ -1,6 +1,6 @@
 import { Container, Row, Col, Form, Button } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-import Logo from "../../assets/Logo.png";
+import Logo from "../assets/Logo.png";
 
 function AdminLogin() {
   return (
@@ -8,7 +8,7 @@ function AdminLogin() {
       <Row className="justify-content-center align-items-center">
         <Col md={6} className="text-center mb-5">
             <div>
-              <img src={Logo} style={{ width: "150px" }} alt="logo" />
+              {/* <img src={Logo} style={{ width: "150px" }} alt="logo" /> */}
             </div>
             <div
               style={{
@@ -50,12 +50,12 @@ function AdminLogin() {
               </a>
             </div>
 
-            <div className="d-flex flex-row align-items-center justify-content-center pb-4 mb-4">
+            {/* <div className="d-flex flex-row align-items-center justify-content-center pb-4 mb-4">
               <p className="mb-0">Don't have an account?</p>
               <Button variant="outline-danger" className="mx-2">
                 Sign Up
               </Button>
-            </div>
+            </div> */}
 
           </div>
         </Col>

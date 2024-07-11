@@ -4,6 +4,7 @@ import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { Modal, Button, Form } from "react-bootstrap";
 import axios from "axios";
+import Sidebar from "../components/Seller-side-bar";
 
 const localizer = momentLocalizer(moment);
 
@@ -22,13 +23,13 @@ function ProductCalendar() {
   // State for categories and products
   const [categories, setCategories] = useState<any[]>([]);
   const [products, setProducts] = useState<any[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
   const mySeller = localStorage.getItem("sellerId");
-
 
   // Fetch categories from the database
   useEffect(() => {
     axios
-      .get("http://localhost:8000/Category")
+      .get("http://localhost:8080/categories")
       .then((response) => {
         setCategories(response.data);
       })
@@ -40,7 +41,7 @@ function ProductCalendar() {
   // Fetch products from the database
   useEffect(() => {
     axios
-      .get("http://localhost:8000/Product")
+      .get("http://localhost:8080/Product")
       .then((response) => {
         setProducts(response.data);
       })
@@ -48,6 +49,19 @@ function ProductCalendar() {
         console.error("Error fetching products:", error);
       });
   }, []);
+
+  // Filter products based on selected seller and category
+  useEffect(() => {
+    if (sellerId && category_id) {
+      const filtered = products.filter(
+        (prod) =>
+          prod.seller_id === sellerId && prod.category_id === category_id
+      );
+      setFilteredProducts(filtered);
+    } else {
+      setFilteredProducts([]);
+    }
+  }, [sellerId, category_id, products]);
 
   // Function to toggle modal
   const toggleModal = () => setShowModal(!showModal);
@@ -89,7 +103,7 @@ function ProductCalendar() {
     clearFormFields();
     toggleModal();
 
-    axios.delete("http://localhost:8000/CalendarSeller/${selectedEvent.id}");
+    axios.delete(`http://localhost:8080/CalendarSeller/${selectedEvent.id}`);
   };
 
   // Function to clear form fields
@@ -107,7 +121,7 @@ function ProductCalendar() {
         ? {
             ...event,
             productName: product,
-            title: "${product} - ${note}",
+            title: `${product} - ${note}`,
             categoryId: category_id,
             sellerId,
           }
@@ -117,7 +131,7 @@ function ProductCalendar() {
     toggleModal();
     clearFormFields();
 
-    axios.put("http://localhost:8000/CalendarSeller/${selectedEvent.id}", {
+    axios.put(`http://localhost:8080/CalendarSeller/${selectedEvent.id}`, {
       note,
       start: selectedEvent.start,
       productName: product,
@@ -126,11 +140,12 @@ function ProductCalendar() {
     });
   };
 
-
   // Function to handle form submission
   const handleFormSubmit = () => {
     const { start, end } = selectedSlot || {};
-    const selectedProduct = products.find((prod) => prod.name === product);
+    const selectedProduct = products.find(
+      (prod) => prod.product_id === product
+    );
     const productId = selectedProduct ? selectedProduct.product_id : null;
 
     if (selectedEvent) {
@@ -139,7 +154,7 @@ function ProductCalendar() {
       setSelectedEvent(null);
       const newEvent = {
         id: events.length + 1,
-        title: "${product} - ${note}",
+        title: `${product} - ${note}`,
         start,
         end,
         categoryId: category_id,
@@ -151,7 +166,7 @@ function ProductCalendar() {
       clearFormFields();
 
       axios
-        .post("http://localhost:8000/CalendarSeller", {
+        .post("http://localhost:8080/CalendarSeller", {
           categoryId: category_id,
           productName: product,
           note,
@@ -181,8 +196,6 @@ function ProductCalendar() {
     toggleModal();
   };
 
-  
-
   // Function to get event style based on category
   const getEventStyle = (event: any) => {
     const categoryColors: { [key: string]: string } = {
@@ -206,6 +219,9 @@ function ProductCalendar() {
 
   return (
     <div>
+      {/* <Col md={2} className="order-first" style={{ background: '#eaeaea', padding: '0' }}>
+            <Sidebar defaultSelected="My Products" />
+          </Col> */}
       <div className="container">
         <div className="row">
           <div className="my-4" style={{ height: 600 }}>
@@ -238,9 +254,9 @@ function ProductCalendar() {
               <Form.Control
                 type="text"
                 placeholder={mySeller || ""}
-
                 value={sellerId}
                 onChange={(e) => setSellerId(e.target.value)}
+                readOnly
                 required
               />
             </Form.Group>
@@ -269,7 +285,7 @@ function ProductCalendar() {
                 required
               >
                 <option value="">Select a Product</option>
-                {products.map((prod, index) => (
+                {filteredProducts.map((prod, index) => (
                   <option key={index} value={prod.product_id}>
                     {prod.product_id} - {prod.name}
                   </option>
