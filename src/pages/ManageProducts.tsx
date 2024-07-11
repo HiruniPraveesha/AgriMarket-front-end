@@ -39,7 +39,7 @@ const ManageProductPage: React.FC<{}> = ({}) => {
     const fetchProducts = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8000/products/seller/${mySeller}`
+          `http://localhost:8080/products/seller/${mySeller}`
         );
         setProducts(response.data);
       } catch (error) {
@@ -53,7 +53,7 @@ const ManageProductPage: React.FC<{}> = ({}) => {
   const updateProduct = async (productId: number, updatedProduct: any) => {
     try {
       const response = await axios.put(
-        `http://localhost:8000/products/${productId}`,
+        `http://localhost:8080/products/${productId}`,
         updatedProduct
       );
       return response.data;
@@ -66,7 +66,7 @@ const ManageProductPage: React.FC<{}> = ({}) => {
   const deleteProduct = async (productId: number) => {
     try {
       const response = await axios.delete(
-        `http://localhost:8000/products/${productId}`
+        `http://localhost:8080/products/${productId}`
       );
       return response.data;
     } catch (error) {

@@ -21,8 +21,14 @@ const ItemDetails: React.FC<{}> = () => {
   const [mainImage, setMainImage] = useState<string>('');
 
   useEffect(() => {
+    setTimeout(() => {
+      window.scrollTo(0, 0);
+    }, 0);
+  }, [location]);
+
+  useEffect(() => {
     // Make an HTTP GET request to fetch data from the API endpoint
-    axios.get(`http://localhost:8000/product/${productId}`)
+    axios.get(`http://localhost:8080/product/${productId}`)
       .then(response => {
         console.log('Fetched product:', response.data);
         // Update the state with the fetched product data
@@ -38,7 +44,7 @@ const ItemDetails: React.FC<{}> = () => {
 
   useEffect(() => {
     // Fetch reviews from the API
-    axios.get(`http://localhost:8000/reviews/${productId}`)
+    axios.get(`http://localhost:8080/reviews/${productId}`)
       .then(response => {
         console.log('Fetched reviews:', response.data);
         setReviews(response.data);
@@ -58,7 +64,7 @@ const ItemDetails: React.FC<{}> = () => {
 
   useEffect(() => {
     // Make an HTTP GET request to fetch rating totals from the API endpoint
-    axios.get(`http://localhost:8000/reviews/${productId}/ratingTotals`)
+    axios.get(`http://localhost:8080/reviews/${productId}/ratingTotals`)
       .then(response => {
         console.log('Fetched rating totals:', response.data);
         // Update the state with the fetched rating totals
@@ -101,7 +107,7 @@ const ItemDetails: React.FC<{}> = () => {
 
   useEffect(() => {
     // Make an HTTP GET request to fetch data from the API endpoint
-    fetch(`http://localhost:8000/reviews/count/${productId}`)
+    fetch(`http://localhost:8080/reviews/count/${productId}`)
       .then(response => {
         if (!response.ok) {
           throw new Error('Network response was not ok');
@@ -122,7 +128,7 @@ const ItemDetails: React.FC<{}> = () => {
 
   useEffect(() => {
     // Fetch more products excluding the current one, limited by cardCount
-    axios.get(`http://localhost:8000/products/more/${productId}?limit=${cardCount}`)
+    axios.get(`http://localhost:8080/products/more/${productId}?limit=${cardCount}`)
       .then(response => {
         console.log('Fetched more products:', response.data);
         setMoreProducts(response.data);

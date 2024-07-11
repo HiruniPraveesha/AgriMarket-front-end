@@ -62,7 +62,7 @@ const Email: React.FC = () => {
     
         try {
             // Make POST request to backend
-            const response = await axios.post('http://localhost:8001/api/forgot-password', { email, userType });
+            const response = await axios.post('http://localhost:8080/api/forgot-password', { email, userType });
             console.log(response.data);
 
             

@@ -69,7 +69,7 @@ const Verify: React.FC = () => {
     
     try {
       // Make POST request to backend for OTP verification
-      const response = await axios.post("http://localhost:8001/api/verify-otp", { email,otp, userType});
+      const response = await axios.post("http://localhost:8080/api/verify-otp", { email,otp, userType});
       handleShowModal("OTP verified")
       console.log(response.data); // Log response from backend
 
@@ -85,7 +85,7 @@ const Verify: React.FC = () => {
   const handleResendOtp = async () => {
     try {
       // Make POST request to backend for resending OTP
-      const response = await axios.post("http://localhost:8001/resend-otp", { email,userType});
+      const response = await axios.post("http://localhost:8080/resend-otp", { email,userType});
       console.log(response.data); // Log response from backend
 
       // Handle success, show a success message

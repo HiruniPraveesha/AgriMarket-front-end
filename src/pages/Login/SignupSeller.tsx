@@ -16,7 +16,7 @@ import Two from "../../assets/Two.svg";
 import Three from "../../assets/Three.svg";
 import Farmer2 from "../../assets/Farmer2.png";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Modal, Button, Form } from "react-bootstrap";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import axios from "axios";

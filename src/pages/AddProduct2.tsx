@@ -40,7 +40,7 @@ export default function AddProduct() {
 
   const fetchSellerDetails = async (sellerId: string) => {
     try {
-      const response = await axios.get(`http://localhost:8000/sellers/${mySeller}`);
+      const response = await axios.get(`http://localhost:8080/sellers/${mySeller}`);
       const sellerData = response.data;
       setFormData(prevState => ({
         ...prevState,

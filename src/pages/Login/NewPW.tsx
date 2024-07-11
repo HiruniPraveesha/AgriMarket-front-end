@@ -85,7 +85,7 @@ const NewPW: React.FC = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:8001/api/reset-password",
+        "http://localhost:8080/api/reset-password",
         { email,userType, password }
       );
       handleShowModal("Password reset successfully!");

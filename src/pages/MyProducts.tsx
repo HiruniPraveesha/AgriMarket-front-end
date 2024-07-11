@@ -23,7 +23,7 @@ const MyProducts: React.FC<{}> = () => {
   const myBuyer = localStorage.getItem("sellerId");
 
   useEffect(() => {
-    axios.get(`http://localhost:8000/products/seller/${myBuyer}`)
+    axios.get(`http://localhost:8080/products/seller/${myBuyer}`)
       .then(response => {
         console.log('Fetched products:', response.data);
         setProducts(response.data);
@@ -56,7 +56,7 @@ const MyProducts: React.FC<{}> = () => {
   };
 
   const fetchProductReviews = (productId: number) => {
-    axios.get(`http://localhost:8000/reviews/${productId}`)
+    axios.get(`http://localhost:8080/reviews/${productId}`)
       .then(response => {
         console.log('Fetched reviews:', response.data);
         setReviews(response.data);
@@ -67,7 +67,7 @@ const MyProducts: React.FC<{}> = () => {
   };
 
   const fetchRatingTotals = (productId: number) => {
-    axios.get(`http://localhost:8000/reviews/${productId}/ratingTotals`)
+    axios.get(`http://localhost:8080/reviews/${productId}/ratingTotals`)
       .then(response => {
         console.log('Fetched rating totals:', response.data);
         setRatingTotals(response.data);
@@ -78,7 +78,7 @@ const MyProducts: React.FC<{}> = () => {
   };
 
   const fetchReviewCount = (productId: number) => {
-    axios.get(`http://localhost:8000/reviews/count/${productId}`)
+    axios.get(`http://localhost:8080/reviews/count/${productId}`)
       .then(response => {
         console.log('Fetched review count:', response.data);
         setReviewCount(response.data.reviewCount);

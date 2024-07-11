@@ -154,7 +154,7 @@ const Home: React.FC = () => {
                   onMouseOver={(e) => (e.currentTarget.style.boxShadow = '1px 1px 2px 2px rgba(0, 0, 0, 0.2)')}
                   onMouseOut={(e) => (e.currentTarget.style.boxShadow = '0 3px 7px rgba(0, 0, 0, 0.1)')}
                 >Shop Now</Button>
-                <Link to="/BecomeASeller">
+                <Link to="/signupSeller">
                   <Button variant="success" style={{
                     backgroundColor: '#00BA29',
                     fontSize: '11px',

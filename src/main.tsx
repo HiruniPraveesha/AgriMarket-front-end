@@ -12,6 +12,7 @@ import SignupSeller from "./pages/Login/SignupSeller";
 import StepProgressBar from "./pages/Login/StepProgressBar";
 import Verifybank from "./pages/Login/Verifybank";
 import AddProduct from "./pages/AddProduct2";
+import ManageProduct from "./pages/ManageProducts";
 // import Email2 from "./pages/Login/Email";
 // import Verify from "./pages/Login/Verify";
 // import NewPW from "./pages/Login/NewPW";
@@ -92,6 +93,10 @@ const router = createBrowserRouter([
     element: <AddProduct/>
   },
   {
+    path: "/ManageYourProducts",
+    element: <ManageProduct/>
+  },
+  {
     path: "/SellerProfile/:sellerId",
     element: <SellerProfile />,
   },
@@ -100,10 +105,7 @@ const router = createBrowserRouter([
     path: "/selectLogin",
     element: <SelectLogin />,
   },
-  // {
-  //   path: "/MyProducts",
-  //   element: <MyProducts />,
-  // },
+  
   {
     path: "/signUpBuyer",
     element: <SignUpBuyer />,
@@ -123,7 +125,7 @@ const router = createBrowserRouter([
   },
 
   {
-    path: "/Fruits/:categoryId",
+    path: "/Category/:categoryId",
     element: <Fruits />,
   },
   {
@@ -163,66 +165,12 @@ const router = createBrowserRouter([
     path: "/buyer-profile",
     element: <BuyerProfile />,
   },
-  // {
-  //   path: "/order-history",
-  //   element: <OrderHistory />,
-  // },
-  // {
-  //   path: "/order-details",
-  //   element: <OrderDetails />,
-  // },
-  // {
-  //   path: "/ongoing-orders",
-  //   element: <OngoingOrders />,
-  // },
+  
   {
     path: "/shopping-cart",
     element: <ShoppingCart />,
   },
-  // {
-  //   path: "/checkout",
-  //   element: <Checkout />,
-  // },
-  // {
-  //   path: "/wallet",
-  //   element: <Wallet />,
-  // },
-  // {
-  //   path: "/signup-buyer",
-  //   element: <SignUpBuyer />,
-  // },
-  // {
-  //   path: "/recharge-wallet",
-  //   element: <RechargeWallet />,
-  // },
-  // {
-  //   path: "/seller-dashboard",
-  //   element: <Sidebar/>,
-  // },
-  // {
-  //   path: "/admin-page",
-  //   element: <AdminNavigation />,
-  // },
-  // {
-  //   path: "/admin-login",
-  //   element: <AdminLogin />,
-  // },
-  // {
-  //   path: "/admin-dashboard",
-  //   element: <Dashboard />,
-  // },
-  // {
-  //   path: "/admin-buyers",
-  //   element: <Buyers />,
-  // },
-  // {
-  //   path: "/admin-sellers",
-  //   element: <Sellers />,
-  // },
-  // {
-  //   path: "/admin-products",
-  //   element: <Products />,
-  // },
+  
   {
     path: "/signupSeller",
     element: <SignupSeller />,
@@ -237,23 +185,7 @@ const router = createBrowserRouter([
     path: "/verifybank/:sellerId?",
     element: <Verifybank currentStep={2} />,
   },
-  /*
-  {
-    path: "/addProduct",
-    element: <AddProduct/>,
-  },*/
-  // {
-  //   path: "/email",
-  //   element: <Email2 />,
-  // },
-  // {
-  //   path: "/verify",
-  //   element: <Verify />,
-  // },
-  // {
-  //   path: "/newpw",
-  //   element: <NewPW />,
-  // },
+
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")!).render(

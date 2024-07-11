@@ -12,7 +12,7 @@ const DisplayByCategory: React.FC<{}> = ({}) => {
 
   useEffect(() => {
     // Make an HTTP GET request to fetch data from the API endpoint
-    fetch(`http://localhost:8000/products/category/${categoryId}`)
+    fetch(`http://localhost:8080/products/category/${categoryId}`)
       .then(response => response.json())
       .then(data => {
         console.log('Fetched products:', data);
@@ -28,7 +28,7 @@ const DisplayByCategory: React.FC<{}> = ({}) => {
  // Initialize products as an array
 
  useEffect(() => {
-  fetch(`http://localhost:8000/categories/${categoryId}`)
+  fetch(`http://localhost:8080/categories/${categoryId}`)
     .then(response => response.json())
     .then(data => {
       console.log('Fetched categoryname:', data);

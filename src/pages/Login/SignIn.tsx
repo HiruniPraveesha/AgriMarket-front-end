@@ -51,7 +51,7 @@ function SignIn() {
 
     try {
       // Include the full URL for the API endpoint
-      const response = await axios.post("http://localhost:8001/signin", {
+      const response = await axios.post("http://localhost:8080/signin", {
         email,
         password,
         rememberMe,
@@ -79,7 +79,7 @@ function SignIn() {
 
       // Redirect based on userType
       if (userType === "buyer") {
-        navigate(`/Home`);
+        navigate(`/HomePage`);
         console.log(response.data);
       } else if (userType === "seller") {
         navigate("/sellerDashboard");
