@@ -19,7 +19,6 @@ function SignIn() {
   const [password, setPassword] = useState("");
   const [isPasswordValid, setIsPasswordValid] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
   const signIn = useSignIn<IUserData>();
   const navigate = useNavigate();
 
@@ -31,9 +30,6 @@ function SignIn() {
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
     setIsPasswordValid(true); // Reset validation when the password changes
-  };
-  const handleRememberMeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setRememberMe(e.target.checked);
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -51,26 +47,23 @@ function SignIn() {
 
     try {
       // Include the full URL for the API endpoint
-      const response = await axios.post("http://localhost:8001/signin", {
+      const response = await axios.post("http://localhost:8080/signin", {
         email,
         password,
-        rememberMe,
       });
       const { token, userType, authUserState, sellerId } = response.data;
 
-      const expiresAt = rememberMe
-        ? new Date().getTime() + 30 * 24 * 60 * 60 * 1000 // 30 days
-        : new Date().getTime() + 1 * 60 * 60 * 1000;
-        signIn({
-          auth: {
-            token: response.data.token,
-            type: "Bearer",
-          },
-          userState: {
-            ...authUserState,
-            expiresAt: expiresAt, // Set expiration time in user state
-          },
-        });
+      const expiresAt = new Date().getTime() + 1 * 60 * 60 * 1000;
+      const signInSuccess = signIn({
+        auth: {
+          token: response.data.token,
+          type: "Bearer",
+        },
+        userState: {
+          ...authUserState,
+          expiresAt: expiresAt, // Set expiration time in user state
+        },
+      });
 
       // Store the token and userEmail in local storage
       localStorage.setItem("token", token);
@@ -79,10 +72,10 @@ function SignIn() {
 
       // Redirect based on userType
       if (userType === "buyer") {
-        navigate(`/Home`);
+        navigate("/");
         console.log(response.data);
       } else if (userType === "seller") {
-        navigate("/sellerDashboard");
+        navigate("../sellerDashboard");
       }
     } catch (error) {
       if (error instanceof AxiosError) {
@@ -166,8 +159,6 @@ function SignIn() {
                   <input
                     className="form-check-input me-2"
                     type="checkbox"
-                    checked={rememberMe}
-                    onChange={handleRememberMeChange}
                     value=""
                     id="flexCheckDefault"
                   />
@@ -178,11 +169,9 @@ function SignIn() {
                     Remember me
                   </label>
                 </div>
-                 <Link to ="/Email">
                 <a href="!#" className="text-success">
                   Forgot your password?
                 </a>
-                </Link>
               </div>
 
               <Button
@@ -251,7 +240,7 @@ function SignIn() {
                 </p>
               </div>
 
-              <Link to="/select">
+              <Link to="/selectLogin">
                 <Button
                   variant="primary"
                   className="mb-4 py-3"

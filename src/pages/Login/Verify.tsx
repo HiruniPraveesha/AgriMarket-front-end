@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from "react";
 import Mail from "../../assets/email icon.svg"; // Importing image file
 import Form from "react-bootstrap/Form";
@@ -14,7 +13,12 @@ const Verify: React.FC = () => {
   const [isHovered, setIsHovered] = useState<boolean>(false);
   const [isResendHovered, setIsResendHovered] = useState<boolean>(false);
   const [code, setCode] = useState<string[]>(["", "", "", ""]); // State to store individual digit values
-  const codeInputsRefs = useRef<(HTMLInputElement | null)[]>([null, null, null, null]);
+  const codeInputsRefs = useRef<(HTMLInputElement | null)[]>([
+    null,
+    null,
+    null,
+    null,
+  ]);
   const [message, setMessage] = useState<string>("");
   const navigate = useNavigate(); // Get history object from React Router
   const location = useLocation();
@@ -22,7 +26,7 @@ const Verify: React.FC = () => {
   const [modalMessage, setModalMessage] = useState("");
   const email = (location.state as any)?.email;
   const userType = (location.state as any)?.userType;
- 
+
   const handleCloseModal = () => setShowModal(false);
   const handleShowModal = (message: string) => {
     setModalMessage(message);
@@ -31,17 +35,19 @@ const Verify: React.FC = () => {
   const handleCodeChange = (
     index: number,
     value: string,
-    e: React.ChangeEvent<HTMLInputElement> | React.KeyboardEvent<HTMLInputElement>, 
+    e:
+      | React.ChangeEvent<HTMLInputElement>
+      | React.KeyboardEvent<HTMLInputElement>
   ) => {
     const newCode = [...code];
-  
+
     // Type guard for ChangeEvent
-    if ('key' in e === false) {
+    if ("key" in e === false) {
       newCode[index] = value;
       setCode(newCode);
       return;
     }
-  
+
     // From here onwards, e is definitely a KeyboardEvent
     if (e.key === "Backspace" && !value && index > 0) {
       newCode[index - 1] = "";
@@ -49,34 +55,35 @@ const Verify: React.FC = () => {
       codeInputsRefs.current[index - 1]?.focus();
       return;
     }
-  
+
     newCode[index] = value;
     setCode(newCode);
-  
+
     // Move focus to the next input
     if (value && index < 3 && codeInputsRefs.current[index + 1]) {
       codeInputsRefs.current[index + 1]?.focus();
     }
   };
-  
-  
 
   // Function to handle form submission
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const otp = code.join(""); 
+    const otp = code.join("");
     console.log("Form submitted with code:", code.join(""));
-    
+
     try {
       // Make POST request to backend for OTP verification
-      const response = await axios.post("http://localhost:8001/api/verify-otp", { email,otp, userType});
-      handleShowModal("OTP verified")
+      const response = await axios.post(
+        "http://localhost:8080/api/verify-otp",
+        { email, otp, userType }
+      );
+      handleShowModal("OTP verified");
       console.log(response.data); // Log response from backend
 
       // Handle success and navigate to password reset page
-      navigate("/NewPW", { state: { email ,userType} }); // Redirect to reset password page after OTP verification
+      navigate("/NewPW", { state: { email, userType } }); // Redirect to reset password page after OTP verification
     } catch (error) {
-      handleShowModal("Error verifying OTP")
+      handleShowModal("Error verifying OTP");
       console.error("Error verifying OTP:", error);
       // Handle error, show user-friendly message if needed
     }
@@ -85,7 +92,10 @@ const Verify: React.FC = () => {
   const handleResendOtp = async () => {
     try {
       // Make POST request to backend for resending OTP
-      const response = await axios.post("http://localhost:8001/resend-otp", { email,userType});
+      const response = await axios.post("http://localhost:8001/resend-otp", {
+        email,
+        userType,
+      });
       console.log(response.data); // Log response from backend
 
       // Handle success, show a success message
@@ -97,10 +107,9 @@ const Verify: React.FC = () => {
     }
   };
 
-
   // TSX return
   return (
-    <div className="container" style={{marginTop:"25px"}}>
+    <div className="container" style={{ marginTop: "25px" }}>
       {/* Header Section */}
       <div className="text-center pb-3">
         <img src={Mail} alt="Key" className="pb-3" />
@@ -117,22 +126,35 @@ const Verify: React.FC = () => {
         {/* Code Input Fields */}
         <div className="d-flex justify-content-center align-items-center pb-5">
           {code.map((value, index) => (
-            <div key={index} className="d-inline-block px-1" style={{ margin: '15px' }}>
+            <div
+              key={index}
+              className="d-inline-block px-1"
+              style={{ margin: "15px" }}
+            >
               <input
                 type="text"
                 maxLength={1}
                 className="form-control text-center small-input"
-                style={{ width: "50px", height: "60px", fontSize: "16px", backgroundColor: '#BEF3C9', border: 'none',borderBottom: '2px solid #00BA29', borderRadius: '0' }} // Inline CSS
+                style={{
+                  width: "50px",
+                  height: "60px",
+                  fontSize: "16px",
+                  backgroundColor: "#BEF3C9",
+                  border: "none",
+                  borderBottom: "2px solid #00BA29",
+                  borderRadius: "0",
+                }} // Inline CSS
                 value={value}
                 onChange={(e) => handleCodeChange(index, e.target.value, e)}
-                onKeyDown={(e) => handleCodeChange(index, e.currentTarget.value, e)}
+                onKeyDown={(e) =>
+                  handleCodeChange(index, e.currentTarget.value, e)
+                }
                 ref={(el) => (codeInputsRefs.current[index] = el)}
               />
             </div>
           ))}
         </div>
 
-        
         <div className="d-flex justify-content-center mb-3">
           <Button
             variant="primary"
@@ -169,12 +191,12 @@ const Verify: React.FC = () => {
           </Button>
         </div>
       </Form>
-      <Modal show={showModal} onHide={handleCloseModal} >
-         <Modal.Header closeButton>
-          <Modal.Title >Notification</Modal.Title>
+      <Modal show={showModal} onHide={handleCloseModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Notification</Modal.Title>
         </Modal.Header>
-        <Modal.Body style={{fontSize:"13px"}}>{modalMessage}</Modal.Body>
-        <Modal.Footer >
+        <Modal.Body style={{ fontSize: "13px" }}>{modalMessage}</Modal.Body>
+        <Modal.Footer>
           <Button variant="secondary" onClick={handleCloseModal}>
             Close
           </Button>

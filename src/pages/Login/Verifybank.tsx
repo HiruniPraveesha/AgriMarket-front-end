@@ -9,8 +9,6 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import Modal from "react-bootstrap/Modal";
 
-
-
 const Verifybank: React.FC<{ currentStep: number }> = ({ currentStep }) => {
   const { sellerId } = useParams<{ sellerId: string }>();
   const [showModal, setShowModal] = useState(false);
@@ -65,11 +63,10 @@ const Verifybank: React.FC<{ currentStep: number }> = ({ currentStep }) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
   const handleCloseModal = () => setShowModal(false);
-     const handleShowModal = (message: string) => {
+  const handleShowModal = (message: string) => {
     setModalMessage(message);
     setShowModal(true);
   };
-
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -111,8 +108,8 @@ const Verifybank: React.FC<{ currentStep: number }> = ({ currentStep }) => {
       newErrors.idNumber =
         "ID number must be 12 digits or 9 digits followed by 'V'";
     }
-    
-     // Proceed with submission if there are no errors
+
+    // Proceed with submission if there are no errors
     if (Object.keys(newErrors).length === 0) {
       try {
         const formDataToSend = new FormData();
@@ -290,14 +287,19 @@ const Verifybank: React.FC<{ currentStep: number }> = ({ currentStep }) => {
                     onDrop={(e) => handleDrop(e, "idFront")}
                   >
                     {selectedFile.idFront ? (
-                      <div style={{ display: "relative", alignItems: "center" }}>
-                        <p style={{ marginRight: "10px" }}>
-                        </p>
+                      <div
+                        style={{ display: "relative", alignItems: "center" }}
+                      >
+                        <p style={{ marginRight: "10px" }}></p>
                         <img
                           src={URL.createObjectURL(selectedFile.idFront)}
                           alt="ID Front"
-                          style={{ width: "25%", height: "25%",objectFit: "contain",
-                          objectPosition: "center"}}
+                          style={{
+                            width: "25%",
+                            height: "25%",
+                            objectFit: "contain",
+                            objectPosition: "center",
+                          }}
                         />
                         <FaTimes
                           style={{
@@ -349,14 +351,19 @@ const Verifybank: React.FC<{ currentStep: number }> = ({ currentStep }) => {
                     onDrop={(e) => handleDrop(e, "idBack")}
                   >
                     {selectedFile.idBack ? (
-                      <div style={{ display: "relative", alignItems: "center" }}>
-                        <p style={{ marginRight: "10px" }}>
-                        </p>
+                      <div
+                        style={{ display: "relative", alignItems: "center" }}
+                      >
+                        <p style={{ marginRight: "10px" }}></p>
                         <img
                           src={URL.createObjectURL(selectedFile.idBack)}
                           alt="ID Back"
-                          style={{ width: "25%", height: "25%",objectFit: "contain",
-                          objectPosition: "center" }}
+                          style={{
+                            width: "25%",
+                            height: "25%",
+                            objectFit: "contain",
+                            objectPosition: "center",
+                          }}
                         />
                         <FaTimes
                           style={{
@@ -439,37 +446,38 @@ const Verifybank: React.FC<{ currentStep: number }> = ({ currentStep }) => {
               >
                 {selectedFile.bankDocument ? (
                   <div style={{ display: "relative", alignItems: "center" }}>
-                    <p style={{ marginRight: "10px" }}>
-                      
-                    </p>
+                    <p style={{ marginRight: "10px" }}></p>
                     <img
-                          src={URL.createObjectURL(selectedFile.bankDocument)}
-                          alt="Bank Document"
-                          style={{ width: "25%", height: "25%" ,objectFit: "contain",
-                          objectPosition: "center"}}
-                        />
-                      
-                      </div>
-                    ) : (
-                      <div>
-                        <img
-                          src={UploadImage}
-                          alt="Upload"
-                          style={{ width: "auto", height: "auto" }}
-                        />
-                        <p>Bank Document</p>
-                      </div>
-                    )}
-                    <input
-                      type="file"
-                      id="bankDocument"
-                      style={{ display: "none" }}
-                      onChange={(e) => handleFileChange(e, "bankDocument")}
+                      src={URL.createObjectURL(selectedFile.bankDocument)}
+                      alt="Bank Document"
+                      style={{
+                        width: "25%",
+                        height: "25%",
+                        objectFit: "contain",
+                        objectPosition: "center",
+                      }}
                     />
                   </div>
-                  {errors.bankDocument && (
-                    <p style={{ color: "red" }}>{errors.bankDocument}</p>
-                  )}
+                ) : (
+                  <div>
+                    <img
+                      src={UploadImage}
+                      alt="Upload"
+                      style={{ width: "auto", height: "auto" }}
+                    />
+                    <p>Bank Document</p>
+                  </div>
+                )}
+                <input
+                  type="file"
+                  id="bankDocument"
+                  style={{ display: "none" }}
+                  onChange={(e) => handleFileChange(e, "bankDocument")}
+                />
+              </div>
+              {errors.bankDocument && (
+                <p style={{ color: "red" }}>{errors.bankDocument}</p>
+              )}
             </div>
 
             <Form.Group style={{ marginTop: "50px" }}>
@@ -570,7 +578,7 @@ const Verifybank: React.FC<{ currentStep: number }> = ({ currentStep }) => {
                   backgroundColor: "#00BA29",
                   height: "40px",
                   width: "200px",
-                  border:"none"
+                  border: "none",
                 }}
               >
                 Submit
@@ -601,12 +609,12 @@ const Verifybank: React.FC<{ currentStep: number }> = ({ currentStep }) => {
         <Col xs={3} md={3}></Col>
       </Row>
 
-      <Modal show={showModal} onHide={handleCloseModal} >
-         <Modal.Header closeButton>
-          <Modal.Title >Notification</Modal.Title>
+      <Modal show={showModal} onHide={handleCloseModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Notification</Modal.Title>
         </Modal.Header>
-        <Modal.Body style={{fontSize:"13px"}}>{modalMessage}</Modal.Body>
-        <Modal.Footer >
+        <Modal.Body style={{ fontSize: "13px" }}>{modalMessage}</Modal.Body>
+        <Modal.Footer>
           <Button variant="secondary" onClick={handleCloseModal}>
             Close
           </Button>

@@ -17,7 +17,7 @@ const SellerProfile: React.FC = () => {
 
   useEffect(() => {
     // Fetch seller details
-    fetch(`http://localhost:8000/api/seller/details?sellerId=${sellerId}`) // Assuming sellerId is 1
+    fetch(`http://localhost:8080/api/seller/details?sellerId=${sellerId}`) // Assuming sellerId is 1
       .then((response) => response.json())
       .then((data) => {
         console.log("Seller Data:", data); // Add this line to debug the received data
@@ -27,7 +27,7 @@ const SellerProfile: React.FC = () => {
   }, [sellerId]);
 
   const handleShowProducts = () => {
-    fetch(`http://localhost:8000/api/seller/products?sellerId=${sellerId}`) // Adjust sellerId as needed
+    fetch(`http://localhost:8080/api/seller/products?sellerId=${sellerId}`) // Adjust sellerId as needed
       .then((response) => response.json())
       .then((data) => {
         const productsWithRatings = data.map(

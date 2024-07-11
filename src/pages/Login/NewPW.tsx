@@ -1,5 +1,3 @@
-
-
 import React, { useState } from "react";
 import Lock from "../../assets/lock icon.svg"; // Importing image file
 import Form from "react-bootstrap/Form";
@@ -18,8 +16,7 @@ const NewPW: React.FC = () => {
   const [arePasswordsMatching, setArePasswordsMatching] =
     useState<boolean>(true);
   const [isHovered, setIsHovered] = useState<boolean>(false);
-  const [, setIsPasswordFormatValid] =
-    useState<boolean>(true);
+  const [, setIsPasswordFormatValid] = useState<boolean>(true);
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
     useState<boolean>(false);
@@ -37,59 +34,59 @@ const NewPW: React.FC = () => {
   };
 
   const isPasswordValid = (pw: string, userType: string): boolean => {
-    let passwordRegex = /^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[@#!]).{7,}$/; 
-  
+    let passwordRegex = /^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[@#!]).{7,}$/;
+
     if (userType === "seller") {
       passwordRegex = /^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[@#!]).{8,}$/;
     }
-  
+
     return passwordRegex.test(pw);
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-  if (!password || !confirmPassword) {
-    setAreFieldsFilled(false);
-    console.log("Please fill in all fields.");
-    return;
-  } else {
-    setAreFieldsFilled(true);
-  }
-
-  if (password !== confirmPassword) {
-    setArePasswordsMatching(false);
-    handleShowModal(
-      "Passwords do not match. Please enter the same password in both fields."
-    );
-    return;
-  } else {
-    setArePasswordsMatching(true);
-  }
-
-  if (!isPasswordValid(password, userType)) {
-    setIsPasswordFormatValid(false);
-    let requirementsMessage = "Password must contain:";
-    if (userType === "seller") {
-      requirementsMessage +=
-        " at least 8 characters, including letters, numbers, and special characters (@, #, !).";
+    if (!password || !confirmPassword) {
+      setAreFieldsFilled(false);
+      console.log("Please fill in all fields.");
+      return;
     } else {
-      requirementsMessage +=
-        " at least 7 characters, including letters, numbers, and special characters (@, #, !).";
+      setAreFieldsFilled(true);
     }
-    handleShowModal(requirementsMessage);
-    return;
-  } else {
-    setIsPasswordFormatValid(true);
-  }
+
+    if (password !== confirmPassword) {
+      setArePasswordsMatching(false);
+      handleShowModal(
+        "Passwords do not match. Please enter the same password in both fields."
+      );
+      return;
+    } else {
+      setArePasswordsMatching(true);
+    }
+
+    if (!isPasswordValid(password, userType)) {
+      setIsPasswordFormatValid(false);
+      let requirementsMessage = "Password must contain:";
+      if (userType === "seller") {
+        requirementsMessage +=
+          " at least 8 characters, including letters, numbers, and special characters (@, #, !).";
+      } else {
+        requirementsMessage +=
+          " at least 7 characters, including letters, numbers, and special characters (@, #, !).";
+      }
+      handleShowModal(requirementsMessage);
+      return;
+    } else {
+      setIsPasswordFormatValid(true);
+    }
 
     try {
       const response = await axios.post(
-        "http://localhost:8001/api/reset-password",
-        { email,userType, password }
+        "http://localhost:8080/api/reset-password",
+        { email, userType, password }
       );
       handleShowModal("Password reset successfully!");
-       console.log(response.data);
+      console.log(response.data);
       navigate("/signIn");
     } catch (error) {
       console.error("Error resetting password:", error);
@@ -105,7 +102,7 @@ const NewPW: React.FC = () => {
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
-        marginTop:"25px",
+        marginTop: "25px",
         padding: "20px",
       }}
     >
@@ -191,7 +188,6 @@ const NewPW: React.FC = () => {
         {!areFieldsFilled && (
           <div className="text-danger mb-3">Please fill in all fields.</div>
         )}
-        
 
         <div className="d-flex justify-content-center">
           <Button

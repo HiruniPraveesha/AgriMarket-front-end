@@ -43,7 +43,7 @@ import Sidebar from "./components/Seller-side-bar";
 // import Products from "./pages/Admin/Products";
 import SellerProfile from "./pages/SellerProfile";
 import MyProducts from "./pages/MyProducts";
-
+import ManageProductPage from "./pages/ManageProducts";
 
 const store = createStore({
   authName: "_auth",
@@ -68,20 +68,24 @@ const router = createBrowserRouter([
     errorElement: <div>404 Not Found</div>,
   },
   {
-    path:"/MyProducts",
-    element:<MyProducts/>
+    path: "/MyProducts",
+    element: <MyProducts />,
+  },
+  {
+    path: "/ManageYourProducts",
+    element: <ManageProductPage />,
   },
   {
     path: "/Email",
-    element: <Email/>,
+    element: <Email />,
   },
   {
     path: "/Verify",
-    element: <Verify/>,
+    element: <Verify />,
   },
   {
     path: "/NewPw",
-    element: <NewPW/>,
+    element: <NewPW />,
   },
   {
     path: "/signIn",
@@ -89,7 +93,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/AddYourProducts",
-    element: <AddProduct/>
+    element: <AddProduct />,
   },
   {
     path: "/SellerProfile/:sellerId",
@@ -123,7 +127,7 @@ const router = createBrowserRouter([
   },
 
   {
-    path: "/Fruits/:categoryId",
+    path: "/Category/:categoryId",
     element: <Fruits />,
   },
   {
