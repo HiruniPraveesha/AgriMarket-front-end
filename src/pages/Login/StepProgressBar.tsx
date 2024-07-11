@@ -1,12 +1,5 @@
-import React, { useState } from "react";
-import {
-  Row,
-  Col,
-  Form,
-  Button,
-  Dropdown,
-  DropdownButton,
-} from "react-bootstrap";
+import React, { useEffect, useState } from "react";
+import { Row, Col, Form, Button } from "react-bootstrap";
 import axios from "axios";
 import Back from "../../assets/Back.svg";
 import HeaderSub from "../../components/Header-sub";
@@ -15,7 +8,10 @@ import { useNavigate, Link } from "react-router-dom";
 interface StepProgressBarProps {
   currentStep: number;
 }
-
+interface City {
+  city_name: string | null | undefined;
+  name: string;
+}
 interface FormData {
   storeName: string;
   email: string;
@@ -27,6 +23,8 @@ interface FormData {
 
 const StepProgressBar: React.FC<StepProgressBarProps> = ({ currentStep }) => {
   const navigate = useNavigate();
+  const [cities, setCities] = useState<City[]>([]);
+  const [selectedCity, setSelectedCity] = useState("");
   const [formData, setFormData] = useState<FormData>({
     storeName: "",
     email: "",
@@ -69,6 +67,19 @@ const StepProgressBar: React.FC<StepProgressBarProps> = ({ currentStep }) => {
     "Vavuniya",
   ];
 
+  useEffect(() => {
+    fetchCities();
+  }, []);
+
+  const fetchCities = async () => {
+    try {
+      const response = await axios.get<City[]>("http://localhost:8080/cities");
+      setCities(response.data); // Assuming response.data is an array of city objects { id: number, name: string }
+    } catch (error) {
+      console.error("Error fetching cities:", error);
+    }
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -78,6 +89,12 @@ const StepProgressBar: React.FC<StepProgressBarProps> = ({ currentStep }) => {
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+  };
+
+  const handleCityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const { value } = e.target;
+    setSelectedCity(value); // Update selected city in state
+    setFormData({ ...formData, addressLine1: value }); // Update formData with selected city
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -98,8 +115,7 @@ const StepProgressBar: React.FC<StepProgressBarProps> = ({ currentStep }) => {
       newErrors.phoneNumber = "Invalid phone number";
     }
     if (!formData.district.trim()) newErrors.district = "District is required";
-    if (!formData.addressLine1.trim())
-      newErrors.addressLine1 = "Address line 1 is required";
+    if (!selectedCity.trim()) newErrors.addressLine1 = "City is required";
     if (!formData.addressLine2.trim())
       newErrors.addressLine2 = "Address line 2 is required";
 
@@ -368,20 +384,32 @@ const StepProgressBar: React.FC<StepProgressBarProps> = ({ currentStep }) => {
                   ))}
                 </Form.Select>
 
-                <Form.Control
-                  type="text"
-                  name="addressLine1"
-                  value={formData.addressLine1}
-                  placeholder="Enter Your City"
-                  style={{
-                    marginBottom: "20px",
-                    borderRadius: "0px",
-                    borderWidth: "2px",
-                    height: "40px",
-                  }}
-                  isInvalid={!!errors.addressLine1}
-                  onChange={handleInputChange}
-                />
+                <Form.Group className="mb-3">
+                  <Form.Label>Select City</Form.Label>
+                  <Form.Control
+                    as="select"
+                    value={selectedCity || ""}
+                    onChange={handleCityChange}
+                    style={{
+                      marginBottom: "20px",
+                      borderRadius: "0px",
+                      borderWidth: "2px",
+                      height: "auto",
+                      maxHeight: "120px",
+                      overflowY: "auto",
+                      position: "relative",
+                    }}
+                  >
+                    <option disabled value="">
+                      Select city
+                    </option>
+                    {cities.map((city) => (
+                      <option key={city.city_name} value={city.city_name || ""}>
+                        {city.city_name}
+                      </option>
+                    ))}
+                  </Form.Control>
+                </Form.Group>
 
                 <Form.Control
                   type="text"
@@ -448,3 +476,6 @@ const StepProgressBar: React.FC<StepProgressBarProps> = ({ currentStep }) => {
 };
 
 export default StepProgressBar;
+function setCityError(arg0: string) {
+  throw new Error("Function not implemented.");
+}

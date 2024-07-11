@@ -4,7 +4,6 @@ import { Container, Row, Col, Button, Card, Badge } from "react-bootstrap";
 import Header from "../components/Header-main";
 import Footer from "../components/Footer-main";
 import ProfileImage from "../assets/ProPic.png"; // Add a placeholder image for the seller profile
-import Item1 from "../assets/carrot.jpeg"; // Add a placeholder image for the products
 import { useNavigate, useParams } from "react-router-dom";
 
 const SellerProfile: React.FC = () => {
@@ -17,7 +16,7 @@ const SellerProfile: React.FC = () => {
 
   useEffect(() => {
     // Fetch seller details
-    fetch(`http://localhost:8080/api/seller/details?sellerId=${sellerId}`) // Assuming sellerId is 1
+    fetch(`http://localhost:8080/api/seller/details?sellerId=${sellerId}`)
       .then((response) => response.json())
       .then((data) => {
         console.log("Seller Data:", data); // Add this line to debug the received data
@@ -27,18 +26,16 @@ const SellerProfile: React.FC = () => {
   }, [sellerId]);
 
   const handleShowProducts = () => {
-    fetch(`http://localhost:8080/api/seller/products?sellerId=${sellerId}`) // Adjust sellerId as needed
+    fetch(`http://localhost:8080/api/seller/products?sellerId=${sellerId}`)
       .then((response) => response.json())
       .then((data) => {
-        const productsWithRatings = data.map(
-          (product: { review: string | any[] }) => ({
-            ...product,
-            rating:
-              product.review && product.review.length > 0
-                ? product.review[0].rating
-                : "N/A", // Assuming you want to show the first rating found
-          })
-        );
+        const productsWithRatings = data.map((product: any) => ({
+          ...product,
+          rating:
+            Array.isArray(product.review) && product.review.length > 0
+              ? product.review[0].rating
+              : "N/A",
+        }));
         setProducts(productsWithRatings);
         setProductCount(productsWithRatings.length);
         setShowProducts(true);
@@ -53,11 +50,14 @@ const SellerProfile: React.FC = () => {
         <Row>
           <Col md={3} className="d-flex flex-column align-items-center">
             <img
-              src={seller.profilePic || ProfileImage} // Use seller's profile picture if available, otherwise use placeholder
+              src={seller.profilePic || ProfileImage}
               alt="Seller Profile"
               className="rounded-circle"
-              style={{ width: "150px", height: "150px", marginTop: "80px" }}
+              style={{ width: "160px", height: "160px", marginTop: "60px" }}
             />
+            <div style={{ fontSize: "20px", padding: "9px" }}>
+              <i>{seller.store_name}</i>
+            </div>
           </Col>
           <Col md={9} className="d-flex flex-column justify-content-center">
             <Card
@@ -70,7 +70,7 @@ const SellerProfile: React.FC = () => {
                 padding: "20px",
                 margin: "10px",
                 background:
-                  "linear-gradient(to bottom, #E5F4D7, #F5FBEF, #DFFFC0,#F5FBEF)",
+                  "linear-gradient(to bottom, #FBFFF8, #F7F8F5, #F7FFEF,#FEFFFD)",
               }}
             >
               <Card.Body>
@@ -79,10 +79,10 @@ const SellerProfile: React.FC = () => {
                 </Card.Title>
                 <Card.Text>
                   <p>
-                    <strong>Address:</strong> {seller.line2}
+                    <strong>Address:</strong> {seller.line2},{seller.line1}
                   </p>
                   <p>
-                    <strong>Phone:</strong> {seller.contactNo}
+                    <strong>Mobile:</strong> {seller.contactNo}
                   </p>
                   <p>
                     <strong>Email:</strong> {seller.email}
@@ -120,7 +120,7 @@ const SellerProfile: React.FC = () => {
                   <Badge
                     pill
                     style={{
-                      backgroundColor: "blue",
+                      backgroundColor: "#000000",
                       position: "absolute",
                       top: "-10px",
                       right: "-10px",
@@ -140,12 +140,12 @@ const SellerProfile: React.FC = () => {
             style={{
               justifyContent: "center",
               alignItems: "center",
-              background:
-                "linear-gradient(to bottom, #E5F4D7, #F5FBEF, #DFFFC0,#F5FBEF)",
               border: "2px",
               boxShadow: "0 4px 8px rgba(0, 0, 0, 0.3)",
               borderRadius: "30px",
               padding: "20px",
+              background:
+                "linear-gradient(to bottom, #FBFFF8, #F7F8F5, #F7FFEF,#FEFFFD)",
             }}
           >
             <Row className="justify-content-md-center">
@@ -165,7 +165,7 @@ const SellerProfile: React.FC = () => {
                 </h1>
               </Col>
             </Row>
-            <Row className="mt-4 d-flex justify-content-center align-items-center">
+            <Row className="mt-3 d-flex justify-content-center align-items-center">
               {products.map((product) => (
                 <Col
                   key={product.product_id}
@@ -181,17 +181,20 @@ const SellerProfile: React.FC = () => {
                       border: "2px",
                       boxShadow: "0 4px 8px rgba(0, 0, 0, 0.3)",
                       borderRadius: "10px",
-                      padding: "20px",
+                      backgroundColor: "transparent",
                     }}
                   >
                     <Card.Link href="#">
-                      <div className="d-flex justify-content-center align-items-center">
+                      <div
+                        className="d-flex justify-content-center align-items-center"
+                        style={{ height: "200px", overflow: "hidden" }}
+                      >
                         <Card.Img
                           variant="top"
-                          src={Item1} // Placeholder image
+                          src={product.image1} // Placeholder image
                           style={{
-                            height: "70%",
-                            width: "70%",
+                            width: "100%",
+                            objectFit: "cover",
                             alignItems: "center",
                           }}
                           onClick={(e) => {
@@ -202,8 +205,15 @@ const SellerProfile: React.FC = () => {
                       </div>
                     </Card.Link>
                     <Card.Body>
-                      <Card.Text style={{ fontSize: "14px", lineHeight: "2" }}>
-                        <span style={{ fontWeight: "bold" }}>
+                      <Card.Text
+                        style={{
+                          fontSize: "15px",
+                          lineHeight: "2",
+                          alignItems: "center",
+                          textAlign: "center",
+                        }}
+                      >
+                        <span style={{ fontWeight: "1px" }}>
                           {product.name}
                         </span>
                         <br />

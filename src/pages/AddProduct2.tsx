@@ -1,9 +1,9 @@
 import { Button, Col, Container, Form, Row, Modal } from "react-bootstrap";
 import { useState, useEffect, ChangeEvent } from "react";
 import axios, { AxiosError } from "axios";
-import Sidebar from "../components/Seller-side-bar";
-import { Link } from "react-router-dom";
 
+import { Link } from "react-router-dom";
+import SellerLayout from "./Seller/SellerLayout";
 export default function AddProduct() {
   const [categories, setCategories] = useState<any[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
@@ -177,341 +177,339 @@ export default function AddProduct() {
   };
 
   return (
-    <Container fluid>
-      <Row>
-        <Col
-          md={2}
-          className="order-first"
-          style={{ background: "#eaeaea", padding: "0" }}
-        >
-          <Sidebar defaultSelected="My Products" />
-        </Col>
-
-        <Col>
-          <div style={{ padding: "5% 15% 5%" }}>
-            <p
-              className="fw-bold"
-              style={{ fontSize: "20px", marginBottom: "-2px" }}
-            >
-              Add Your Product
-            </p>
-            <p className="mb-0" style={{ fontSize: "10px", color: "gray" }}>
-              Add a new product to your store
-            </p>
-            <hr />
-
-            <Form style={{ fontSize: "12px" }} onSubmit={handleSubmit}>
-              <Form.Group
-                className="mb-3"
-                style={{ display: "flex", flexDirection: "column" }}
+    <SellerLayout>
+      <Container fluid>
+        <Row>
+          <Col>
+            <div style={{ padding: "5% 15% 5%" }}>
+              <p
+                className="fw-bold"
+                style={{ fontSize: "20px", marginBottom: "-2px" }}
               >
-                <Form.Label>
-                  SELLER NAME<span style={{ color: "red" }}>*</span>
-                </Form.Label>
-                <Form.Control
-                  type="text"
-                  name="sellerName"
-                  style={{ width: "100%", marginBottom: "8px" }}
-                  value={formData.sellerName}
-                  onChange={handleInputChange}
-                  required
-                  readOnly
-                />
-              </Form.Group>
-              <Form.Group
-                className="mb-3"
-                style={{ display: "flex", flexDirection: "column" }}
-              >
-                <Form.Label>
-                  PRODUCT NAME<span style={{ color: "red" }}>*</span>
-                </Form.Label>
-                <Form.Control
-                  type="text"
-                  name="productName"
-                  style={{ width: "100%", marginBottom: "8px" }}
-                  value={formData.productName}
-                  onChange={handleInputChange}
-                  required
-                />
-              </Form.Group>
+                Add Your Product
+              </p>
+              <p className="mb-0" style={{ fontSize: "10px", color: "gray" }}>
+                Add a new product to your store
+              </p>
+              <hr />
 
-              <Form.Group
-                className="mb-3"
-                style={{ display: "flex", flexDirection: "column" }}
-              >
-                <Form.Label>
-                  CATEGORY<span style={{ color: "red" }}>*</span>
-                </Form.Label>
-                <Form.Select
-                  aria-label="Select category"
-                  style={{ width: "100%", fontSize: "15px" }}
-                  value={selectedCategory}
-                  onChange={handleCategoryChange}
-                  required
+              <Form style={{ fontSize: "12px" }} onSubmit={handleSubmit}>
+                <Form.Group
+                  className="mb-3"
+                  style={{ display: "flex", flexDirection: "column" }}
                 >
-                  <option value="" disabled>
-                    Please select your Category
-                  </option>
-                  {categories.map((category) => (
-                    <option
-                      key={category.category_id}
-                      value={category.category_id}
-                    >
-                      {category.name}
+                  <Form.Label>
+                    SELLER NAME<span style={{ color: "red" }}>*</span>
+                  </Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="sellerName"
+                    style={{ width: "100%", marginBottom: "8px" }}
+                    value={formData.sellerName}
+                    onChange={handleInputChange}
+                    required
+                    readOnly
+                  />
+                </Form.Group>
+                <Form.Group
+                  className="mb-3"
+                  style={{ display: "flex", flexDirection: "column" }}
+                >
+                  <Form.Label>
+                    PRODUCT NAME<span style={{ color: "red" }}>*</span>
+                  </Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="productName"
+                    style={{ width: "100%", marginBottom: "8px" }}
+                    value={formData.productName}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </Form.Group>
+
+                <Form.Group
+                  className="mb-3"
+                  style={{ display: "flex", flexDirection: "column" }}
+                >
+                  <Form.Label>
+                    CATEGORY<span style={{ color: "red" }}>*</span>
+                  </Form.Label>
+                  <Form.Select
+                    aria-label="Select category"
+                    style={{ width: "100%", fontSize: "15px" }}
+                    value={selectedCategory}
+                    onChange={handleCategoryChange}
+                    required
+                  >
+                    <option value="" disabled>
+                      Please select your Category
                     </option>
-                  ))}
-                </Form.Select>
-              </Form.Group>
+                    {categories.map((category) => (
+                      <option
+                        key={category.category_id}
+                        value={category.category_id}
+                      >
+                        {category.name}
+                      </option>
+                    ))}
+                  </Form.Select>
+                </Form.Group>
 
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  gap: "5px",
-                  marginTop: "-15px",
-                }}
-              >
-                <div style={{ flex: 1 }}>
-                  <Form.Group
-                    className="mb-3"
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      marginTop: "25px",
-                    }}
-                  >
-                    <Form.Label>
-                      QUANTITY<span style={{ color: "red" }}>*</span>
-                    </Form.Label>
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        alignItems: "center",
-                      }}
-                    >
-                      <Form.Control
-                        type="number"
-                        name="quantity"
-                        style={{
-                          width: "calc(80% - 30px)",
-                          marginBottom: "8px",
-                        }}
-                        placeholder={
-                          selectedCategory === "1" ||
-                          selectedCategory === "2" ||
-                          selectedCategory === "3"
-                            ? "Enter quantity in Kg"
-                            : "Enter quantity"
-                        }
-                        value={formData.quantity}
-                        onChange={handleInputChange}
-                        required
-                      />
-                      {(selectedCategory === "1" ||
-                        selectedCategory === "2" ||
-                        selectedCategory === "3") && (
-                        <div style={{ marginLeft: "10px" }}>
-                          <p style={{ fontSize: "18px" }}>Kg</p>
-                        </div>
-                      )}
-                    </div>
-                  </Form.Group>
-                </div>
-
-                <div style={{ flex: 1 }}>
-                  <Form.Group
-                    className="mb-3"
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      marginTop: "25px",
-                    }}
-                  >
-                    <Form.Label>
-                      PRICE PER UNIT<span style={{ color: "red" }}>*</span>
-                    </Form.Label>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        flexDirection: "row",
-                      }}
-                    >
-                      <Form.Control
-                        type="text"
-                        name="price"
-                        style={{
-                          width: "calc(80% - 30px)",
-                          marginBottom: "8px",
-                        }}
-                        placeholder="Enter price in Rs"
-                        value={formData.price}
-                        onChange={handleInputChange}
-                        required
-                      />
-                      <div style={{ marginLeft: "10px" }}>
-                        <p style={{ fontSize: "20px" }}>Rs</p>
-                      </div>
-                    </div>
-                  </Form.Group>
-                </div>
-              </div>
-
-              <Form.Group
-                className="mb-3"
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  marginTop: "25px",
-                }}
-              >
-                <Form.Label>
-                  QUANTITY PER LIMIT<span style={{ color: "red" }}>*</span>
-                </Form.Label>
                 <div
                   style={{
                     display: "flex",
                     flexDirection: "row",
-                    alignItems: "center",
+                    gap: "5px",
+                    marginTop: "-15px",
                   }}
                 >
-                  <Form.Control
-                    type="number"
-                    name="quantityLimit"
-                    style={{ width: "calc(80% - 30px)", marginBottom: "8px" }}
-                    placeholder={
-                      selectedCategory === "1" ||
-                      selectedCategory === "2" ||
-                      selectedCategory === "3"
-                        ? "Enter quantity in Kg"
-                        : "Enter quantity"
-                    }
-                    value={formData.quantityLimit}
-                    onChange={handleInputChange}
-                    required
-                  />
-                  {(selectedCategory === "1" ||
-                    selectedCategory === "2" ||
-                    selectedCategory === "3") && (
-                    <div style={{ marginLeft: "10px" }}>
-                      <p style={{ fontSize: "18px" }}>Kg</p>
-                    </div>
-                  )}
-                </div>
-              </Form.Group>
-
-              <Form.Group className="mb-3">
-                <Form.Label>
-                  PRODUCT IMAGES<span style={{ color: "red" }}>*</span>
-                </Form.Label>
-                <p>Add files in type of jpeg, jpg, png.</p>
-                {/* <p>Width = 271 px, Height = 186 px</p> */}
-                <div
-                  className="image-rectangle"
-                  style={{ display: "flex", flexDirection: "row", gap: "5px" }}
-                >
-                  {filePreviews.map((preview, index) => (
-                    <div
-                      key={index}
+                  <div style={{ flex: 1 }}>
+                    <Form.Group
+                      className="mb-3"
                       style={{
-                        position: "relative",
-                        width: "120px",
-                        height: "120px",
-                        border: "1px solid black",
                         display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        borderRadius: "5px",
-                        overflow: "hidden",
-                        backgroundColor: "#f0f0f0",
+                        flexDirection: "column",
+                        marginTop: "25px",
                       }}
                     >
-                      {preview ? (
-                        <img
-                          src={preview}
-                          alt={`preview-${index}`}
+                      <Form.Label>
+                        QUANTITY<span style={{ color: "red" }}>*</span>
+                      </Form.Label>
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Form.Control
+                          type="number"
+                          name="quantity"
                           style={{
-                            width: "100%",
-                            height: "100%",
-                            objectFit: "cover",
+                            width: "calc(80% - 30px)",
+                            marginBottom: "8px",
                           }}
+                          placeholder={
+                            selectedCategory === "1" ||
+                            selectedCategory === "2" ||
+                            selectedCategory === "3"
+                              ? "Enter quantity in Kg"
+                              : "Enter quantity"
+                          }
+                          value={formData.quantity}
+                          onChange={handleInputChange}
+                          required
                         />
-                      ) : (
-                        <div>
-                          <label
-                            htmlFor={`file-input-${index}`}
-                            style={{
-                              position: "absolute",
-                              inset: "0",
-                              display: "flex",
-                              justifyContent: "center",
-                              alignItems: "center",
-                              cursor: "pointer",
-                            }}
-                          >
-                            <span style={{ fontSize: "48px", color: "gray" }}>
-                              +
-                            </span>
-                          </label>
-                          <input
-                            type="file"
-                            id={`file-input-${index}`}
-                            onChange={(e) => handleFileChange(e, index)}
-                            style={{ display: "none" }}
-                          />
+                        {(selectedCategory === "1" ||
+                          selectedCategory === "2" ||
+                          selectedCategory === "3") && (
+                          <div style={{ marginLeft: "10px" }}>
+                            <p style={{ fontSize: "18px" }}>Kg</p>
+                          </div>
+                        )}
+                      </div>
+                    </Form.Group>
+                  </div>
+
+                  <div style={{ flex: 1 }}>
+                    <Form.Group
+                      className="mb-3"
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        marginTop: "25px",
+                      }}
+                    >
+                      <Form.Label>
+                        PRICE PER UNIT<span style={{ color: "red" }}>*</span>
+                      </Form.Label>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          flexDirection: "row",
+                        }}
+                      >
+                        <Form.Control
+                          type="text"
+                          name="price"
+                          style={{
+                            width: "calc(80% - 30px)",
+                            marginBottom: "8px",
+                          }}
+                          placeholder="Enter price in Rs"
+                          value={formData.price}
+                          onChange={handleInputChange}
+                          required
+                        />
+                        <div style={{ marginLeft: "10px" }}>
+                          <p style={{ fontSize: "20px" }}>Rs</p>
                         </div>
-                      )}
-                    </div>
-                  ))}
+                      </div>
+                    </Form.Group>
+                  </div>
                 </div>
-              </Form.Group>
 
-              <Form.Group className="mb-3" controlId="description">
-                <Form.Label>
-                  DESCRIPTION<span style={{ color: "red" }}>*</span>
-                </Form.Label>
-                <Form.Control
-                  as="textarea"
-                  name="description"
-                  value={formData.description}
-                  onChange={handleInputChange}
-                  style={{ height: "100px" }}
-                  required
-                />
-              </Form.Group>
+                <Form.Group
+                  className="mb-3"
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    marginTop: "25px",
+                  }}
+                >
+                  <Form.Label>
+                    QUANTITY PER LIMIT<span style={{ color: "red" }}>*</span>
+                  </Form.Label>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Form.Control
+                      type="number"
+                      name="quantityLimit"
+                      style={{ width: "calc(80% - 30px)", marginBottom: "8px" }}
+                      placeholder={
+                        selectedCategory === "1" ||
+                        selectedCategory === "2" ||
+                        selectedCategory === "3"
+                          ? "Enter quantity in Kg"
+                          : "Enter quantity"
+                      }
+                      value={formData.quantityLimit}
+                      onChange={handleInputChange}
+                      required
+                    />
+                    {(selectedCategory === "1" ||
+                      selectedCategory === "2" ||
+                      selectedCategory === "3") && (
+                      <div style={{ marginLeft: "10px" }}>
+                        <p style={{ fontSize: "18px" }}>Kg</p>
+                      </div>
+                    )}
+                  </div>
+                </Form.Group>
 
-              <Button
-                variant="primary"
-                type="submit"
-                style={{
-                  backgroundColor: "#F5F5F5",
-                  border: "1px solid black",
-                  borderRadius: "6px",
-                  color: "black",
-                  fontWeight: "semi-bold",
-                }}
-                disabled={productAdded} // Disable button if product was already added
-              >
-                {productAdded ? "Added" : "Add Product"}
-              </Button>
-            </Form>
-            <Modal show={showModal} onHide={handleCloseModal}>
-              <Modal.Header closeButton>
-                <Modal.Title>Notification</Modal.Title>
-              </Modal.Header>
-              <Modal.Body>{modalMessage}</Modal.Body>
-              <Modal.Footer>
-                <Link to="/MyProducts">
-                  <Button variant="secondary" onClick={handleCloseModal}>
-                    Close
-                  </Button>
-                </Link>
-              </Modal.Footer>
-            </Modal>
-          </div>
-        </Col>
-      </Row>
-    </Container>
+                <Form.Group className="mb-3">
+                  <Form.Label>
+                    PRODUCT IMAGES<span style={{ color: "red" }}>*</span>
+                  </Form.Label>
+                  <p>Add files in type of jpeg, jpg, png.</p>
+                  {/* <p>Width = 271 px, Height = 186 px</p> */}
+                  <div
+                    className="image-rectangle"
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      gap: "5px",
+                    }}
+                  >
+                    {filePreviews.map((preview, index) => (
+                      <div
+                        key={index}
+                        style={{
+                          position: "relative",
+                          width: "120px",
+                          height: "120px",
+                          border: "1px solid black",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          borderRadius: "5px",
+                          overflow: "hidden",
+                          backgroundColor: "#f0f0f0",
+                        }}
+                      >
+                        {preview ? (
+                          <img
+                            src={preview}
+                            alt={`preview-${index}`}
+                            style={{
+                              width: "100%",
+                              height: "100%",
+                              objectFit: "cover",
+                            }}
+                          />
+                        ) : (
+                          <div>
+                            <label
+                              htmlFor={`file-input-${index}`}
+                              style={{
+                                position: "absolute",
+                                inset: "0",
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                cursor: "pointer",
+                              }}
+                            >
+                              <span style={{ fontSize: "48px", color: "gray" }}>
+                                +
+                              </span>
+                            </label>
+                            <input
+                              type="file"
+                              id={`file-input-${index}`}
+                              onChange={(e) => handleFileChange(e, index)}
+                              style={{ display: "none" }}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </Form.Group>
+
+                <Form.Group className="mb-3" controlId="description">
+                  <Form.Label>
+                    DESCRIPTION<span style={{ color: "red" }}>*</span>
+                  </Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    name="description"
+                    value={formData.description}
+                    onChange={handleInputChange}
+                    style={{ height: "100px" }}
+                    required
+                  />
+                </Form.Group>
+
+                <Button
+                  variant="primary"
+                  type="submit"
+                  style={{
+                    backgroundColor: "#F5F5F5",
+                    border: "1px solid black",
+                    borderRadius: "6px",
+                    color: "black",
+                    fontWeight: "semi-bold",
+                  }}
+                  disabled={productAdded} // Disable button if product was already added
+                >
+                  {productAdded ? "Added" : "Add Product"}
+                </Button>
+              </Form>
+              <Modal show={showModal} onHide={handleCloseModal}>
+                <Modal.Header closeButton>
+                  <Modal.Title>Notification</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>{modalMessage}</Modal.Body>
+                <Modal.Footer>
+                  <Link to="/MyProducts">
+                    <Button variant="secondary" onClick={handleCloseModal}>
+                      Close
+                    </Button>
+                  </Link>
+                </Modal.Footer>
+              </Modal>
+            </div>
+          </Col>
+        </Row>
+      </Container>
+    </SellerLayout>
   );
 }

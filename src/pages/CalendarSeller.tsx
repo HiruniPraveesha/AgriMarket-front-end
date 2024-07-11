@@ -4,7 +4,7 @@ import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { Modal, Button, Form } from "react-bootstrap";
 import axios from "axios";
-
+import SellerLayout from "./Seller/SellerLayout";
 const localizer = momentLocalizer(moment);
 
 function ProductCalendar() {
@@ -236,135 +236,138 @@ function ProductCalendar() {
   };
 
   return (
-    <div>
-      <div className="container">
-        <div className="row">
-          <div className="my-4" style={{ height: 600 }}>
-            <Calendar
-              localizer={localizer}
-              events={events}
-              startAccessor="start"
-              endAccessor="end"
-              defaultDate={new Date()}
-              selectable
-              onSelectSlot={handleSelectSlot}
-              onSelectEvent={handleEventClick}
-              eventPropGetter={getEventStyle}
-            />
+    <SellerLayout>
+      <div>
+        <div className="container">
+          <h3>Add your calendar updates</h3>
+          <div className="row">
+            <div className="my-4" style={{ height: 600 }}>
+              <Calendar
+                localizer={localizer}
+                events={events}
+                startAccessor="start"
+                endAccessor="end"
+                defaultDate={new Date()}
+                selectable
+                onSelectSlot={handleSelectSlot}
+                onSelectEvent={handleEventClick}
+                eventPropGetter={getEventStyle}
+              />
+            </div>
           </div>
         </div>
-      </div>
 
-      <Modal show={showModal} onHide={handleModalClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>
-            {selectedEvent ? "Edit" : "Add"} Product Details
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <Form.Group controlId="sellerId">
-              <Form.Label>Seller ID</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder={sellerId}
-                value={sellerId}
-                readOnly
-                required
-              />
-            </Form.Group>
-            <Form.Group controlId="category">
-              <Form.Label>Category</Form.Label>
-              <Form.Control
-                as="select"
-                value={category_id}
-                onChange={(e) => setCategory(e.target.value)}
-                required
-              >
-                <option value="">Select a Category</option>
-                {categories.map((cat, index) => (
-                  <option key={index} value={cat.category_id}>
-                    {cat.category_id} - {cat.name}
-                  </option>
-                ))}
-              </Form.Control>
-            </Form.Group>
-            <Form.Group controlId="productName">
-              <Form.Label>Product Name</Form.Label>
-              <Form.Control
-                as="select"
-                value={product_id}
-                onChange={(e) => setProduct(e.target.value)}
-                required
-              >
-                <option value="">Select a Product</option>
-                {products.map((prod, index) => (
-                  <option key={index} value={prod.product_id}>
-                    {prod.product_id} - {prod.name}
-                  </option>
-                ))}
-              </Form.Control>
-            </Form.Group>
-            <Form.Group controlId="note">
-              <Form.Label>Note</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter a note"
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-                required
-              />
-            </Form.Group>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseEvent}>
-            Close
-          </Button>
-          {selectedEvent ? (
-            <>
-              <Button variant="danger" onClick={handleDeleteEvent}>
-                Delete
-              </Button>
+        <Modal show={showModal} onHide={handleModalClose}>
+          <Modal.Header closeButton>
+            <Modal.Title>
+              {selectedEvent ? "Edit" : "Add"} Product Details
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form>
+              <Form.Group controlId="sellerId">
+                <Form.Label>Seller ID</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder={sellerId}
+                  value={sellerId}
+                  readOnly
+                  required
+                />
+              </Form.Group>
+              <Form.Group controlId="category">
+                <Form.Label>Category</Form.Label>
+                <Form.Control
+                  as="select"
+                  value={category_id}
+                  onChange={(e) => setCategory(e.target.value)}
+                  required
+                >
+                  <option value="">Select a Category</option>
+                  {categories.map((cat, index) => (
+                    <option key={index} value={cat.category_id}>
+                      {cat.category_id} - {cat.name}
+                    </option>
+                  ))}
+                </Form.Control>
+              </Form.Group>
+              <Form.Group controlId="productName">
+                <Form.Label>Product Name</Form.Label>
+                <Form.Control
+                  as="select"
+                  value={product_id}
+                  onChange={(e) => setProduct(e.target.value)}
+                  required
+                >
+                  <option value="">Select a Product</option>
+                  {products.map((prod, index) => (
+                    <option key={index} value={prod.product_id}>
+                      {prod.product_id} - {prod.name}
+                    </option>
+                  ))}
+                </Form.Control>
+              </Form.Group>
+              <Form.Group controlId="note">
+                <Form.Label>Note</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Enter a note"
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  required
+                />
+              </Form.Group>
+            </Form>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleCloseEvent}>
+              Close
+            </Button>
+            {selectedEvent ? (
+              <>
+                <Button variant="danger" onClick={handleDeleteEvent}>
+                  Delete
+                </Button>
+                <Button
+                  variant="primary"
+                  onClick={handleEditEvent}
+                  style={{ backgroundColor: "#00BA29", borderColor: "#00BA29" }}
+                >
+                  Save Changes
+                </Button>
+              </>
+            ) : (
               <Button
-                variant="primary"
-                onClick={handleEditEvent}
+                variant="success"
+                onClick={handleFormSubmit}
+                disabled={!category_id || !product_id || !sellerId}
                 style={{ backgroundColor: "#00BA29", borderColor: "#00BA29" }}
               >
-                Save Changes
+                Save
               </Button>
-            </>
-          ) : (
+            )}
+          </Modal.Footer>
+        </Modal>
+
+        <Modal show={showAlert} onHide={() => setShowAlert(false)}>
+          <Modal.Header closeButton>
+            <Modal.Title>Alert</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            Products can only be added to days that are after today.
+          </Modal.Body>
+          <Modal.Footer>
             <Button
-              variant="success"
-              onClick={handleFormSubmit}
-              disabled={!category_id || !product_id || !sellerId}
+              variant="primary"
+              onClick={() => setShowAlert(false)}
               style={{ backgroundColor: "#00BA29", borderColor: "#00BA29" }}
             >
-              Save
+              OK
             </Button>
-          )}
-        </Modal.Footer>
-      </Modal>
-
-      <Modal show={showAlert} onHide={() => setShowAlert(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Alert</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          Products can only be added to days that are after today.
-        </Modal.Body>
-        <Modal.Footer>
-          <Button
-            variant="primary"
-            onClick={() => setShowAlert(false)}
-            style={{ backgroundColor: "#00BA29", borderColor: "#00BA29" }}
-          >
-            OK
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    </div>
+          </Modal.Footer>
+        </Modal>
+      </div>
+    </SellerLayout>
   );
 }
 

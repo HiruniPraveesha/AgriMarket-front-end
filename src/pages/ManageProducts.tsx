@@ -11,8 +11,7 @@ import {
 import Table from "react-bootstrap/Table";
 //import { useParams } from 'react-router-dom';
 import axios from "axios"; // Import axios
-import Sidebar from "../components/Seller-side-bar";
-
+import SellerLayout from "./Seller/SellerLayout";
 const ManageProductPage: React.FC<{}> = ({}) => {
   //const { sellerId } = useParams();
 
@@ -160,232 +159,251 @@ const ManageProductPage: React.FC<{}> = ({}) => {
   };
 
   return (
-    <Container fluid>
-      <Row>
-        <Col
-          md={2}
-          className="order-first"
-          style={{ background: "#eaeaea", padding: "0" }}
-        >
-          <Sidebar defaultSelected="My Products" />
-        </Col>
-        <Col>
-          <div style={{ padding: "5% 15% 5%" }}>
-            <p className="fw-bold" style={{ fontSize: "20px", margin: "12px" }}>
-              Manage Products
-            </p>
-            <p style={{ fontSize: "15px", fontStyle: "bold", margin: "12px" }}>
-              {storeName}
-            </p>
-            <hr />
-            <Table striped bordered hover>
-              <thead>
-                <tr>
-                  <th>Product ID</th>
-                  <th>Name</th>
-                  <th>Category Name</th>
-                  <th>Existing Price</th>
-                  <th>Description</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {products.map((product) => (
-                  <tr key={product.product_id}>
-                    <td>{product.product_id}</td>
-                    <td>{product.name}</td>
-                    <td>{product.category.name}</td>
-                    <td>Rs.{product.price}</td>
-                    <td>{product.description}</td>
-                    <td style={{ position: "relative" }}>
-                      <Dropdown>
-                        <Dropdown.Toggle
-                          variant="light"
-                          id={`dropdown-${product.product_id}`}
-                          style={{ border: "none", paddingBottom: "5px" }}
-                        >
-                          Actions
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu style={{ zIndex: 9999 }}>
-                          <Dropdown.Item
-                            onClick={() =>
-                              handleEdit(
-                                product.product_id,
-                                product.name,
-                                product.price,
-                                product.description
-                              )
-                            }
-                          >
-                            Update
-                          </Dropdown.Item>
-                          <Dropdown.Item
-                            onClick={() => handleRemove(product.product_id)}
-                          >
-                            Remove
-                          </Dropdown.Item>
-                        </Dropdown.Menu>
-                      </Dropdown>
-                    </td>
+    <SellerLayout>
+      <Container fluid>
+        <Row>
+          <Col>
+            <div style={{ padding: "5% 15% 5%" }}>
+              <p
+                className="fw-bold"
+                style={{ fontSize: "20px", margin: "12px" }}
+              >
+                Manage Products
+              </p>
+              <p
+                style={{ fontSize: "15px", fontStyle: "bold", margin: "12px" }}
+              >
+                {storeName}
+              </p>
+              <hr />
+              <Table striped bordered hover>
+                <thead>
+                  <tr>
+                    <th>Product ID</th>
+                    <th>Name</th>
+                    <th>Category Name</th>
+                    <th>Existing Price</th>
+                    <th>Description</th>
+                    <th>Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </Table>
+                </thead>
+                <tbody>
+                  {products.map((product) => (
+                    <tr key={product.product_id}>
+                      <td>{product.product_id}</td>
+                      <td>{product.name}</td>
+                      <td>{product.category.name}</td>
+                      <td>Rs.{product.price}</td>
+                      <td>{product.description}</td>
+                      <td style={{ position: "relative" }}>
+                        <Dropdown>
+                          <Dropdown.Toggle
+                            variant="light"
+                            id={`dropdown-${product.product_id}`}
+                            style={{ border: "none", paddingBottom: "5px" }}
+                          >
+                            Actions
+                          </Dropdown.Toggle>
+                          <Dropdown.Menu style={{ zIndex: 9999 }}>
+                            <Dropdown.Item
+                              onClick={() =>
+                                handleEdit(
+                                  product.product_id,
+                                  product.name,
+                                  product.price,
+                                  product.description
+                                )
+                              }
+                            >
+                              Update
+                            </Dropdown.Item>
+                            <Dropdown.Item
+                              onClick={() => handleRemove(product.product_id)}
+                            >
+                              Remove
+                            </Dropdown.Item>
+                          </Dropdown.Menu>
+                        </Dropdown>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
 
-            {/* Remove Confirmation Modal */}
-            <Modal
-              show={showRemoveModal}
-              onHide={() => setShowRemoveModal(false)}
-            >
-              <Modal.Header closeButton>
-                <Modal.Title>Confirmation</Modal.Title>
-              </Modal.Header>
-              <Modal.Body>
-                {selectedProductId && (
-                  <p>Do you want to remove the item {selectedProductId}?</p>
-                )}
-              </Modal.Body>
-              <Modal.Footer>
-                <Button
-                  variant="secondary"
-                  onClick={() => setShowRemoveModal(false)}
-                >
-                  No
-                </Button>
-                <Button
-                  variant="secondary"
-                  style={{ backgroundColor: "#00BA29", borderColor: "#00BA29" }}
-                  onClick={handleRemoveConfirmation}
-                >
-                  Yes
-                </Button>
-              </Modal.Footer>
-            </Modal>
+              {/* Remove Confirmation Modal */}
+              <Modal
+                show={showRemoveModal}
+                onHide={() => setShowRemoveModal(false)}
+              >
+                <Modal.Header closeButton>
+                  <Modal.Title>Confirmation</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  {selectedProductId && (
+                    <p>Do you want to remove the item {selectedProductId}?</p>
+                  )}
+                </Modal.Body>
+                <Modal.Footer>
+                  <Button
+                    variant="secondary"
+                    onClick={() => setShowRemoveModal(false)}
+                  >
+                    No
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    style={{
+                      backgroundColor: "#00BA29",
+                      borderColor: "#00BA29",
+                    }}
+                    onClick={handleRemoveConfirmation}
+                  >
+                    Yes
+                  </Button>
+                </Modal.Footer>
+              </Modal>
 
-            {/* Product Removed Modal */}
-            <Modal show={showRemovedModal} onHide={handleModalClose}>
-              <Modal.Header closeButton>
-                <Modal.Title>Product Removed</Modal.Title>
-              </Modal.Header>
-              <Modal.Body>
-                <p>The product has been successfully removed.</p>
-              </Modal.Body>
-              <Modal.Footer>
-                <Button variant="secondary" onClick={handleModalClose}>
-                  Close
-                </Button>
-              </Modal.Footer>
-            </Modal>
+              {/* Product Removed Modal */}
+              <Modal show={showRemovedModal} onHide={handleModalClose}>
+                <Modal.Header closeButton>
+                  <Modal.Title>Product Removed</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  <p>The product has been successfully removed.</p>
+                </Modal.Body>
+                <Modal.Footer>
+                  <Button variant="secondary" onClick={handleModalClose}>
+                    Close
+                  </Button>
+                </Modal.Footer>
+              </Modal>
 
-            {/* Product Updated Modal */}
-            <Modal show={showUpdatedModal} onHide={handleModalClose}>
-              <Modal.Header closeButton>
-                <Modal.Title>Product Updated</Modal.Title>
-              </Modal.Header>
-              <Modal.Body>
-                <p>The product has been successfully updated.</p>
-              </Modal.Body>
-              <Modal.Footer>
-                <Button variant="secondary" onClick={handleModalClose}>
-                  Close
-                </Button>
-              </Modal.Footer>
-            </Modal>
+              {/* Product Updated Modal */}
+              <Modal show={showUpdatedModal} onHide={handleModalClose}>
+                <Modal.Header closeButton>
+                  <Modal.Title>Product Updated</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  <p>The product has been successfully updated.</p>
+                </Modal.Body>
+                <Modal.Footer>
+                  <Button variant="secondary" onClick={handleModalClose}>
+                    Close
+                  </Button>
+                </Modal.Footer>
+              </Modal>
 
-            {/* Edit Modal */}
-            <Modal show={showEditModal} onHide={handleModalClose}>
-              <Modal.Header closeButton>
-                <Modal.Title>Update Product</Modal.Title>
-              </Modal.Header>
-              <Modal.Body>
-                <Form>
-                  <Form.Group controlId="formProductId">
-                    <Form.Label style={{ fontWeight: "bold", color: "black" }}>
-                      Product ID
-                    </Form.Label>
-                    <Form.Control
-                      type="text"
-                      placeholder="Enter product ID"
-                      value={editProduct.id}
-                      readOnly
-                    />
-                  </Form.Group>
-                  <Form.Group controlId="formProductName">
-                    <Form.Label style={{ fontWeight: "bold", color: "black" }}>
-                      Product Name
-                    </Form.Label>
-                    <Form.Control
-                      type="text"
-                      placeholder="Enter product name"
-                      value={editProduct.name}
-                      onChange={(e) =>
-                        setEditProduct({ ...editProduct, name: e.target.value })
-                      }
-                    />
-                  </Form.Group>
-                  <Form.Group controlId="formCurrentPrice">
-                    <Form.Label style={{ fontWeight: "bold", color: "black" }}>
-                      Current Price
-                    </Form.Label>
-                    <Form.Control
-                      type="text"
-                      placeholder="Enter current price"
-                      value={editProduct.price}
-                      readOnly
-                    />
-                  </Form.Group>
-                  <Form.Group controlId="formNewPrice">
-                    <Form.Label style={{ color: "#00BA29" }}>
-                      New Price
-                    </Form.Label>
-                    <Form.Control
-                      type="number"
-                      placeholder="Enter new price"
-                      value={newPrice !== null ? newPrice : ""}
-                      onChange={(e) => setNewPrice(parseFloat(e.target.value))}
-                    />
-                  </Form.Group>
-                  <Form.Group controlId="formCurrentPrice">
-                    <Form.Label style={{ fontWeight: "bold", color: "black" }}>
-                      Current Description
-                    </Form.Label>
-                    <Form.Control
-                      type="text"
-                      placeholder="Enter current price"
-                      value={editProduct.description}
-                      readOnly
-                    />
-                  </Form.Group>
-                  <Form.Group controlId="formNewDescription">
-                    <Form.Label style={{ color: "#00BA29" }}>
-                      New Description
-                    </Form.Label>
-                    <Form.Control
-                      as="textarea"
-                      placeholder="Enter new description"
-                      value={newDescription}
-                      onChange={(e) => setNewDescription(e.target.value)}
-                    />
-                  </Form.Group>
-                </Form>
-              </Modal.Body>
-              <Modal.Footer>
-                <Button variant="secondary" onClick={handleModalClose}>
-                  Close
-                </Button>
-                <Button
-                  variant="primary"
-                  onClick={handleEditConfirmation}
-                  style={{ backgroundColor: "#00BA29", borderColor: "#00BA29" }}
-                >
-                  Save Changes
-                </Button>
-              </Modal.Footer>
-            </Modal>
-          </div>
-        </Col>
-      </Row>
-    </Container>
+              {/* Edit Modal */}
+              <Modal show={showEditModal} onHide={handleModalClose}>
+                <Modal.Header closeButton>
+                  <Modal.Title>Update Product</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  <Form>
+                    <Form.Group controlId="formProductId">
+                      <Form.Label
+                        style={{ fontWeight: "bold", color: "black" }}
+                      >
+                        Product ID
+                      </Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Enter product ID"
+                        value={editProduct.id}
+                        readOnly
+                      />
+                    </Form.Group>
+                    <Form.Group controlId="formProductName">
+                      <Form.Label
+                        style={{ fontWeight: "bold", color: "black" }}
+                      >
+                        Product Name
+                      </Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Enter product name"
+                        value={editProduct.name}
+                        onChange={(e) =>
+                          setEditProduct({
+                            ...editProduct,
+                            name: e.target.value,
+                          })
+                        }
+                      />
+                    </Form.Group>
+                    <Form.Group controlId="formCurrentPrice">
+                      <Form.Label
+                        style={{ fontWeight: "bold", color: "black" }}
+                      >
+                        Current Price
+                      </Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Enter current price"
+                        value={editProduct.price}
+                        readOnly
+                      />
+                    </Form.Group>
+                    <Form.Group controlId="formNewPrice">
+                      <Form.Label style={{ color: "#00BA29" }}>
+                        New Price
+                      </Form.Label>
+                      <Form.Control
+                        type="number"
+                        placeholder="Enter new price"
+                        value={newPrice !== null ? newPrice : ""}
+                        onChange={(e) =>
+                          setNewPrice(parseFloat(e.target.value))
+                        }
+                      />
+                    </Form.Group>
+                    <Form.Group controlId="formCurrentPrice">
+                      <Form.Label
+                        style={{ fontWeight: "bold", color: "black" }}
+                      >
+                        Current Description
+                      </Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Enter current price"
+                        value={editProduct.description}
+                        readOnly
+                      />
+                    </Form.Group>
+                    <Form.Group controlId="formNewDescription">
+                      <Form.Label style={{ color: "#00BA29" }}>
+                        New Description
+                      </Form.Label>
+                      <Form.Control
+                        as="textarea"
+                        placeholder="Enter new description"
+                        value={newDescription}
+                        onChange={(e) => setNewDescription(e.target.value)}
+                      />
+                    </Form.Group>
+                  </Form>
+                </Modal.Body>
+                <Modal.Footer>
+                  <Button variant="secondary" onClick={handleModalClose}>
+                    Close
+                  </Button>
+                  <Button
+                    variant="primary"
+                    onClick={handleEditConfirmation}
+                    style={{
+                      backgroundColor: "#00BA29",
+                      borderColor: "#00BA29",
+                    }}
+                  >
+                    Save Changes
+                  </Button>
+                </Modal.Footer>
+              </Modal>
+            </div>
+          </Col>
+        </Row>
+      </Container>
+    </SellerLayout>
   );
 };
 

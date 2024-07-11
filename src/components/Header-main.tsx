@@ -74,6 +74,11 @@ const HeaderNew: React.FC = () => {
 
   const handleSelect = (category: any | null) => {
     setSelectedCategory(category);
+    if (category) {
+      navigate(`/Category/${category.category_id}`);
+    } else {
+      navigate(`/HomePage`);
+    }
   };
 
   console.log("User Email:", userEmail);
@@ -117,7 +122,7 @@ const HeaderNew: React.FC = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/categories")
+      .get("http://localhost:8080/categories")
       .then((response) => {
         setCategories(response.data);
       })
@@ -129,7 +134,7 @@ const HeaderNew: React.FC = () => {
   const fetchNotifications = async () => {
     try {
       const response = await axios.get<Notification[]>(
-        "http://localhost:8000/Notification"
+        "http://localhost:8080/Notification"
       );
       setNotifications(response.data);
     } catch (error) {

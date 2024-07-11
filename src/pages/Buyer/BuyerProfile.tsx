@@ -4,75 +4,126 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import ProPic from "../../assets/ProPic.png";
 import MainHeader from "../../components/Header-main";
 import MainFooter from "../../components/Footer-main";
+import { Card } from "react-bootstrap";
+import { AiOutlinePlus } from "react-icons/ai";
+import { IoIosCard } from "react-icons/io";
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { Link } from "react-router-dom";
 import axios from "axios";
 
 export default function BuyerProfile() {
-  const [email, setEmail] = useState("");
+  const [buyerId, setBuyerId] = useState("");
   const [contactNumber, setContactNumber] = useState("");
-  const [newContactNumber, setNewContactNumber] = useState(contactNumber);
-  const [userName, setUserName] = useState("");
-  const [newUserName, setNewUserName] = useState(userName);
-  const [newProfilePicture, setNewProfilePicture] = useState(ProPic);
+  const [newcontactNumber, setNewContactNumber] = useState("");
+  const [email, setEmail] = useState("");
+  const [newEmail, setNewEmail] = useState("");
+  const [newProfilePicture, setNewProfilePicture] = useState<File | null>(null);
   const [showContactNumberModal, setShowContactNumberModal] = useState(false);
   const [showUserNameModal, setShowUserNameModal] = useState(false);
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
   const [newAddressLine1, setNewAddressLine1] = useState("");
   const [newAddressLine2, setNewAddressLine2] = useState("");
+  const [newPostalcode, setNewPostalcode] = useState("");
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [showProfilePictureModal, setShowProfilePictureModal] = useState(false);
   const [city, setCity] = useState("");
   const [newCity, setNewCity] = useState(city);
   const [showCityModal, setShowCityModal] = useState(false);
-  const buyerId = localStorage.getItem("buyerId");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+  //const [buyerAddress, setBuyerAddress] = useState(null);
 
-  const id = 1;
+  useEffect(() => {
+    fetchUserData();
+  }, []);
+  useEffect(() => {
+    fetchAddressData();
+  }, []);
+
+  const fetchUserData = () => {
+    axios
+      .get(`http://localhost:8080/buyer/${buyerId}`)
+      .then((response) => {
+        const { contactNo, email, profilePhoto } = response.data;
+        setContactNumber(contactNo);
+        setEmail(email);
+
+        setNewProfilePicture(profilePhoto || ProPic); // Use default profile picture if none exists
+      })
+      .catch((error) => {
+        console.error("Error fetching user data:", error);
+      });
+  };
+
+  const fetchAddressData = () => {
+    axios
+      .get(`http://localhost:8080/buyer/address/${buyerId}`)
+      .then((response) => {
+        const { city, line1, line2 } = response.data;
+        setCity(city);
+        setNewAddressLine1(line1);
+        setNewAddressLine2(line2);
+      })
+      .catch((error) => {
+        console.error("Error fetching user data:", error);
+      });
+  };
+
+  const handleCloseModal = () => setShowModal(false);
+  const handleShowModal = (message: string) => {
+    setModalMessage(message);
+    setShowModal(true);
+  };
 
   const handleEditContactNumber = () => {
-    setNewContactNumber(contactNumber);
     setShowContactNumberModal(true);
   };
 
-  const handleSaveContactNumber = async () => {
-    setContactNumber(newContactNumber);
-    setShowContactNumberModal(false);
-    try {
-      const url = "http://localhost:8000/changeContactNumber";
-      const response = await axios.put(url, {
-        buyerId,
-        newContactNumber: newContactNumber,
-      });
-      console.log(response.data.message);
-      setContactNumber(response.data.user.contactNo);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error updating contact number:", error);
-    } finally {
-      setLoading(false);
+  const handleSaveContactNumber = () => {
+    const phonenumregex = /^\d{10}$/;
+    if (!phonenumregex.test(newcontactNumber)) {
+      handleShowModal("please enter valid phone number");
+      return;
     }
+    // Update contact number logic
+    axios
+      .put(`http://localhost:8080/buyer/contact/${buyerId}`, {
+        contactNo: newcontactNumber,
+      })
+      .then((response) => {
+        console.log("Contact number updated successfully:", response.data);
+        setContactNumber(newcontactNumber);
+        setShowContactNumberModal(false);
+      })
+      .catch((error) => {
+        console.error("Error updating contact number:", error);
+        // Handle error - Display an error message to the user, if needed
+      });
   };
 
-  const handleEditUserName = () => {
-    setNewUserName(userName);
+  const handleEditEmail = () => {
+    setNewEmail(email);
     setShowUserNameModal(true);
   };
 
-  const handleSaveUserName = async () => {
-    setUserName(newUserName);
-    setShowUserNameModal(false);
-    try {
-      setLoading(true);
-      const url = "http://localhost:8000/changeUserName";
-      const response = await axios.put(url, { buyerId, newName: newUserName });
-      console.log(newUserName);
-      console.log(response.data.message);
-      setUserName(response.data.user.name);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error updating user name:", error);
-    } finally {
-      setLoading(false);
-    }
+  const handleSaveEmail = () => {
+    // Update email logic here
+    axios
+      .put(`http://localhost:8080/buyer/email/${buyerId}`, { email: newEmail })
+      .then((response) => {
+        console.log("Email updated successfully:", response.data);
+        setEmail(newEmail);
+        setShowUserNameModal(false);
+      })
+      .catch((error) => {
+        console.error("Error updating email:", error);
+        // Handle error - Display an error message to the user, if needed
+      });
   };
 
   const handleChangePassword = () => {
@@ -83,7 +134,57 @@ export default function BuyerProfile() {
     setShowChangePasswordModal(false);
   };
 
+  const handleSavePassword = () => {
+    if (newPassword !== confirmNewPassword) {
+      handleShowModal("New passwords do not match.");
+      return;
+    }
+
+    const passwordRegex = /^(?=.*\d)(?=.*[!@#])(?=.*[a-z])(?=.*[A-Z]).{7,}$/;
+
+    if (!passwordRegex.test(newPassword)) {
+      handleShowModal(
+        "Password must contain at least 7 characters, including one uppercase letter, one lowercase letter, one number, and one special character(!,@,#)."
+      );
+      return;
+    }
+
+    if (newPassword !== confirmNewPassword) {
+      handleShowModal("New passwords do not match.");
+      return;
+    }
+    axios
+      .put(`http://localhost:8080/buyer/password/${buyerId}`, {
+        currentPassword,
+        newPassword,
+      })
+      .then((response) => {
+        console.log("Password updated successfully:", response.data);
+        setShowChangePasswordModal(false);
+      })
+      .catch((error) => {
+        console.error("Error updating password:", error);
+        handleShowModal(
+          "Error updating password. Please check your current password and try again."
+        );
+      });
+  };
+
   const handleSaveAddress = () => {
+    axios
+      .put(`http://localhost:8080/buyer/address/${buyerId}`, {
+        addressLine1: newAddressLine1,
+        addressLine2: newAddressLine2,
+        postalCode: newPostalcode,
+      })
+      .then((response) => {
+        console.log("Address updated successfully:", response.data);
+        fetchUserData(); // Refresh user data to show the updated address
+      })
+      .catch((error) => {
+        console.error("Error updating address:", error);
+      });
+
     setShowAddressModal(false);
   };
 
@@ -95,8 +196,32 @@ export default function BuyerProfile() {
     setShowProfilePictureModal(true);
   };
 
-  const handleSaveProfilePicture = () => {
-    setNewProfilePicture(newProfilePicture);
+  const handleSaveProfilePicture = async () => {
+    if (!newProfilePicture) {
+      console.error("No profile picture selected.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("profilePhoto", newProfilePicture); // Assuming newProfilePicture is a File object
+
+    try {
+      const response = await axios.put(
+        `http://localhost:8080/buyer/profile/photo/${buyerId}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data", // Ensure correct content type for FormData
+          },
+        }
+      );
+      console.log("Profile photo updated successfully:", response.data);
+      // Optionally update state or perform any UI updates on success
+    } catch (error) {
+      console.error("Error updating profile photo:", error);
+      // Handle error - Display an error message to the user, if needed
+    }
+
     setShowProfilePictureModal(false);
   };
 
@@ -105,51 +230,17 @@ export default function BuyerProfile() {
   };
 
   const handleSaveCity = () => {
-    setCity(newCity);
-    setShowCityModal(false);
+    axios
+      .put(`http://localhost:8080/buyer/city/${buyerId}`, { city: newCity })
+      .then((response) => {
+        console.log("City updated successfully:", response.data);
+        setCity(newCity);
+        setShowCityModal(false);
+      })
+      .catch((error) => {
+        console.error("Error updating city:", error);
+      });
   };
-
-  const [loading, setLoading] = useState(false);
-  const [userdetails, setUserDetails] = useState([]);
-
-  const fetchBuyerDetails = async () => {
-    try {
-      setLoading(true);
-      const url = "http://localhost:8000/getBuyerDetails";
-      const response = await axios.get(url, { params: { buyerId } });
-
-      // Destructure data from response
-      const { name, email, contactNo, addresses } = response.data.data;
-
-      // Assuming addresses is an array and you want the first address
-      if (addresses && addresses.length > 0) {
-        const firstAddress = addresses[0];
-
-        // Update state with first address details
-        setCity(firstAddress.city);
-        setNewAddressLine1(firstAddress.line1);
-        setNewAddressLine2(firstAddress.line2);
-      } else {
-        console.error("No addresses found in response data");
-        // Handle case where no addresses are found
-        // You may want to set default values or show an error message
-      }
-
-      // Update state with other details
-      setUserName(name);
-      setEmail(email);
-      setContactNumber(contactNo);
-
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      setLoading(false); // Ensure loading state is reset in case of error
-    }
-  };
-
-  useEffect(() => {
-    fetchBuyerDetails();
-  }, []);
 
   return (
     <>
@@ -176,81 +267,10 @@ export default function BuyerProfile() {
                       <p style={{ marginBottom: "5px", fontWeight: "bold" }}>
                         Contact Information
                       </p>
-                      <p style={{ color: "#666666", marginBottom: "1px" }}>
-                        <span>{email}</span>
-                      </p>
-                      <p></p>
-                    </Form.Group>
-
-                    <Form.Group>
-                      <p style={{ color: "#666666", marginBottom: "1px" }}>
-                        <span>{contactNumber}</span>
-                      </p>
-                      <Button
-                        variant="link"
-                        style={{
-                          padding: "0",
-                          color: "#00BA29",
-                          fontSize: "11px",
-                          marginBottom: "15px",
-                        }}
-                        onClick={handleEditContactNumber}
-                      >
-                        Edit
-                      </Button>
-                    </Form.Group>
-
-                    <Modal
-                      show={showContactNumberModal}
-                      onHide={() => setShowContactNumberModal(false)}
-                      style={{ fontSize: "12px" }}
-                    >
-                      <Modal.Header closeButton>
-                        <Modal.Title style={{ fontSize: "12px" }}>
-                          Edit Contact Number
-                        </Modal.Title>
-                      </Modal.Header>
-                      <Modal.Body>
-                        <Form.Group>
-                          <Form.Label>New Contact Number</Form.Label>
-                          <Form.Control
-                            type="text"
-                            value={newContactNumber}
-                            onChange={(e) =>
-                              setNewContactNumber(e.target.value)
-                            }
-                            style={{ fontSize: "12px" }}
-                          />
-                        </Form.Group>
-                      </Modal.Body>
-                      <Modal.Footer>
-                        <Button
-                          variant="secondary"
-                          onClick={() => setShowContactNumberModal(false)}
-                          style={{ fontSize: "12px" }}
-                        >
-                          Cancel
-                        </Button>
-                        <Button
-                          onClick={handleSaveContactNumber}
-                          style={{
-                            fontSize: "12px",
-                            backgroundColor: "#00BA29",
-                          }}
-                        >
-                          Save Changes
-                        </Button>
-                      </Modal.Footer>
-                    </Modal>
-
-                    <Form.Group>
-                      <p style={{ marginBottom: "5px", fontWeight: "bold" }}>
-                        Edit Username
-                      </p>
                       <p style={{ color: "#666666", marginBottom: "1px" }} />
                       <Form.Group>
                         <p style={{ color: "#666666", marginBottom: "1px" }}>
-                          <span>{userName}</span>
+                          <span>{contactNumber}</span>
                         </p>
                         <Button
                           variant="link"
@@ -260,12 +280,77 @@ export default function BuyerProfile() {
                             fontSize: "11px",
                             marginBottom: "15px",
                           }}
-                          onClick={handleEditUserName}
+                          onClick={handleEditContactNumber}
                         >
                           Edit
                         </Button>
                       </Form.Group>
+                      <Modal
+                        show={showContactNumberModal}
+                        onHide={() => setShowContactNumberModal(false)}
+                        style={{ fontSize: "12px" }}
+                      >
+                        <Modal.Header closeButton>
+                          <Modal.Title style={{ fontSize: "12px" }}>
+                            Edit Contact Number
+                          </Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                          <Form.Group>
+                            <Form.Label>New Contact Number</Form.Label>
+                            <Form.Control
+                              type="text"
+                              value={newcontactNumber}
+                              onChange={(e) =>
+                                setNewContactNumber(e.target.value)
+                              }
+                              style={{ fontSize: "12px" }}
+                            />
+                          </Form.Group>
+                        </Modal.Body>
+                        <Modal.Footer>
+                          <Button
+                            variant="secondary"
+                            onClick={() => setShowContactNumberModal(false)}
+                            style={{ fontSize: "12px" }}
+                          >
+                            Cancel
+                          </Button>
+                          <Button
+                            onClick={handleSaveContactNumber}
+                            style={{
+                              fontSize: "12px",
+                              backgroundColor: "#00BA29",
+                            }}
+                          >
+                            Save Changes
+                          </Button>
+                        </Modal.Footer>
+                      </Modal>
+                    </Form.Group>
 
+                    <Form.Group>
+                      <p style={{ marginBottom: "5px", fontWeight: "bold" }}>
+                        Email Address
+                      </p>
+                      <p style={{ color: "#666666", marginBottom: "1px" }} />
+                      <Form.Group>
+                        <p style={{ color: "#666666", marginBottom: "1px" }}>
+                          <span>{email}</span>
+                        </p>
+                        <Button
+                          variant="link"
+                          style={{
+                            padding: "0",
+                            color: "#00BA29",
+                            fontSize: "11px",
+                            marginBottom: "15px",
+                          }}
+                          onClick={handleEditEmail}
+                        >
+                          Edit
+                        </Button>
+                      </Form.Group>
                       <Modal
                         show={showUserNameModal}
                         onHide={() => setShowUserNameModal(false)}
@@ -273,16 +358,16 @@ export default function BuyerProfile() {
                       >
                         <Modal.Header closeButton>
                           <Modal.Title style={{ fontSize: "12px" }}>
-                            Edit User Name
+                            Edit Email Address
                           </Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
                           <Form.Group>
-                            <Form.Label>New User Name</Form.Label>
+                            <Form.Label>New Email Address</Form.Label>
                             <Form.Control
                               type="text"
-                              value={newUserName}
-                              onChange={(e) => setNewUserName(e.target.value)}
+                              value={newEmail}
+                              onChange={(e) => setNewEmail(e.target.value)}
                               style={{ fontSize: "12px" }}
                             />
                           </Form.Group>
@@ -297,7 +382,7 @@ export default function BuyerProfile() {
                           </Button>
                           <Button
                             variant="primary"
-                            onClick={handleSaveUserName}
+                            onClick={handleSaveEmail}
                             style={{
                               fontSize: "12px",
                               backgroundColor: "#00BA29",
@@ -314,17 +399,30 @@ export default function BuyerProfile() {
                 <Col>
                   <p
                     style={{
-                      marginBottom: "5px",
+                      marginBottom: "8px",
                       fontWeight: "bold",
                       fontSize: "11px",
+                      paddingLeft: "14px",
                     }}
                   >
                     Profile Picture
                   </p>
                   <img
-                    src={newProfilePicture}
-                    style={{ width: "80px", height: "80px" }}
+                    src={
+                      newProfilePicture
+                        ? typeof newProfilePicture === "string"
+                          ? newProfilePicture
+                          : URL.createObjectURL(newProfilePicture)
+                        : ProPic
+                    }
                     alt="Profile"
+                    style={{
+                      width: "100px",
+                      height: "100px",
+                      objectFit: "cover",
+                      borderRadius: "50%",
+                      overflow: "hidden",
+                    }}
                   />
                   <Form.Group>
                     <Button
@@ -334,6 +432,7 @@ export default function BuyerProfile() {
                         color: "#00BA29",
                         fontSize: "11px",
                         marginBottom: "15px",
+                        marginLeft: "37px",
                       }}
                       onClick={handleEditProfilePicture}
                     >
@@ -359,9 +458,7 @@ export default function BuyerProfile() {
                             e: React.ChangeEvent<HTMLInputElement>
                           ) => {
                             if (e.target.files) {
-                              setNewProfilePicture(
-                                URL.createObjectURL(e.target.files[0])
-                              );
+                              setNewProfilePicture(e.target.files[0]);
                             }
                           }}
                           style={{ fontSize: "12px" }}
@@ -425,27 +522,91 @@ export default function BuyerProfile() {
                   <Modal.Body>
                     <Form.Group controlId="formCurrentPassword">
                       <Form.Label>Current Password</Form.Label>
-                      <Form.Control
-                        type="password"
-                        placeholder="Enter current password"
-                        style={{ fontSize: "12px", marginBottom: "5px" }}
-                      />
+                      <div style={{ position: "relative" }}>
+                        <Form.Control
+                          type={showPassword ? "text" : "password"}
+                          value={currentPassword}
+                          placeholder="Enter current password"
+                          onChange={(e) => setCurrentPassword(e.target.value)}
+                          style={{ fontSize: "12px", marginBottom: "5px" }}
+                        />
+                        <span
+                          onClick={() => setShowPassword(!showPassword)}
+                          style={{
+                            position: "absolute",
+                            top: "50%",
+                            right: "10px",
+                            transform: "translateY(-50%)",
+                            cursor: "pointer",
+                          }}
+                        >
+                          {showPassword ? (
+                            <AiOutlineEyeInvisible />
+                          ) : (
+                            <AiOutlineEye />
+                          )}
+                        </span>
+                      </div>
                     </Form.Group>
                     <Form.Group controlId="formNewPassword">
                       <Form.Label>New Password</Form.Label>
-                      <Form.Control
-                        type="password"
-                        placeholder="Enter new password"
-                        style={{ fontSize: "12px", marginBottom: "5px" }}
-                      />
+                      <div style={{ position: "relative" }}>
+                        <Form.Control
+                          type={showPassword ? "text" : "password"}
+                          value={newPassword}
+                          onChange={(e) => setNewPassword(e.target.value)}
+                          placeholder="Enter new password"
+                          style={{ fontSize: "12px", marginBottom: "5px" }}
+                        />
+                        <span
+                          onClick={() => setShowPassword(!showPassword)}
+                          style={{
+                            position: "absolute",
+                            top: "50%",
+                            right: "10px",
+                            transform: "translateY(-50%)",
+                            cursor: "pointer",
+                          }}
+                        >
+                          {showPassword ? (
+                            <AiOutlineEyeInvisible />
+                          ) : (
+                            <AiOutlineEye />
+                          )}
+                        </span>
+                      </div>
                     </Form.Group>
                     <Form.Group controlId="formConfirmPassword">
                       <Form.Label>Confirm New Password</Form.Label>
-                      <Form.Control
-                        type="password"
-                        placeholder="Confirm new password"
-                        style={{ fontSize: "12px" }}
-                      />
+                      <div style={{ position: "relative" }}>
+                        <Form.Control
+                          type={showConfirmPassword ? "text" : "password"}
+                          value={confirmNewPassword}
+                          onChange={(e) =>
+                            setConfirmNewPassword(e.target.value)
+                          }
+                          placeholder="Confirm new password"
+                          style={{ fontSize: "12px" }}
+                        />
+                        <span
+                          onClick={() =>
+                            setShowConfirmPassword(!showConfirmPassword)
+                          }
+                          style={{
+                            position: "absolute",
+                            top: "50%",
+                            right: "10px",
+                            transform: "translateY(-50%)",
+                            cursor: "pointer",
+                          }}
+                        >
+                          {showConfirmPassword ? (
+                            <AiOutlineEyeInvisible />
+                          ) : (
+                            <AiOutlineEye />
+                          )}
+                        </span>
+                      </div>
                     </Form.Group>
                   </Modal.Body>
                   <Modal.Footer>
@@ -457,7 +618,7 @@ export default function BuyerProfile() {
                       Cancel
                     </Button>
                     <Button
-                      variant="primary"
+                      onClick={handleSavePassword}
                       style={{ fontSize: "12px", backgroundColor: "#00BA29" }}
                     >
                       Save Changes
@@ -551,10 +712,11 @@ export default function BuyerProfile() {
                     <Form.Group>
                       <Form.Label>New City</Form.Label>
                       <Form.Control
+                        type="text"
                         value={newCity}
                         onChange={(e) => setNewCity(e.target.value)}
                         style={{ fontSize: "12px" }}
-                      ></Form.Control>
+                      />
                     </Form.Group>
                   </Modal.Body>
                   <Modal.Footer>
@@ -574,7 +736,6 @@ export default function BuyerProfile() {
                   </Modal.Footer>
                 </Modal>
               </Row>
-
               <Row>
                 <p
                   style={{
@@ -592,9 +753,7 @@ export default function BuyerProfile() {
                     color: "#666666",
                   }}
                 >
-                  {newAddressLine1},
-                  <p style={{ marginTop: "-15px" }} />
-                  {newAddressLine2}
+                  {newAddressLine1} , {newAddressLine2}
                 </p>
                 <Form.Group>
                   <Button
@@ -637,6 +796,15 @@ export default function BuyerProfile() {
                         type="text"
                         value={newAddressLine2}
                         onChange={(e) => setNewAddressLine2(e.target.value)}
+                        style={{ fontSize: "12px", marginBottom: "5px" }}
+                      />
+                    </Form.Group>
+                    <Form.Group>
+                      <Form.Label>Postal Code</Form.Label>
+                      <Form.Control
+                        type="text"
+                        value={newPostalcode}
+                        onChange={(e) => setNewPostalcode(e.target.value)}
                         style={{ fontSize: "12px", marginBottom: "5px" }}
                       />
                     </Form.Group>
@@ -721,21 +889,21 @@ export default function BuyerProfile() {
                   </Link>
                 </Form.Group>
               </Row>
-              <Row>
-                <p
-                  style={{
-                    fontSize: "13px",
-                    fontWeight: "bold",
-                    marginBottom: "5px",
-                  }}
-                >
-                  Credit or Debit Card
-                </p>
-              </Row>
             </Col>
           </Row>
         </Container>
       </section>
+      <Modal show={showModal} onHide={handleCloseModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Notification</Modal.Title>
+        </Modal.Header>
+        <Modal.Body style={{ fontSize: "13px" }}>{modalMessage}</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseModal}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
       <MainFooter />
     </>
   );

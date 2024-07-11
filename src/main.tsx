@@ -16,7 +16,7 @@ import AddProduct from "./pages/AddProduct2";
 // import Verify from "./pages/Login/Verify";
 // import NewPW from "./pages/Login/NewPW";
 import HomePage from "./pages/HomePage";
-import SellerDashboard from "./pages/sellerDashboard";
+import SellerDashboard from "./pages/Seller/sellerDashboard";
 
 // import AddProduct from "./pages/Login/AddProduct";
 // import VerifyBank from "./pages/Login/VerifyBank";
@@ -45,6 +45,8 @@ import SellerProfile from "./pages/SellerProfile";
 import MyProducts from "./pages/MyProducts";
 import ManageProductPage from "./pages/ManageProducts";
 import Checkout from "./pages/Checkout/Checkout";
+import AddNotification from "./pages/Seller/AddNotification";
+import SellerEditProfile from "./pages/Seller/SellerEditProfile";
 
 const store = createStore({
   authName: "_auth",
@@ -53,7 +55,6 @@ const store = createStore({
   cookieSecure: window.location.protocol === "https:",
 });
 import CalendarBuyer from "./pages/CalendarBuyer";
-// import Dashboard from "./pages/Dashbaord";
 
 import ItemDetails from "./pages/ItemDetails2";
 import ReviewRating from "./pages/ReviewRating";
@@ -61,6 +62,7 @@ import Fruits from "./pages/Fruits";
 import Email from "./pages/Login/Email";
 import Verify from "./pages/Login/Verify";
 import NewPW from "./pages/Login/NewPW";
+import ProductPage from "./pages/SearchPage";
 
 const router = createBrowserRouter([
   {
@@ -75,6 +77,10 @@ const router = createBrowserRouter([
   {
     path: "/ManageYourProducts",
     element: <ManageProductPage />,
+  },
+  {
+    path: "/sellerNotification",
+    element: <AddNotification />,
   },
   {
     path: "/Email",
@@ -139,10 +145,10 @@ const router = createBrowserRouter([
     path: "/CalendarBuyer",
     element: <CalendarBuyer />,
   },
-  // {
-  //   path: "/Dashboard",
-  //   element: <Dashboard />,
-  // },
+  {
+    path: "/editSellerProfile",
+    element: <SellerEditProfile />,
+  },
   {
     path: "/TC",
     element: <TC />,
@@ -156,10 +162,10 @@ const router = createBrowserRouter([
     path: "/sellerDashboard",
     element: <SellerDashboard />,
   },
-  // {
-  //   path: "/AddProduct",
-  //   element: <AddProduct />,
-  // },
+  {
+    path: "/Search",
+    element: <ProductPage />,
+  },
   {
     path: "/buyer-profile",
     element: <BuyerProfile />,

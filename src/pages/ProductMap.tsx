@@ -124,24 +124,6 @@ export default function App() {
       <div className="container">
         <div className="row w-100">
           <div className="col-lg-4 my-4 align-items-center">
-            <div className="me-3 mt-2">
-              <div className="input-group mb-3">
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Search Product Map"
-                  aria-label="Search"
-                  aria-describedby="button-addon2"
-                />
-                <button
-                  className="btn btn-outline-secondary"
-                  type="button"
-                  id="button-addon2"
-                >
-                  <i className="bi bi-search"></i>
-                </button>
-              </div>
-            </div>
             <div className="p-2" style={{ backgroundColor: "#DFFFC0" }}>
               <div className="me-3 mt-2">
                 <h6>Select your city :</h6>

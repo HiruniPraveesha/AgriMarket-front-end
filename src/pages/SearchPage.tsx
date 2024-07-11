@@ -1,43 +1,49 @@
 import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { useParams } from "react-router-dom";
-import { Container, Row, Col, Button, Card, Modal } from "react-bootstrap";
+import {
+  Container,
+  Row,
+  Col,
+  Button,
+  Card,
+  Modal,
+  Form,
+} from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import Header from "../components/Header-main";
-import Footer from "../components/Footer-main";
 import axios from "axios";
 
-const DisplayByCategory: React.FC<{}> = ({}) => {
+const ProductPage: React.FC = () => {
   const navigate = useNavigate();
-  const [products, setProducts] = useState<any[]>([]);
-  const [categoryname, setCategoryName] = useState<any>({});
+  const [products, setProducts] = useState<any[]>([]); // Initialize products as an empty array
   const [addedToCart, setAddedToCart] = useState<{ [key: number]: boolean }>(
     {}
   );
   const [showModal, setShowModal] = useState(false);
-  const { categoryId } = useParams();
-
+  const [searchQuery, setSearchQuery] = useState("");
   useEffect(() => {
-    axios
-      .get(`http://localhost:8080/products/category/${categoryId}`)
-      .then((response) => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/products");
         console.log("Fetched products:", response.data);
-        setProducts(response.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching products:", error);
-      });
 
-    axios
-      .get(`http://localhost:8080/categories/${categoryId}`)
-      .then((response) => {
-        console.log("Fetched category name:", response.data);
-        setCategoryName(response.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching category name:", error);
-      });
-  }, [categoryId]);
+        if (
+          response.data &&
+          response.data.data &&
+          Array.isArray(response.data.data)
+        ) {
+          setProducts(response.data.data);
+        } else {
+          console.error("Invalid response structure:", response.data);
+          setProducts([]); // Set products to an empty array if data is invalid
+        }
+      } catch (error) {
+        console.error("Error fetching products:", error);
+        setProducts([]); // Set products to an empty array if there's an error
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   const addToCart = (product: any, quantity = 1) => {
     const buyerIdString = localStorage.getItem("sellerId");
@@ -76,7 +82,24 @@ const DisplayByCategory: React.FC<{}> = ({}) => {
 
   return (
     <div>
-      <Header />
+      <Form
+        className="d-flex justify-content-center mb-4"
+        style={{ padding: "10px" }}
+      >
+        <Form.Control
+          type="search"
+          placeholder="Search products"
+          className="me-2"
+          aria-label="Search"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          style={{
+            width: "50%",
+            maxWidth: "600px",
+            borderRadius: "20px",
+          }}
+        />
+      </Form>
       <Container
         className="mt-4"
         style={{
@@ -103,7 +126,7 @@ const DisplayByCategory: React.FC<{}> = ({}) => {
                 textShadow: "2px 2px 4px rgba(0, 0, 0, 0.3)",
               }}
             >
-              {categoryname.name}
+              Products
             </h1>
           </Col>
         </Row>
@@ -181,7 +204,7 @@ const DisplayByCategory: React.FC<{}> = ({}) => {
           ))}
         </Row>
       </Container>
-      <Footer />
+
       <Modal show={showModal} onHide={handleCloseModal}>
         <Modal.Header closeButton>
           <Modal.Title>Authentication Required</Modal.Title>
@@ -193,7 +216,11 @@ const DisplayByCategory: React.FC<{}> = ({}) => {
           <Button variant="secondary" onClick={handleCloseModal}>
             Close
           </Button>
-          <Button variant="primary" onClick={() => navigate("/signIn")}>
+          <Button
+            variant="primary"
+            style={{ backgroundColor: "#00BA29", borderColor: "#00BA29" }}
+            onClick={() => navigate("/signIn")}
+          >
             Sign In
           </Button>
         </Modal.Footer>
@@ -202,4 +229,4 @@ const DisplayByCategory: React.FC<{}> = ({}) => {
   );
 };
 
-export default DisplayByCategory;
+export default ProductPage;
