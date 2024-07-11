@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Row,
   Col,
@@ -80,7 +80,7 @@ const StepProgressBar: React.FC<StepProgressBarProps> = ({ currentStep }) => {
 
   const fetchCities = async () => {
     try {
-      const response = await axios.get<City[]>("http://localhost:8001/cities");
+      const response = await axios.get<City[]>("http://localhost:8080/cities");
       setCities(response.data); // Assuming response.data is an array of city objects { id: number, name: string }
     } catch (error) {
       console.error("Error fetching cities:", error);
@@ -484,6 +484,6 @@ const StepProgressBar: React.FC<StepProgressBarProps> = ({ currentStep }) => {
 };
 
 export default StepProgressBar;
-function useEffect(arg0: () => void, arg1: never[]) {
+function setCityError(arg0: string) {
   throw new Error("Function not implemented.");
 }
