@@ -36,11 +36,12 @@ import BuyerProfile from "./pages/Buyer/BuyerProfile";
 // import RechargeWallet from "./pages/Buyer/RechargeWallet";
 // import AddProduct from "./pages/Seller/AddProduct";
 import Sidebar from "./components/Seller-side-bar";
-// import AdminLogin from "./pages/Admin/Admin-login";
+import AdminLogin from "./Admin/Admin-login";
+import AdminDashboard from "./Admin/AdminDashboard";
 // import AdminNavigation from "./components/Admin-bar";
-// import Buyers from "./pages/Admin/Buyers";
-// import Sellers from "./pages/Admin/Sellers";
-// import Products from "./pages/Admin/Products";
+import Buyers from "./Admin/Buyers";
+import Sellers from "./Admin/Sellers";
+import Products from "./Admin/Products";
 import SellerProfile from "./pages/SellerProfile";
 import MyProducts from "./pages/MyProducts";
 import ManageProductPage from "./pages/ManageProducts";
@@ -64,11 +65,32 @@ import Verify from "./pages/Login/Verify";
 import NewPW from "./pages/Login/NewPW";
 import ProductPage from "./pages/SearchPage";
 
+
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
     errorElement: <div>404 Not Found</div>,
+  },
+  {
+    path: "/admin-buyers",
+    element: <Buyers />,
+  },
+  {
+    path: "/admin-sellers",
+    element: <Sellers />,
+  },
+  {
+    path: "/admin-products",
+    element: <Products />,
+  },
+  // {
+  //   path: "/AdminSidebar",
+  //   element: <Sidebar  />,
+  // },
+  {
+    path: "/adminLogin",
+    element: <AdminLogin />,
   },
   {
     path: "/MyProducts",
@@ -214,10 +236,10 @@ const router = createBrowserRouter([
   //   path: "/admin-login",
   //   element: <AdminLogin />,
   // },
-  // {
-  //   path: "/admin-dashboard",
-  //   element: <Dashboard />,
-  // },
+  {
+    path: "/admin/adminDashboard",
+    element: <AdminDashboard />,
+  },
   // {
   //   path: "/admin-buyers",
   //   element: <Buyers />,
