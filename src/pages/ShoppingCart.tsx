@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Button, Card, Col, Form, Row } from "react-bootstrap";
 import Header from "../components/Header-main";
 import Footer from "../components/Footer-main";
 import Delete from "../assets/Delete.svg"; // Import the delete icon
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 interface Product {
+  [x: string]: number;
   product_id: number;
-  name: string;
   price: number;
   quantity: number;
 }
@@ -17,7 +18,11 @@ const ShoppingCart = () => {
   const [cartProducts, setCartProducts] = useState<Product[]>([]);
   const [subtotal, setSubtotal] = useState(0);
   const [totalItemsCount, setTotalItemsCount] = useState(0);
-  //console.log(cartProducts);
+  const [rewardPoints, setRewardPoints] = useState<number | string>(0); // Ensure the input is zero initially
+  // Ensure the input is empty initially
+  const [discountedTotal, setDiscountedTotal] = useState(0);
+  const [pointsApplied, setPointsApplied] = useState(false); // New state variable
+  const [walletBalance, setWalletBalance] = useState(0); // New state for wallet balance
 
   // Function to fetch cart products from session storage
   const fetchCartProducts = () => {
@@ -63,21 +68,26 @@ const ShoppingCart = () => {
     }
   };
 
-  const updateProductQuantity = (productId: number, quantity: number) => {
-    try {
-      let cart = JSON.parse(sessionStorage.getItem("cart") || "[]");
-      cart = cart.map((product: Product) => {
-        if (product.product_id === productId) {
-          return { ...product, quantity: quantity > 0 ? quantity : 1 };
-        }
-        return product;
-      });
-      sessionStorage.setItem("cart", JSON.stringify(cart));
-      fetchCartProducts(); // Refresh cart products after quantity update
-    } catch (error) {
-      console.error("Error updating product quantity:", error); // Handle error
-    }
-  };
+const updateProductQuantity = (productId: number, quantity: number) => {
+  try {
+    let cart = JSON.parse(sessionStorage.getItem("cart") || "[]");
+
+    cart = cart.map((product: Product) => {
+      if (product.product_id === productId) {
+        // Ensure the entered quantity does not exceed the maximum quantity
+        const updatedQuantity = quantity > 0 ? Math.min(quantity, product.quantityLimit) : 1;
+        return { ...product, quantity: updatedQuantity };
+      }
+      return product;
+    });
+
+    sessionStorage.setItem("cart", JSON.stringify(cart));
+    fetchCartProducts(); // Refresh cart products after quantity update
+  } catch (error) {
+    console.error("Error updating product quantity:", error); // Handle error
+  }
+};
+
 
   // Calculate subtotal based on cart products
   const calculateSubtotal = (products: Product[]) => {
@@ -86,6 +96,7 @@ const ShoppingCart = () => {
       total += product.price * product.quantity;
     });
     setSubtotal(total);
+    setDiscountedTotal(Math.max(total - Number(rewardPoints), 0)); // Update discounted total, ensure it is not negative
   };
 
   // Function to clear the shopping cart
@@ -95,14 +106,54 @@ const ShoppingCart = () => {
       setCartProducts([]); // Clear cart products in state
       setSubtotal(0); // Reset subtotal
       setTotalItemsCount(0); // Reset total items count
+      setRewardPoints(""); // Reset reward points
+      setDiscountedTotal(0); // Reset discounted total
+      setPointsApplied(false); // Reset points applied status
     } catch (error) {
       console.error("Error clearing cart:", error); // Handle error
     }
   };
 
-  // Fetch cart products on component mount
+  const fetchWalletBalance = async () => {
+    try {
+      const buyerId = sessionStorage.getItem("buyerId");
+      console.log("Buyer ID from sessionStorage:", buyerId);
+
+      if (1) {
+        const response = await axios.get(
+          `http://localhost:8000/get-wallet-balance?buyerId=1`
+        );
+        console.log("Response from backend:", response.data);
+        setWalletBalance(response.data.data.pointBalance || 0);
+      }
+    } catch (error) {
+      console.error("Error fetching wallet balance:", error);
+    }
+  };
+
+  // Function to apply reward points
+  const applyRewardPoints = () => {
+    if (Number(rewardPoints) <= walletBalance) {
+      setDiscountedTotal(Math.max(subtotal - Number(rewardPoints), 0)); // Ensure total is not negative
+      setPointsApplied(true); // Set points applied status to true
+      sessionStorage.setItem("reward", JSON.stringify(rewardPoints));
+    } else {
+      alert("You cannot apply more points than available in your wallet.");
+    }
+  };
+
+  // Function to cancel reward points
+  const cancelRewardPoints = () => {
+    setRewardPoints("");
+    setDiscountedTotal(subtotal); // Reset discounted total to subtotal
+    setPointsApplied(false); // Set points applied status to false
+  };
+
+  // Fetch cart products and wallet balance on component mount
   useEffect(() => {
     fetchCartProducts();
+    fetchWalletBalance(); // Fetch wallet balance on component mount
+    setRewardPoints(""); // Clear reward points when component mounts
   }, []); // Empty dependency array means this effect runs once after initial render
 
   return (
@@ -197,6 +248,7 @@ const ShoppingCart = () => {
                               >
                                 <Form.Control
                                   type="number"
+                                  placeholder=""
                                   value={product.quantity}
                                   onChange={(e) =>
                                     updateProductQuantity(
@@ -288,24 +340,56 @@ const ShoppingCart = () => {
                             </h5>
                           </div>
                           <div>
-                            <h3>Rs.{subtotal}</h3>
+                            <h3>Rs.{discountedTotal}</h3>
                           </div>
                         </div>
 
                         <hr />
 
+                        <div className="d-flex justify-content-between mb-2">
+                          <h5 style={{ fontSize: "15px" }}>
+                            Total Reward Points
+                          </h5>
+                          <h5 style={{ fontSize: "15px" }}>{walletBalance}</h5>
+                        </div>
+
+                        <hr style={{ marginTop: "-2px" }} />
+
                         <h5 className="mb-2" style={{ fontSize: "13px" }}>
-                          Enter promo code
+                          Enter Reward point Amount
+                        </h5>
+                        <h5
+                          className="mb-2"
+                          style={{
+                            fontSize: "10px",
+                            color: "gray",
+                            marginTop: "-5px",
+                          }}
+                        >
+                          You can pay with your Reward points.
                         </h5>
 
                         <div className="mb-3 d-flex align-items-center">
                           <Form.Control
                             size="sm"
                             style={{
-                              width: "150px",
+                              width: "110px",
                               fontSize: "15px",
-                              marginRight: "15px",
+                              marginRight: "10px",
+                              marginLeft: "10px",
                             }}
+                            value={rewardPoints}
+                            onChange={(e) => {
+                              const value = parseInt(e.target.value) || 0;
+                              if (value <= walletBalance) {
+                                setRewardPoints(value);
+                              } else {
+                                ("You cannot enter more points than available in your wallet.");
+                                setRewardPoints(walletBalance);
+                              }
+                              setPointsApplied(false); // Reset points applied status on change
+                            }}
+                            disabled={totalItemsCount === 0} // Disable input if cart is empty
                           />
                           <Button
                             variant="primary"
@@ -313,11 +397,37 @@ const ShoppingCart = () => {
                             style={{
                               padding: "0.2rem 0.8rem",
                               fontSize: "12px",
-                              backgroundColor: "#01B928",
+                              backgroundColor: pointsApplied
+                                ? "#A2A6B0"
+                                : "#01B928",
+                              color: pointsApplied ? "#000" : "#fff",
                             }}
+                            onClick={applyRewardPoints}
+                            disabled={
+                              pointsApplied ||
+                              totalItemsCount === 0 ||
+                              rewardPoints === "" ||
+                              rewardPoints === 0
+                            } // Disable button if points already applied or cart is empty or no points entered
                           >
-                            Apply
+                            {pointsApplied ? "Applied" : "Apply"}
                           </Button>
+                          {pointsApplied && (
+                            <Button
+                              variant="secondary"
+                              size="sm"
+                              style={{
+                                padding: "0.2rem 0.8rem",
+                                fontSize: "12px",
+                                backgroundColor: "#01B928",
+                                color: "#fff",
+                                marginLeft: "10px",
+                              }}
+                              onClick={cancelRewardPoints}
+                            >
+                              Cancel
+                            </Button>
+                          )}
                         </div>
 
                         <hr style={{ marginTop: "30px" }} />
@@ -329,14 +439,20 @@ const ShoppingCart = () => {
 
                         <div className="d-flex justify-content-between mb-2">
                           <h5 style={{ fontSize: "12px" }}>
-                            Promo code discount
+                            Reward points discount
                           </h5>
-                          <h5 style={{ fontSize: "12px" }}>-Rs.00</h5>
+                          <h5 style={{ fontSize: "12px" }}>
+                            {Number(rewardPoints) > 0
+                              ? `-Rs.${rewardPoints}`
+                              : "-Rs.0"}
+                          </h5>
                         </div>
 
                         <div className="d-flex justify-content-between mb-2">
                           <h5 style={{ fontSize: "12px" }}>Order total</h5>
-                          <h5 style={{ fontSize: "12px" }}>Rs.{subtotal}</h5>
+                          <h5 style={{ fontSize: "12px" }}>
+                            Rs.{discountedTotal}
+                          </h5>
                         </div>
 
                         <div

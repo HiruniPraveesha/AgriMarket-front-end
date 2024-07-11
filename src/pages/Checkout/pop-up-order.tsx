@@ -1,6 +1,7 @@
 import React from "react";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
+import { Link } from "react-router-dom";
 
 interface OrderSuccessPopupProps {
   show: boolean;
@@ -26,23 +27,26 @@ const OrderSuccessPopup: React.FC<OrderSuccessPopupProps> = ({
           ORDER IS CONFIRMED!
         </p>
         <p style={{ color: "#666666", fontSize: "12px", marginTop: "5px" }}>
-          Your order has been successfully placed. Thank you for shopping with us!
+          Your order has been successfully placed. Thank you for shopping with
+          us!
         </p>
       </Modal.Body>
 
       <Modal.Footer>
-        <Button
-          variant="secondary"
-          onClick={handleClose}
-          style={{
-            display: "block",
-            margin: "auto",
-            backgroundColor: "#01B928",
-            borderColor: "#01B928",
-          }}
-        >
-          Continue Shopping
-        </Button>
+        <Link to="/HomePage">
+          <Button
+            variant="secondary"
+            onClick={handleClose}
+            style={{
+              display: "block",
+              margin: "auto",
+              backgroundColor: "#01B928",
+              borderColor: "#01B928",
+            }}
+          >
+            Home Page
+          </Button>
+        </Link>
       </Modal.Footer>
     </Modal>
   );

@@ -1,44 +1,59 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Table from 'react-bootstrap/Table';
 import More from '../../assets/more.svg';
 import MainHeader from '../../components/Header-main';
 import Footer2 from '../../components/Footer-main';
-import { Link } from 'react-router-dom';
+import React from 'react';
 
 interface Order {
   orderId: number;
   orderedDate: string;
-  product: {
+  products: {
     name: string;
-    quantity: string;
-  };
-  seller: {
-    store_name: string;
-  };
-  totalAmount: number;
+    quantity: number;
+  }[];
+  totalAmount?: number;
+  deliveryAddress?: string;
+  pickupAddress?: string;
 }
 
 function OrderHistory() {
   const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [expandedRow, setExpandedRow] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        // Replace with actual API endpoint
-        const response = await fetch('http://localhost:8000/order-history?id=1');
+        const response = await fetch('http://localhost:8000/order-history?buyerId=1');
         if (!response.ok) {
           throw new Error('Failed to fetch orders');
         }
-        const ordersData = await response.json();
-        setOrders(ordersData);
+        const { orders } = await response.json();
+        setOrders(orders);
       } catch (error) {
+        setError('Error fetching orders');
         console.error('Error fetching orders:', error);
-        // Handle error, e.g., show error message
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchOrders();
   }, []);
+
+  const handleMoreClick = (orderId: number) => {
+    setExpandedRow(expandedRow === orderId ? null : orderId);
+  };
+
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
+  if (error) {
+    return <p>{error}</p>;
+  }
 
   return (
     <>
@@ -52,26 +67,60 @@ function OrderHistory() {
             <tr>
               <th style={{ width: '10%', textAlign: 'center' }}>Order No</th>
               <th style={{ width: '15%', textAlign: 'center' }}>Ordered Date</th>
-              <th style={{ width: '20%', textAlign: 'center' }}>Product</th>
-              <th style={{ width: '20%', textAlign: 'center' }}>Seller</th>
               <th style={{ width: '15%', textAlign: 'center' }}>Total</th>
               <th style={{ width: '5%', textAlign: 'center' }}></th>
             </tr>
           </thead>
           <tbody>
             {orders.map((order) => (
-              <tr key={order.orderId}>
-                <td style={{ textAlign: 'center' }}>{`#${order.orderId}`}</td>
-                <td style={{ textAlign: 'center' }}>{order.orderedDate}</td>
-                <td style={{ textAlign: 'center' }}>{`${order.product.name} - ${order.product.quantity}`}</td>
-                <td style={{ textAlign: 'center' }}>{order.seller.store_name}</td>
-                <td style={{ textAlign: 'center' }}>{`Rs.${order.totalAmount.toFixed(2)}`}</td>
-                <td style={{ textAlign: 'center' }}>
-                  <Link to="/order-details">
-                    <img src={More} alt="More" style={{ width: '20px', height: '20px', transform: 'rotate(-90deg)' }} />
-                  </Link>
-                </td>
-              </tr>
+              <React.Fragment key={order.orderId}>
+                <tr>
+                  <td style={{ textAlign: 'center' }}>{`#${order.orderId}`}</td>
+                  <td style={{ textAlign: 'center' }}>{new Date(order.orderedDate).toLocaleDateString()}</td>
+                  <td style={{ textAlign: 'center' }}>
+                    {order.totalAmount !== undefined ? `Rs.${order.totalAmount}` : 'N/A'}
+                  </td>
+                  <td style={{ textAlign: 'center' }}>
+                    <img
+                      src={More}
+                      alt="More"
+                      style={{ width: '20px', height: '20px', transform: 'rotate(-90deg)', cursor: 'pointer' }}
+                      onClick={() => handleMoreClick(order.orderId)}
+                    />
+                  </td>
+                </tr>
+                {expandedRow === order.orderId && (
+                  <tr>
+                    <td colSpan={4} style={{ textAlign: 'center', padding: '10px', backgroundColor: '#f9f9f9' }}>
+                      <Table bordered style={{ marginBottom: '10px' }}>
+                        <thead>
+                          <tr>
+                            <th>Product Name</th>
+                            <th>Quantity</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {order.products.map((product, index) => (
+                            <tr key={index}>
+                              <td>{product.name}</td>
+                              <td>{product.quantity}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </Table>
+                      {order.deliveryAddress === 'Pickup from store' ? (
+                        <div>
+                          <p><strong>Pick up address:</strong> {order.pickupAddress}</p>
+                        </div>
+                      ) : (
+                        <div>
+                          <p><strong>Shipping Address:</strong> {order.deliveryAddress}</p>
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                )}
+              </React.Fragment>
             ))}
           </tbody>
         </Table>

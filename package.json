@@ -19,6 +19,7 @@
     "@googlemaps/js-api-loader": "^1.16.6",
     "@mui/material": "^5.15.15",
     "@react-google-maps/api": "^2.19.3",
+    "@stripe/stripe-js": "^4.0.0",
     "@types/googlemaps": "^3.43.3",
     "@types/next": "^9.0.0",
     "@types/react-bootstrap": "^0.32.36",
