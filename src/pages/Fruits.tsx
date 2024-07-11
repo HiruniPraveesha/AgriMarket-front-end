@@ -1,156 +1,163 @@
-import React, { useEffect, useState } from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
-import { useParams } from "react-router-dom";
-import { Container, Row, Col, Button, Card } from "react-bootstrap";
+import React, { useEffect, useState } from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { useParams } from 'react-router-dom';
+import { Container, Row, Col, Button, Card, Modal} from 'react-bootstrap';
+import { useNavigate } from "react-router-dom";
 import Header from "../components/Header-main";
 import Footer from "../components/Footer-main";
+import axios from 'axios';
 
 const DisplayByCategory: React.FC<{}> = ({}) => {
-  const [products, setProducts] = useState<any[]>([]); // Initialize products as an array
+  const navigate = useNavigate();
+  const [products, setProducts] = useState<any[]>([]);
+  const [categoryname, setCategoryName] = useState<any>({});
+  const [addedToCart, setAddedToCart] = useState<{ [key: number]: boolean }>({});
+  const [showModal, setShowModal] = useState(false);
   const { categoryId } = useParams();
 
   useEffect(() => {
-    // Make an HTTP GET request to fetch data from the API endpoint
-    fetch(`http://localhost:8080/products/category/${categoryId}`)
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("Fetched products:", data);
-        // Update the state with the fetched products data
-        setProducts(data);
+    axios.get(`http://localhost:8080/products/category/${categoryId}`)
+      .then(response => {
+        console.log('Fetched products:', response.data);
+        setProducts(response.data);
       })
-      .catch((error) => {
-        console.error("Error fetching products:", error);
+      .catch(error => {
+        console.error('Error fetching products:', error);
+      });
+
+    axios.get(`http://localhost:8080/categories/${categoryId}`)
+      .then(response => {
+        console.log('Fetched category name:', response.data);
+        setCategoryName(response.data);
+      })
+      .catch(error => {
+        console.error('Error fetching category name:', error);
       });
   }, [categoryId]);
 
-  const [categoryname, setCategoryName] = useState<any>({});
-  // Initialize products as an array
+  const addToCart = (product: any, quantity = 1) => {
+    const buyerIdString = localStorage.getItem("sellerId");
+    const buyerId = buyerIdString ? parseInt(buyerIdString) : null;
 
-  useEffect(() => {
-    fetch(`http://localhost:8080/categories/${categoryId}`)
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("Fetched categoryname:", data);
-        setCategoryName(data); // Assuming data is an object containing category details
-      })
-      .catch((error) => {
-        console.error("Error fetching categoryname:", error);
-      });
-  }, [categoryId]);
+    if (buyerId === null) {
+      console.error('Buyer ID is missing');
+      setShowModal(true);
+      return;
+    }
+
+    const currentCart = JSON.parse(sessionStorage.getItem('cart') || '[]');
+    const updatedCart = [...currentCart, { ...product, quantity }];
+    sessionStorage.setItem('cart', JSON.stringify(updatedCart));
+    console.log("Item added to cart", product.product_id);
+  };
+
+  const handleAddToCartClick = (product: any) => {
+    const buyerIdString = localStorage.getItem("sellerId");
+    const buyerId = buyerIdString ? parseInt(buyerIdString) : null;
+
+    if (buyerId === null) {
+      console.error('Buyer ID is missing');
+      setShowModal(true);
+      return;
+    }
+
+    addToCart(product);
+    setAddedToCart(prevState => ({ ...prevState, [product.product_id]: true }));
+  };
+
+  
+
+  const handleCloseModal = () => setShowModal(false);
 
   return (
     <div>
       <Header />
-      <Container
-        className="mt-4"
+      <Container className="mt-4"
         style={{
-          justifyContent: "center",
-          alignItems: "center",
-          background:
-            "linear-gradient(to bottom, #E5F4D7, #F5FBEF, #DFFFC0,#F5FBEF)",
-          border: "2px",
-          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.3)",
-          borderRadius: "30px",
-          padding: "20px",
-        }}
-      >
-        <Row className="justify-content-md-center text-center">
+          justifyContent: 'center',
+          alignItems: 'center',
+          background: 'linear-gradient(to bottom, #FBFFF8, #F7F8F5, #F7FFEF,#FEFFFD)',
+          borderRadius: '10px'
+        }}>
+        <Row>
           <Col>
-            <h1
-              style={{
-                fontFamily: "Poppins",
-                color: "#484848",
-                justifyContent: "center",
-                alignItems: "center",
-                padding: "3px",
-                backgroundClip: "text",
-                textShadow: "2px 2px 4px rgba(0, 0, 0, 0.3)",
-              }}
-            >
-              {categoryname.name}
+            <h1 className="text-center"
+            style={{ 
+              fontFamily: 'Poppins',
+              color: '#484848',
+              justifyContent: 'center', 
+              alignItems: 'center',  
+              padding: '3px',
+              marginRight: 'auto',
+              marginLeft: 'auto',
+              backgroundClip: 'text',
+              textShadow: '2px 2px 4px rgba(0, 0, 0, 0.3)',
+            }}>
+                {categoryname.name}
             </h1>
           </Col>
         </Row>
-        <Row className="mt-4 d-flex justify-content-center align-items-center">
-          {products.map(
-            (
-              product // Use products.map to iterate over the products array
-            ) => (
-              <Col
-                key={product.product_id}
-                xs={12}
-                sm={6}
-                md={6}
-                lg={3}
-                className="mb-4"
-              >
-                <Card
-                  style={{
-                    width: "100%",
-                    border: "2px",
-                    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.3)",
-                    borderRadius: "10px",
-                    padding: "20px",
-                  }}
-                >
-                  <Card.Link href="#">
-                    <div className="d-flex justify-content-center align-items-center">
-                      <Card.Img
-                        variant="top"
-                        src={product.image}
-                        style={{
-                          height: "70%",
-                          width: "70%",
-                          alignItems: "center",
-                          border: "none",
-                        }}
-                        onClick={(e) => {
-                          e.preventDefault();
-                        }}
-                      />
-                    </div>
-                  </Card.Link>
-                  <Card.Body>
-                    <Card.Text style={{ fontSize: "14px", lineHeight: "2" }}>
-                      <span style={{ fontWeight: "bold" }}>
-                        Rs.{product.price} - 1kg
-                      </span>
-                      <br />
-                      <span style={{ fontFamily: "Sans-serif" }}>
-                        {product.name}
-                      </span>
-                      <br />
-                      <span style={{ fontFamily: "Sans-serif" }}>
-                        {product.seller.store_name}
-                      </span>
-                      <br />
-                      <Button
-                        variant="primary"
-                        style={{
-                          backgroundColor: "#00BA29",
-                          border: "none",
-                          fontSize: "12px",
-                        }}
-                        onMouseOver={(e) =>
-                          (e.currentTarget.style.boxShadow =
-                            "1px 1px 2px 2px rgba(0, 0, 0, 0.2)")
-                        }
-                        onMouseOut={(e) =>
-                          (e.currentTarget.style.boxShadow =
-                            "0 3px 7px rgba(0, 0, 0, 0.1)")
-                        }
-                      >
-                        Add to Cart
-                      </Button>
-                    </Card.Text>
-                  </Card.Body>
-                </Card>
-              </Col>
-            )
-          )}
+        <Row className="d-flex justify-content-center mt-3">
+          {products.map((product) => (
+            <Col key={product.product_id} md={4} className="d-flex justify-content-center mb-4">
+              <Card className="shadow-sm" style={{ width: '18rem', transition: 'box-shadow 0.3s', backgroundColor: 'transparent' }}>
+                <Card.Img variant="top" 
+                style={{cursor: 'pointer' }}
+                src={product.image1}
+                onClick={(e) => {e.preventDefault();
+                    console.log(product);
+                    navigate(`/ItemDetails/${product.product_id}`); 
+                  }} />
+                <Card.Body className="text-center">
+                  <Card.Title style={{ fontSize: '15px' }}>{product.name}</Card.Title>
+                  <Card.Text>Rs.{product.price}</Card.Text>
+                  <Card.Text style={{ fontFamily: 'Sans-serif', fontStyle:'italic', cursor: 'pointer' }}
+                   onClick={(e) => {
+                    e.preventDefault();
+                    navigate(`/SellerProfile/${product.seller.seller_id}`);
+                    }}
+                  >{product.seller.store_name}
+                  </Card.Text>
+                  <Button 
+                    variant="primary"
+                    style={{
+                      backgroundColor: '#00BA29',
+                      border: 'none',
+                      fontSize: '12px'
+                    }}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleAddToCartClick(product);
+                    }}
+                    onMouseOver={(e) => (e.currentTarget.style.boxShadow = '1px 1px 2px 2px rgba(0, 0, 0, 0.2)')}
+                    onMouseOut={(e) => (e.currentTarget.style.boxShadow = '0 3px 7px rgba(0, 0, 0, 0.1)')}
+                    disabled={!!addedToCart[product.product_id]}
+                  >
+                    {addedToCart[product.product_id] ? 'Added to Cart' : 'Add to Cart'}
+                  </Button>
+                </Card.Body>
+              </Card>
+            </Col>
+          ))}
         </Row>
       </Container>
       <Footer />
+      <Modal show={showModal} onHide={handleCloseModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Authentication Required</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>Please log in or register to add items to your cart.</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseModal}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={() => navigate('/signIn')}>
+            Sign In
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };
