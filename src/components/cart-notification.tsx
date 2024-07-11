@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { Button } from "react-bootstrap";
@@ -14,15 +14,64 @@ interface CartItem {
 interface CartNotificationProps {
   isVisible: boolean;
   onClose: () => void;
-  cartItems: CartItem[];
 }
 
 const CartNotification: React.FC<CartNotificationProps> = ({
   isVisible,
   onClose,
-  cartItems,
 }) => {
   const navigate = useNavigate();
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [subtotal, setSubtotal] = useState(0);
+  const [totalItems, setTotalItems] = useState(0);
+
+  useEffect(() => {
+    fetchCartProducts();
+  }, []);
+
+  useEffect(() => {
+    const cartData = sessionStorage.getItem("cart");
+    if (cartData) {
+      const parsedCartData: CartItem[] = JSON.parse(cartData);
+      setCartItems(parsedCartData);
+      calculateSubtotal(parsedCartData);
+      setTotalItems(
+        parsedCartData.reduce((acc, product) => acc + product.quantity, 0)
+      );
+    } else {
+      setCartItems([]);
+      setSubtotal(0);
+      setTotalItems(0);
+    }
+  }, [isVisible]);
+
+  const fetchCartProducts = () => {
+    try {
+      const cartData = sessionStorage.getItem("cart");
+      if (cartData) {
+        const parsedCartData: CartItem[] = JSON.parse(cartData);
+        setCartItems(parsedCartData);
+        calculateSubtotal(parsedCartData);
+        setTotalItems(
+          parsedCartData.reduce((acc, product) => acc + product.quantity, 0)
+        );
+      } else {
+        setCartItems([]);
+        setSubtotal(0);
+        setTotalItems(0);
+      }
+    } catch (error) {
+      console.error("Error fetching cart products:", error);
+    }
+  };
+
+  const calculateSubtotal = (cartItems: CartItem[]) => {
+    let total = 0;
+    cartItems.forEach((item) => {
+      total += item.price * item.quantity;
+    });
+    setSubtotal(total);
+  };
 
   const handleCheckout = () => {
     navigate("/shopping-cart");
@@ -57,6 +106,10 @@ const CartNotification: React.FC<CartNotificationProps> = ({
         </button>
       </div>
       <div>
+        <p className="mb-0" style={{ marginTop: "-15px" }}>
+          Total Items: {totalItems}
+        </p>
+        <hr />
         {cartItems.length === 0 ? (
           <p>Your cart is currently empty.</p>
         ) : (
@@ -70,7 +123,7 @@ const CartNotification: React.FC<CartNotificationProps> = ({
                   <p className="mb-0">Qty: {item.quantity}</p>
                 </div>
                 <div className="col-4 text-end">
-                  <p className="mb-0">${item.price.toFixed(2)}</p>
+                  <p className="mb-0">Rs.{item.price}</p>
                 </div>
               </div>
             ))}
@@ -78,7 +131,20 @@ const CartNotification: React.FC<CartNotificationProps> = ({
         )}
       </div>
 
-      <div style={{ display: "flex", justifyContent: "center" }}>
+      <hr style={{ marginBottom: "-15px" }} />
+
+      <div className="d-flex justify-content-between align-items-center mt-4">
+        <div>
+          <p className="mb-0">Subtotal:</p>
+        </div>
+        <div className="text-end">
+          <p className="mb-0">Rs.{subtotal}</p>
+        </div>
+      </div>
+
+      <div
+        style={{ display: "flex", justifyContent: "center", marginTop: "20px" }}
+      >
         <Button
           style={{
             width: "200px",
@@ -88,11 +154,11 @@ const CartNotification: React.FC<CartNotificationProps> = ({
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            marginTop: "15px",
           }}
           onClick={handleCheckout}
+          disabled={cartItems.length === 0}
         >
-          View Cart
+          View Shopping Cart
         </Button>
       </div>
     </div>

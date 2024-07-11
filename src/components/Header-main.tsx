@@ -30,12 +30,6 @@ import { Navbar, Nav, Container } from "react-bootstrap";
 import useAuthUser from "react-auth-kit/hooks/useAuthUser";
 // Define the type for the category
 
-interface Notification {
-  image: string;
-  title: string;
-  timestamp: string;
-  message: string;
-}
 interface HeaderProps {
   userEmail: string | null; // Define the type of userEmail
 }
@@ -62,15 +56,9 @@ const HeaderNew: React.FC = () => {
 
   const toggleCart = () => setIsCartVisible(!isCartVisible); // Toggle cart notification
 
-  const [keyword, setKeyword] = useState("");
-  const searchHandler = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-
-    const category = selectedCategory ? selectedCategory.category_id : "all";
-    const searchPath = keyword.trim() ? `/search/${keyword}` : `/`;
-
-    history.pushState(null, "", searchPath);
-  };
+  const [buyerId, setSellerId] = useState(
+    localStorage.getItem("sellerId") || ""
+  );
 
   const handleSelect = (category: any | null) => {
     setSelectedCategory(category);
@@ -217,7 +205,9 @@ const HeaderNew: React.FC = () => {
               </Nav.Link>
             )}
             <span style={{ margin: "10px 10px" }}></span>
-            <Nav.Link href="/buyer-profile">{userEmail ?? " "}</Nav.Link>
+            <Nav.Link href={`/buyerProfile/${buyerId}`}>
+              {userEmail ?? " "}
+            </Nav.Link>
             <span style={{ margin: "0 10px" }}></span>
             <Link
               to="/signIn"
@@ -234,18 +224,9 @@ const HeaderNew: React.FC = () => {
       <div className="bg-white">
         <div className="row">
           {/* Logo */}
-          <div className="col-md-3 col-lg-2 col-xl-2 mb-1 ml-2 d-flex justify-content-center align-items-center">
-            <a href="#">
-              <img
-                src={Logo}
-                style={{ height: "55px", width: "45px" }}
-                alt="Logo"
-              />
-            </a>
-          </div>
 
           {/* Search Bar */}
-          <div className="col-md-7 col-lg-7 col-xl-7 mb-1 mt-0 d-flex justify-content-center align-items-center">
+          <div className="col-md-3 col-lg-2 col-xl-2 mb-1 ml-2 d-flex justify-content-center align-items-center">
             <Dropdown>
               <Dropdown.Toggle
                 variant="light"
@@ -283,31 +264,36 @@ const HeaderNew: React.FC = () => {
                 ))}
               </Dropdown.Menu>
             </Dropdown>
-            <input
-              className="form-control mr-sm-2"
-              type="search"
-              placeholder="Enter product name ..."
-              aria-label="Search"
-              style={{ borderRadius: "0", width: "300px", fontSize: "0.7rem" }}
-              onChange={(e) => setKeyword(e.target.value)}
-            />
-            <button
-              className="btn btn-success my-2 my-sm-0"
-              type="submit"
-              style={{
-                backgroundColor: "#00BA29",
-                borderColor: "#00BA29",
-                borderRadius: "0",
-                padding: "3px 8px",
-              }}
-              onClick={searchHandler}
-            >
-              <img src={Search} alt="Search" />
-            </button>
+          </div>
+
+          <div className="col-md-7 col-lg-7 col-xl-7 mb-1 mt-0 d-flex justify-content-center align-items-center">
+            <a href="#">
+              <img
+                src={Logo}
+                style={{ height: "58px", width: "48px" }}
+                alt="Logo"
+              />
+            </a>
+            <h3>AGRIMARKET</h3>
           </div>
 
           {/* Bell & Cart Icons */}
           <div className="col-md-2 col-lg-2 col-xl-2 mb-md-0 mt-1 d-flex justify-content-center align-items-center position-relative">
+            <Link to="/Search">
+              <button
+                className="btn btn-success my-2 my-sm-0"
+                type="submit"
+                style={{
+                  backgroundColor: "#00BA29",
+                  borderColor: "white",
+                  borderRadius: "0",
+                  padding: "3px 8px",
+                  margin: "0 10px",
+                }}
+              >
+                <img src={Search} alt="Search" />
+              </button>
+            </Link>
             <button
               ref={bellRef}
               onClick={toggleNotifications}

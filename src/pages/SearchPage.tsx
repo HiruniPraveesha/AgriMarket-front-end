@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
+import HeaderNew from "../components/Header-main";
+import Footer2 from "../components/Footer-main";
 import {
   Container,
   Row,
@@ -14,36 +16,68 @@ import axios from "axios";
 
 const ProductPage: React.FC = () => {
   const navigate = useNavigate();
-  const [products, setProducts] = useState<any[]>([]); // Initialize products as an empty array
+  const [products, setProducts] = useState<any[]>([]);
   const [addedToCart, setAddedToCart] = useState<{ [key: number]: boolean }>(
     {}
   );
   const [showModal, setShowModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await axios.get("http://localhost:8080/products");
-        console.log("Fetched products:", response.data);
 
-        if (
-          response.data &&
-          response.data.data &&
-          Array.isArray(response.data.data)
-        ) {
-          setProducts(response.data.data);
-        } else {
-          console.error("Invalid response structure:", response.data);
-          setProducts([]); // Set products to an empty array if data is invalid
-        }
-      } catch (error) {
-        console.error("Error fetching products:", error);
-        setProducts([]); // Set products to an empty array if there's an error
+  // Define the fetchProducts function
+  const fetchProducts = async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/products");
+      console.log("Fetched products:", response.data);
+
+      if (
+        response.data &&
+        response.data.data &&
+        Array.isArray(response.data.data)
+      ) {
+        setProducts(response.data.data);
+      } else {
+        console.error("Invalid response structure:", response.data);
+        setProducts([]);
       }
-    };
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      setProducts([]);
+    }
+  };
 
+  useEffect(() => {
     fetchProducts();
   }, []);
+
+  const searchProducts = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/api/search?keyword=${searchQuery}`
+      );
+      if (response.data && Array.isArray(response.data)) {
+        setProducts(response.data);
+      } else {
+        console.error("Invalid search response structure:", response.data);
+        setProducts([]);
+      }
+    } catch (error) {
+      console.error("Error searching products:", error);
+      setProducts([]);
+    }
+  };
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+    if (e.target.value.trim() === "") {
+      // If search query is cleared, fetch all products
+      fetchProducts();
+    }
+  };
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    searchProducts();
+  };
 
   const addToCart = (product: any, quantity = 1) => {
     const buyerIdString = localStorage.getItem("sellerId");
@@ -82,9 +116,11 @@ const ProductPage: React.FC = () => {
 
   return (
     <div>
+      <HeaderNew />
       <Form
         className="d-flex justify-content-center mb-4"
         style={{ padding: "10px" }}
+        onSubmit={handleSearchSubmit}
       >
         <Form.Control
           type="search"
@@ -92,7 +128,7 @@ const ProductPage: React.FC = () => {
           className="me-2"
           aria-label="Search"
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={handleSearchChange}
           style={{
             width: "50%",
             maxWidth: "600px",
@@ -225,6 +261,7 @@ const ProductPage: React.FC = () => {
           </Button>
         </Modal.Footer>
       </Modal>
+      <Footer2 />
     </div>
   );
 };

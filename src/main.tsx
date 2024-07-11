@@ -167,7 +167,7 @@ const router = createBrowserRouter([
     element: <ProductPage />,
   },
   {
-    path: "/buyer-profile",
+    path: "/buyerProfile/:buyerId",
     element: <BuyerProfile />,
   },
   // {

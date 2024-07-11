@@ -12,7 +12,9 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 
 export default function BuyerProfile() {
-  const [buyerId, setBuyerId] = useState("");
+  const [buyerId, setSellerId] = useState(
+    localStorage.getItem("sellerId") || ""
+  );
   const [contactNumber, setContactNumber] = useState("");
   const [newcontactNumber, setNewContactNumber] = useState("");
   const [email, setEmail] = useState("");
