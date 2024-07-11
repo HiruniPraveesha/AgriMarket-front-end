@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { GoogleMap, useJsApiLoader, MarkerF } from "@react-google-maps/api";
+import {
+  GoogleMap,
+  useJsApiLoader,
+  MarkerF,
+  InfoWindow,
+} from "@react-google-maps/api";
 import "bootstrap/dist/css/bootstrap.min.css";
 import MainHeader from "../components/Header-main";
 import MainFooter from "../components/Footer-main";
 import axios from "axios";
 
 import Form from "react-bootstrap/Form";
-import Icon1 from "../assets/icon1.svg";
-import Icon2 from "../assets/icon2.svg";
-import Icon3 from "../assets/icon3.svg";
-import Icon4 from "../assets/icon4.svg";
 
 export default function App() {
   const containerStyle = {
@@ -30,14 +31,24 @@ export default function App() {
   };
 
   const [points, setPoints] = useState<
-    { lat: number; lng: number; text: string; category_id: number }[]
+    {
+      id: number;
+      lat: number;
+      lng: number;
+      text: string;
+      category_id: number;
+    }[]
   >([]);
 
   const [sellers, setSellers] = useState<string[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
-
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [selectedSeller, setSelectedSeller] = useState<string | null>(null);
+  const [selectedMarker, setSelectedMarker] = useState<{
+    lat: number;
+    lng: number;
+    text: string;
+  } | null>(null);
 
   const filteredPoints = selectedCategory
     ? points.filter(
@@ -58,8 +69,8 @@ export default function App() {
 
   const onLoad = React.useCallback(
     (map: google.maps.Map) => {
-      const googleMap = map;
-      googleMap.fitBounds(bounds);
+      setMap(map);
+      map.fitBounds(bounds);
     },
     [bounds]
   );
@@ -68,54 +79,63 @@ export default function App() {
     setMap(null);
   }, []);
 
+  const fetchPoints = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:8080/products-seller-cities"
+      );
+
+      const data = response.data;
+      console.log("Fetched points:", data);
+      setPoints(
+        data.map((item: any) => ({
+          id: item.id,
+          lat: item.lat,
+          lng: item.lng,
+          text: `${item.store_name} (${item.product_name})`,
+          category_id: item.category_id,
+        }))
+      );
+
+      // Extract seller names from data and remove duplicates
+      const sellerNames = [
+        ...new Set(data.map((item: any) => item.store_name)),
+      ] as string[];
+      setSellers(sellerNames);
+
+      // Extract category names from data and remove duplicates
+      const categoryNames = [
+        ...new Set(data.map((item: any) => item.category_name)),
+      ] as string[];
+      setCategories(categoryNames);
+    } catch (error) {
+      console.error("Error fetching points:", error);
+    }
+  };
+
   useEffect(() => {
-    const fetchPoints = async () => {
-      try {
-        const response = await axios.get(
-          "http://localhost:8080/products-seller-cities"
-        );
-
-        const data = response.data;
-        console.log("Fetched points:", data);
-        setPoints(
-          data.map((item: any) => ({
-            lat: item.lat,
-            lng: item.lng,
-            text: `${item.store_name} (${item.product_name})`,
-            category_id: item.category_id,
-          }))
-        );
-
-        // Extract seller names from data and remove duplicates
-        const sellerNames = [
-          ...new Set(data.map((item: any) => item.store_name)),
-        ] as string[];
-        setSellers(sellerNames);
-
-        // Extract category names from data and remove duplicates
-        const categoryNames = [
-          ...new Set(data.map((item: any) => item.category_name)),
-        ] as string[];
-        setCategories(categoryNames);
-      } catch (error) {
-        console.error("Error fetching points:", error);
-      }
-    };
-
     fetchPoints();
   }, []);
 
   const getCategoryMarker = (categoryId: number) => {
     switch (categoryId) {
       case 1:
-        return "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"; // Blue marker for category 1
+        return "http://maps.google.com/mapfiles/ms/icons/green-dot.png";
       case 2:
-        return "http://maps.google.com/mapfiles/ms/icons/green-dot.png"; // Green marker for category 2
+        return "http://maps.google.com/mapfiles/ms/icons/blue-dot.png";
       case 3:
-        return "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png"; // Green marker for category 2
+        return "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png";
       default:
-        return "http://maps.google.com/mapfiles/ms/icons/red-dot.png"; // Default red marker for other categories
+        return "http://maps.google.com/mapfiles/ms/icons/red-dot.png";
     }
+  };
+
+  const handleMarkerClick = (marker: {
+    lat: number;
+    lng: number;
+    text: string;
+  }) => {
+    setSelectedMarker(marker);
   };
 
   return isLoaded ? (
@@ -126,15 +146,6 @@ export default function App() {
           <div className="col-lg-4 my-4 align-items-center">
             <div className="p-2" style={{ backgroundColor: "#DFFFC0" }}>
               <div className="me-3 mt-2">
-                <h6>Select your city :</h6>
-                <Form.Select aria-label="Select District">
-                  <option>Select District</option>
-                  <option value="1">Colombo</option>
-                  <option value="2">Gampaha</option>
-                  <option value="3">Kandy</option>
-                </Form.Select>
-              </div>
-              <div className="me-3 mt-4">
                 <h6>Select your farmer :</h6>
                 <Form.Select
                   aria-label="Select Farmer"
@@ -174,20 +185,36 @@ export default function App() {
               style={{ backgroundColor: "#DFFFC0" }}
             >
               <div className="me-3 mt-2">
-                <img src={Icon1} style={{ height: "40px", width: "40px" }} />{" "}
+                <img
+                  src="http://maps.google.com/mapfiles/ms/icons/red-dot.png"
+                  style={{ height: "40px", width: "40px" }}
+                  alt="Fruits"
+                />{" "}
                 Fruits
               </div>
               <div className="me-3 mt-4">
-                <img src={Icon2} style={{ height: "40px", width: "40px" }} />{" "}
-                Farmers
-              </div>
-              <div className="me-3 mt-4">
-                <img src={Icon3} style={{ height: "40px", width: "40px" }} />{" "}
+                <img
+                  src="http://maps.google.com/mapfiles/ms/icons/green-dot.png"
+                  style={{ height: "40px", width: "40px" }}
+                  alt="Vegetables"
+                />{" "}
                 Vegetables
               </div>
+              <div className="me-3 mt-4">
+                <img
+                  src="http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
+                  style={{ height: "40px", width: "40px" }}
+                  alt="Grains"
+                />{" "}
+                Grains
+              </div>
               <div className="me-3 mt-4 mb-4">
-                <img src={Icon4} style={{ height: "40px", width: "40px" }} />{" "}
-                Food
+                <img
+                  src="http://maps.google.com/mapfiles/ms/icons/yellow-dot.png"
+                  style={{ height: "40px", width: "40px" }}
+                  alt="Others"
+                />{" "}
+                Others
               </div>
             </div>
           </div>
@@ -207,12 +234,27 @@ export default function App() {
               {filteredPoints.map((point, i) => (
                 <MarkerF
                   key={i}
-                  position={point}
+                  position={{ lat: point.lat, lng: point.lng }}
                   icon={{
                     url: getCategoryMarker(point.category_id),
                   }}
-                ></MarkerF>
+                  onClick={() => handleMarkerClick(point)}
+                />
               ))}
+
+              {selectedMarker && (
+                <InfoWindow
+                  position={{
+                    lat: selectedMarker.lat,
+                    lng: selectedMarker.lng,
+                  }}
+                  onCloseClick={() => setSelectedMarker(null)}
+                >
+                  <div>
+                    <h6>{selectedMarker.text}</h6>
+                  </div>
+                </InfoWindow>
+              )}
 
               {/* Child components, such as markers, info windows, etc. */}
               <></>

@@ -47,7 +47,7 @@ import ManageProductPage from "./pages/ManageProducts";
 import Checkout from "./pages/Checkout/Checkout";
 import AddNotification from "./pages/Seller/AddNotification";
 import SellerEditProfile from "./pages/Seller/SellerEditProfile";
-
+import Contact from "./pages/Footer/ContactUS";
 const store = createStore({
   authName: "_auth",
   authType: "cookie",
@@ -170,10 +170,10 @@ const router = createBrowserRouter([
     path: "/buyerProfile/:buyerId",
     element: <BuyerProfile />,
   },
-  // {
-  //   path: "/order-history",
-  //   element: <OrderHistory />,
-  // },
+  {
+    path: "/contactUs",
+    element: <Contact />,
+  },
   // {
   //   path: "/order-details",
   //   element: <OrderDetails />,

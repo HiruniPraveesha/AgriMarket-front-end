@@ -138,21 +138,17 @@ const Home: React.FC = () => {
           >
             <div className="text-center text-md-start p-3">
               <p
-                className="text-uppercase fw-bold"
+                className="fw-bold"
                 style={{
-                  fontFamily: "Sansita",
+                  fontFamily: "Poppins",
                   letterSpacing: "3px",
-                  fontSize: "3rem",
-                  fontStyle: "italic",
+                  fontSize: "2rem",
                   fontWeight: "bold",
-                  background:
-                    "linear-gradient(180deg, #032004 8.13%, #18C01F 62.1%, #00FF0B 73.6%)",
+                  background: "green",
                   backgroundClip: "text",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
                 }}
               >
-                AgriMarket
+                Ease your Grocery Shopping...
               </p>
               <p
                 className="text-success"

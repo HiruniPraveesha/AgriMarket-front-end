@@ -21,10 +21,16 @@ interface Category {
 }
 
 interface Notification {
-  image: string;
-  title: string;
-  timestamp: string;
+  N_id: number;
   message: string;
+  timestamp: string;
+  categoryId: number;
+  sellerId: number;
+  productId: number;
+  image?: string;
+  seller: {
+    store_name: string;
+  };
 }
 import { Navbar, Nav, Container } from "react-bootstrap";
 import useAuthUser from "react-auth-kit/hooks/useAuthUser";
@@ -122,7 +128,7 @@ const HeaderNew: React.FC = () => {
   const fetchNotifications = async () => {
     try {
       const response = await axios.get<Notification[]>(
-        "http://localhost:8080/Notification"
+        "http://localhost:8080/notifications"
       );
       setNotifications(response.data);
     } catch (error) {
@@ -270,11 +276,26 @@ const HeaderNew: React.FC = () => {
             <a href="#">
               <img
                 src={Logo}
-                style={{ height: "58px", width: "48px" }}
+                style={{ height: "58px", width: "48px", margin: "0 50px" }}
                 alt="Logo"
               />
             </a>
-            <h3>AGRIMARKET</h3>
+            <p
+              className="text-uppercase fw-bold"
+              style={{
+                fontFamily: "Sansita",
+                letterSpacing: "3px",
+                fontSize: "2.5rem",
+                fontWeight: "bold",
+                background:
+                  "linear-gradient(180deg, #032004 8.13%, #18C01F 62.1%, #00FF0B 73.6%)",
+                backgroundClip: "text",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
+            >
+              AgriMarket
+            </p>
           </div>
 
           {/* Bell & Cart Icons */}
@@ -320,38 +341,50 @@ const HeaderNew: React.FC = () => {
                   right: "0",
                   background: "white",
                   boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-                  zIndex: 1000,
+                  zIndex: 999,
                   width: "300px",
                   maxHeight: "400px",
                   overflowY: "auto",
+                  border: "1px solid #eee",
                   borderRadius: "4px",
-                  padding: "10px",
                 }}
               >
-                {notifications.map((notification, index) => (
-                  <div
-                    key={index}
-                    style={{
-                      padding: "10px",
-                      borderBottom: "1px solid #e0e0e0",
-                    }}
-                  >
-                    <div className="d-flex align-items-center mb-2">
-                      <img
-                        src={notification.image}
-                        alt="Notification"
-                        style={{
-                          width: "20px",
-                          height: "20px",
-                          marginRight: "10px",
-                        }}
-                      />
-                      <strong>{notification.title}</strong>
+                {notifications.length === 0 ? (
+                  <p style={{ textAlign: "center", padding: "10px" }}>
+                    No notifications
+                  </p>
+                ) : (
+                  notifications.map((notification, index) => (
+                    <div
+                      key={index}
+                      className="p-3 border-bottom"
+                      style={{ cursor: "pointer" }}
+                    >
+                      <div className="d-flex align-items-center">
+                        <div>
+                          <img
+                            src={notification.image}
+                            alt="Notification"
+                            style={{
+                              width: "60px",
+                              height: "50px",
+                              borderRadius: "50%",
+                            }}
+                          />
+                        </div>
+                        <div className="flex-grow-1 ms-2">
+                          <h6 className="mb-0">
+                            {notification.seller.store_name}
+                          </h6>
+                          <small className="text-muted">
+                            {notification.timestamp}
+                          </small>
+                          <p className="mb-0">{notification.message}</p>
+                        </div>
+                      </div>
                     </div>
-                    <div>{notification.message}</div>
-                    <small>{notification.timestamp}</small>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             )}
           </div>
@@ -410,7 +443,7 @@ const HeaderNew: React.FC = () => {
                     <li className="nav-item">
                       <a
                         className="nav-link text-black"
-                        href="#"
+                        href="/contactUs"
                         style={{ fontSize: "12px" }}
                       >
                         CONTACT US

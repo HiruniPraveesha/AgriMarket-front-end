@@ -71,17 +71,20 @@ export default function Footer2() {
               </a>
             </p>
             <p>
-              <a href="#!" className="text-reset text-decoration-none">
+              <a
+                href="/PrivacyPolicy"
+                className="text-reset text-decoration-none"
+              >
                 Private Policy
               </a>
             </p>
             <p>
-              <a href="#!" className="text-reset text-decoration-none">
+              <a href="/TC" className="text-reset text-decoration-none">
                 Terms and Services
               </a>
             </p>
             <p>
-              <a href="#!" className="text-reset text-decoration-none">
+              <a href="/contactUs" className="text-reset text-decoration-none">
                 Contact Us
               </a>
             </p>
