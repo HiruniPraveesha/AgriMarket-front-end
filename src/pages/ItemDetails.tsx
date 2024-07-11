@@ -15,10 +15,14 @@ const ItemDetails: React.FC<{}> = () => {
   const { productId } = useParams();
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
- 
-
   const [product, setProduct] = useState<any>({});
   const [mainImage, setMainImage] = useState<string>('');
+
+  useEffect(() => {
+    setTimeout(() => {
+      window.scrollTo(0, 0);
+    }, 0);
+  }, [location]);
 
   useEffect(() => {
     // Make an HTTP GET request to fetch data from the API endpoint

@@ -3,7 +3,7 @@ import React from "react";
 
 import HomePage from "./pages/Home";
 import AddProduct from "./pages/AddProduct";
-
+import AddNotification from "./pages/AddNotification";
 
 
 
@@ -12,7 +12,8 @@ import AddProduct from "./pages/AddProduct";
 const App: React.FC = () => {
   return (
     <div>
-      <HomePage />
+      {/* <HomePage/> */}
+      <AddNotification />
     </div>
   );
 };

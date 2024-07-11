@@ -83,9 +83,6 @@ const App: React.FC<{}> = ({}) => {
     }
   };
   
-  
-  
-
   return (
     <div className="container" style={{
       width: '70%',

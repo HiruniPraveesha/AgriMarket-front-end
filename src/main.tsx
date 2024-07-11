@@ -17,6 +17,7 @@ import AddProduct from "./pages/AddProduct";
 import ManageProduct from "./pages/ManageProducts";
 import AuthProvider from "react-auth-kit";
 import createStore from "react-auth-kit/createStore";
+
 const store = createStore({
   authName: "_auth",
   authType: "cookie",
@@ -42,6 +43,7 @@ const router = createBrowserRouter([
     path: "/Email",
     element: <Email />,
   },
+  
   {
     path: "/select",
     element: <SelectLogin />,

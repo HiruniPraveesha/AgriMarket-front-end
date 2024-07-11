@@ -45,15 +45,10 @@ const DisplayByCategory: React.FC<{}> = ({}) => {
       return;
     }
 
-    const currentCart = JSON.parse(sessionStorage.getItem('cart') || '{}');
-    if (currentCart[product.product_id]) {
-      currentCart[product.product_id] += quantity;
-    } else {
-      currentCart[product.product_id] = quantity;
-    }
-    sessionStorage.setItem('cart', JSON.stringify(currentCart));
-
-    console.log("Item added to cart");
+    const currentCart = JSON.parse(sessionStorage.getItem('cart') || '[]');
+    const updatedCart = [...currentCart, { ...product, quantity }];
+    sessionStorage.setItem('cart', JSON.stringify(updatedCart));
+    console.log("Item added to cart", product.product_id);
   };
 
   const handleAddToCartClick = (product: any) => {
@@ -69,6 +64,8 @@ const DisplayByCategory: React.FC<{}> = ({}) => {
     addToCart(product);
     setAddedToCart(prevState => ({ ...prevState, [product.product_id]: true }));
   };
+
+  
 
   const handleCloseModal = () => setShowModal(false);
 
@@ -156,7 +153,7 @@ const DisplayByCategory: React.FC<{}> = ({}) => {
           <Button variant="secondary" onClick={handleCloseModal}>
             Close
           </Button>
-          <Button variant="primary" onClick={() => navigate('/SignIn')}>
+          <Button variant="primary" onClick={() => navigate('/signIn')}>
             Sign In
           </Button>
         </Modal.Footer>
