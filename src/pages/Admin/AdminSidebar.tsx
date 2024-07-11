@@ -2,16 +2,20 @@ import { useState, FC, useEffect } from "react";
 import { ProSidebar, Menu, MenuItem } from "react-pro-sidebar";
 import { Box, IconButton, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import "react-pro-sidebar/dist/css/styles.css";
 import { tokens } from "../../theme";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
-import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
-import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
-import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
+
+import StorefrontIcon from "@mui/icons-material/Storefront";
+
+import ShoppingCartCheckoutIcon from "@mui/icons-material/ShoppingCartCheckout";
+import InventoryIcon from "@mui/icons-material/Inventory";
+import LogoutIcon from "@mui/icons-material/Logout";
 import customTheme from "../../customTheme";
+import useSignOut from "react-auth-kit/hooks/useSignOut";
 
 interface ItemProps {
   title: string;
@@ -19,6 +23,7 @@ interface ItemProps {
   icon: React.ReactNode;
   selected: string;
   setSelected: (title: string) => void;
+  onClick?: () => void;
 }
 
 const Item: FC<ItemProps> = ({ title, to, icon, selected, setSelected }) => {
@@ -40,31 +45,53 @@ const Item: FC<ItemProps> = ({ title, to, icon, selected, setSelected }) => {
   );
 };
 
-const SellerSideBar: FC = () => {
+const Sidebar1: FC = () => {
   const theme = useTheme();
   const colors = tokens(customTheme.palette.mode);
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [selected, setSelected] = useState("Dashboard");
+  const navigate = useNavigate();
+  const signOut = useSignOut();
 
   const location = useLocation();
+
+  const handleLogout = () => {
+    navigate("/admin-login"); // Redirect to the home page or login page after logout
+  };
 
   useEffect(() => {
     const path = location.pathname;
     switch (path) {
-      case "/MyProducts":
-        setSelected("My Products ");
+      case "/admin-buyers":
+        setSelected("Manage Buyers");
         break;
-      case "/editSellerProfile":
-        setSelected("My Profile");
+      case "/admin-sellers":
+        setSelected("Manage Sellers");
         break;
-
-      case "/calendar-seller":
+      case "/admin-products":
+        setSelected("Manage Products");
+        break;
+      case "/form":
+        setSelected("Profile Form");
+        break;
+      case "/calendar":
         setSelected("Calendar");
         break;
-
-      case "/sellerMap":
-        setSelected("Map");
+      case "/faq":
+        setSelected("FAQ Page");
         break;
+      case "/bar":
+        setSelected("Bar Chart");
+        break;
+      case "/pie":
+        setSelected("Pie Chart");
+        break;
+      case "/line":
+        setSelected("Line Chart");
+        break;
+
+      case "/admin/AdminDashboard":
+        setSelected("Admin Dashboard");
       default:
         setSelected("Dashboard");
         break;
@@ -74,11 +101,10 @@ const SellerSideBar: FC = () => {
   return (
     <Box
       sx={{
-        color: "#0A490B",
         height: "100vh",
-        backgroundColor: "#0A490B", // Replace with your desired background color
+        backgroundColor: "red", // Replace with your desired background color
         "& .pro-sidebar-inner": {
-          backgroundColor: "#0A490B",
+          background: `#12312C`,
           height: "100vh",
         },
         "& .pro-icon-wrapper": {
@@ -91,7 +117,7 @@ const SellerSideBar: FC = () => {
           color: "#868dfb !important",
         },
         "& .pro-menu-item.active": {
-          color: "#ffff !important",
+          color: "#6870fa !important",
         },
       }}
     >
@@ -103,7 +129,7 @@ const SellerSideBar: FC = () => {
             icon={isCollapsed ? <MenuOutlinedIcon /> : undefined}
             style={{
               margin: "10px 0 20px 0",
-              color: "#0A490B",
+              color: colors.grey[100],
             }}
           >
             {!isCollapsed && (
@@ -120,9 +146,6 @@ const SellerSideBar: FC = () => {
                   <IconButton onClick={() => setIsCollapsed(!isCollapsed)}>
                     <MenuOutlinedIcon />
                   </IconButton>
-                  {/* <IconButton onClick={() => console.log("Exit button clicked")}>
-                    <CloseOutlinedIcon />
-                  </IconButton> */}
                 </Box>
               </Box>
             )}
@@ -130,73 +153,57 @@ const SellerSideBar: FC = () => {
 
           {!isCollapsed && (
             <Box mb="25px">
-              {/* <Box display="flex" justifyContent="center" alignItems="center">
-                <img
-                  alt="profile-user"
-                  width="100px"
-                  height="100px"
-                  src={`../../assets/user.png`}
-                  style={{ cursor: "pointer", borderRadius: "50%" }}
-                />
-              </Box> */}
+              <Box textAlign="center">
+                <Typography variant="h5" color={colors.greenAccent[500]}>
+                  Administrator
+                </Typography>
+              </Box>
             </Box>
           )}
 
-          <Box paddingLeft={isCollapsed ? undefined : "10%"} color={"#0A490B"}>
+          <Box sx={{ flexGrow: 1 }} paddingBottom={"140%"}>
             <Item
               title="Dashboard"
-              to="/sellerDashboard"
+              to="/admin/AdminDashboard"
               icon={<HomeOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
             <Item
-              title="My Profile"
-              to="/editSellerProfile"
-              icon={<PeopleOutlinedIcon />}
+              title="Manage Buyers"
+              to="/admin-buyers"
+              icon={<ShoppingCartCheckoutIcon />}
               selected={selected}
               setSelected={setSelected}
             />
             <Item
-              title="Calendar"
-              to="/CalendarSeller"
-              icon={<CalendarMonthIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            {/* <Item
-              title="Calendar"
-              to="/bar"
-              icon={<BarChartOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            /> */}
-            {/* <Item
-              title="Analytics"
-              to="/pie"
-              icon={<PieChartOutlineOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            /> */}
-            <Item
-              title="My Products"
-              to="/MyProducts"
-              icon={<MapOutlinedIcon />}
+              title="Manage Sellers"
+              to="/admin-sellers"
+              icon={<StorefrontIcon />}
               selected={selected}
               setSelected={setSelected}
             />
             <Item
-              title="Sign Out"
-              to="/"
-              icon={<MapOutlinedIcon />}
+              title="Manage Products"
+              to="/admin-products"
+              icon={<InventoryIcon />}
               selected={selected}
               setSelected={setSelected}
             />
           </Box>
+
+          <Item
+            title="Sign Out"
+            to="/admin-login"
+            icon={<LogoutIcon />}
+            selected={selected}
+            setSelected={setSelected}
+            onClick={handleLogout} // Add the handleLogout function here
+          />
         </Menu>
       </ProSidebar>
     </Box>
   );
 };
 
-export default SellerSideBar;
+export default Sidebar1;

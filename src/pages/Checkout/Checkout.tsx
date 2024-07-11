@@ -7,12 +7,12 @@ import Payment from "../Checkout/Payment";
 import axios from "axios";
 
 type CartItem = {
-  seller_id: any;
+  sellerId: any;
   name: string;
   quantity: number;
   price: number;
   store_name?: string;
-  imageUrl?: string;
+  image1: string;
 };
 
 type Seller = {
@@ -55,7 +55,7 @@ export default function Checkout() {
 
   useEffect(() => {
     if (sameStore && cartItems.length > 0) {
-      fetchSellerAddress(cartItems[0].seller_id);
+      fetchSellerAddress(cartItems[0].sellerId);
     }
   }, [sameStore, cartItems]);
 
@@ -63,43 +63,36 @@ export default function Checkout() {
     try {
       console.log("Items in fetchSellerAddress:", items);
 
-      if (items.length > 0) {
-        const sellerId = items[0].seller_id;
+      if (items && items.length > 0) {
+        // Check if items is defined and not empty
+        const sellerId = items[0].sellerId;
         console.log("SellerId:", sellerId);
 
-        if (sellerId !== undefined) {
-          // Check if sellerId is defined
-          const allSameSeller = items.every(
-            (item) => item.seller_id === sellerId
-          );
-          console.log("All Same Seller:", allSameSeller);
+        const allSameSeller = items.every((item) => item.sellerId === sellerId);
+        console.log("All Same Seller:", allSameSeller);
 
-          if (allSameSeller) {
-            const response = await axios.get(
-              `http://localhost:8080/seller-address`,
-              {
-                params: { sellerId },
-              }
-            );
-            console.log("Response from fetchSellerAddress:", response.data);
-
-            const data = response.data.data;
-            if (data) {
-              setStoreAddress({
-                line1: data.line1,
-                line2: data.line2,
-                city: data.city,
-              });
+        if (allSameSeller) {
+          const response = await axios.get(
+            `http://localhost:8080/seller-address`,
+            {
+              params: { sellerId },
             }
-          } else {
-            setStoreAddress(null);
+          );
+          console.log("Response from fetchSellerAddress:", storeAddress);
+
+          const data = response.data.data;
+          if (data) {
+            setStoreAddress({
+              line1: data.line1,
+              line2: data.line2,
+              city: data.city,
+            });
           }
         } else {
-          console.log("sellerId is undefined.");
           setStoreAddress(null);
         }
       } else {
-        console.log("Items array is empty.");
+        console.log("Items array is empty or undefined.");
         setStoreAddress(null);
       }
     } catch (error) {
@@ -110,7 +103,7 @@ export default function Checkout() {
   const checkSameStore = (items: CartItem[]) => {
     if (items.length > 0) {
       const storeName = items[0].store_name;
-      const sellerId = items[0].seller_id;
+      const sellerId = items[0].sellerId;
       const allSameStore = items.every((item) => item.store_name === storeName);
       setSameStore(allSameStore);
       console.log(storeName);
@@ -149,11 +142,13 @@ export default function Checkout() {
 
     if (shouldAutoFill) {
       try {
+        const buyerId = localStorage.getItem("sellerId");
         const response = await axios.get(
           "http://localhost:8080/get-delivery-details",
+
           {
             params: {
-              id: 1,
+              buyerId,
             },
           }
         );
@@ -417,9 +412,7 @@ export default function Checkout() {
                                   <span>Please note:</span> You can only select{" "}
                                   <span style={{ fontWeight: "bold" }}>
                                     Pick Up from Store
-                                  </span>{" "}
-                                  if all items in your cart are from the same
-                                  store.
+                                  </span>
                                 </p>
                               </tbody>
                             </table>
@@ -586,7 +579,8 @@ export default function Checkout() {
                                 <div className="bg-image rounded hover-zoom hover-overlay">
                                   <img
                                     className="w-100"
-                                    // alt={item.name}
+                                    src={item.image1} // Assuming image1 is the key in session storage for the image URL
+                                    alt={item.name}
                                     style={{
                                       maxWidth: "80px",
                                       maxHeight: "80px",

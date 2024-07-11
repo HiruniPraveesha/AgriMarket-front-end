@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, ReactNode } from "react";
 import { Button, Card, Col, Form, Row } from "react-bootstrap";
 import Header from "../../components/Header-main";
 import Footer from "../../components/Footer-main";
@@ -7,10 +7,12 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 interface Product {
-  [x: string]: number;
+  name: ReactNode;
   product_id: number;
   price: number;
   quantity: number;
+  image1: string;
+  quantityLimit: number; // Define quantityLimit as a number
 }
 
 const ShoppingCart = () => {
@@ -116,12 +118,12 @@ const ShoppingCart = () => {
 
   const fetchWalletBalance = async () => {
     try {
-      const buyerId = sessionStorage.getItem("buyerId");
-      console.log("Buyer ID from sessionStorage:", buyerId);
+      const buyerId = localStorage.getItem("sellerId");
+      console.log("Buyer ID from localStorage:", buyerId);
 
-      if (1) {
+      if (buyerId) {
         const response = await axios.get(
-          `http://localhost:8000/get-wallet-balance?buyerId=1`
+          `http://localhost:8080/get-wallet-balance?buyerId=${buyerId}`
         );
         console.log("Response from backend:", response.data);
         setWalletBalance(response.data.data.pointBalance || 0);
@@ -138,7 +140,6 @@ const ShoppingCart = () => {
       setPointsApplied(true); // Set points applied status to true
       sessionStorage.setItem("reward", JSON.stringify(rewardPoints));
     } else {
-      alert("You cannot apply more points than available in your wallet.");
     }
   };
 
@@ -227,6 +228,7 @@ const ShoppingCart = () => {
                                   }}
                                 >
                                   <img
+                                    src={product.image1} // Display product image
                                     width="50"
                                     height="50"
                                     style={{
@@ -381,17 +383,21 @@ const ShoppingCart = () => {
                             }}
                             value={rewardPoints}
                             onChange={(e) => {
-                              const value = parseInt(e.target.value) || 0;
-                              if (value <= walletBalance) {
-                                setRewardPoints(value);
-                              } else {
-                                ("You cannot enter more points than available in your wallet.");
-                                setRewardPoints(walletBalance);
+                              let value = parseInt(e.target.value) || 0;
+                              if (
+                                subtotal <= walletBalance &&
+                                value > subtotal
+                              ) {
+                                value = subtotal;
+                              } else if (value > walletBalance) {
+                                value = walletBalance;
                               }
-                              setPointsApplied(false); // Reset points applied status on change
+                              setRewardPoints(value);
+                              setDiscountedTotal(Math.max(subtotal - value, 0)); // Update discounted total on change
                             }}
                             disabled={totalItemsCount === 0} // Disable input if cart is empty
                           />
+
                           <Button
                             variant="primary"
                             size="sm"

@@ -1,11 +1,18 @@
 import React, { useState, useEffect } from "react";
+import { loadStripe } from "@stripe/stripe-js";
+import {
+  Elements,
+  CardElement,
+  useStripe,
+  useElements,
+} from "@stripe/react-stripe-js";
+import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import Spinner from "react-bootstrap/Spinner";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Container, Row } from "react-bootstrap";
-// import CardPayment from "../Checkout/credit-cart";
 import OrderSuccessPopup from "../Checkout/pop-up-order";
 
 type DeliveryDetails = {
@@ -21,12 +28,90 @@ type Props = {
   deliveryDetails: DeliveryDetails;
 };
 
+// Load Stripe outside of your component to avoid reloading on every render
+const stripePromise = loadStripe(
+  "pk_test_51PWFvoCiZBL8kioasI40YB0kFPC1H2qspv1MGoQLaPiZj1P7IyIa0jKDYsAJRzpBhlB0UX0g3PO6bAWLRQ52Kg3I0061hwfwCw"
+);
+
+const PaymentForm: React.FC<{ onSuccess: () => void }> = ({ onSuccess }) => {
+  const stripe = useStripe();
+  const elements = useElements();
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!stripe || !elements) return;
+
+    setLoading(true);
+    setErrorMessage("");
+
+    const cardElement = elements.getElement(CardElement);
+
+    try {
+      const { data: clientSecret } = await axios.post(
+        "http://localhost:8080/create-payment-intent",
+        {
+          amount: 1000, // Replace with the actual amount
+        }
+      );
+
+      const { error, paymentIntent } = await stripe.confirmCardPayment(
+        clientSecret,
+        {
+          payment_method: {
+            card: cardElement!,
+          },
+        }
+      );
+
+      if (error) {
+        setErrorMessage(error.message || "Payment failed");
+      } else if (paymentIntent && paymentIntent.status === "succeeded") {
+        onSuccess();
+      }
+    } catch (error) {
+      setErrorMessage("Payment failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <CardElement />
+      {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
+      <Button
+        type="submit"
+        disabled={!stripe || loading}
+        style={{ marginTop: "10px" }}
+      >
+        {loading ? (
+          <>
+            <Spinner
+              as="span"
+              animation="border"
+              size="sm"
+              role="status"
+              aria-hidden="true"
+              style={{ marginRight: "5px" }}
+            />
+            Processing...
+          </>
+        ) : (
+          "Pay"
+        )}
+      </Button>
+    </form>
+  );
+};
+
 const Payment: React.FC<Props> = ({ deliveryDetails }) => {
   const [selectedMethod, setSelectedMethod] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
   const [address, setAddress] = useState(deliveryDetails);
-  const [walletBalance, setWalletBalance] = useState<number | null>(null); // State for wallet balance
+  const [walletBalance, setWalletBalance] = useState<number | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
@@ -81,13 +166,14 @@ const Payment: React.FC<Props> = ({ deliveryDetails }) => {
         storeAddress: `${item.seller.line1}, ${item.seller.line2} ${item.seller.city}`,
       }));
 
+      const buyerId = localStorage.getItem("sellerId");
       const response = await fetch("http://localhost:8080/placeOrder", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          buyerId: "1", // Replace with actual buyerId if available
+          buyerId,
           products: products,
           usedRewardPoints: usedRewardPoints,
           deliveryInstructions: address.deliveryInstructions,
@@ -106,28 +192,13 @@ const Payment: React.FC<Props> = ({ deliveryDetails }) => {
       sessionStorage.setItem("cart", JSON.stringify([]));
       sessionStorage.removeItem("reward");
 
-      setWalletBalance(responseData.walletBalance); // Update wallet balance
+      setWalletBalance(responseData.walletBalance);
       setShowSuccess(true);
     } catch (error) {
       console.error("Error placing order:", error);
-      // Handle error: show error message or retry logic
     } finally {
       setLoading(false);
     }
-  };
-
-  const baseStyle = {
-    border: "1px solid #ddd",
-    borderRadius: "5px",
-    padding: "20px",
-    marginBottom: "20px",
-    cursor: "pointer",
-    transition: "background-color 0.3s ease",
-  };
-
-  const selectedStyle = {
-    backgroundColor: "#e9ecef",
-    borderColor: "#007bff",
   };
 
   return (
@@ -156,9 +227,14 @@ const Payment: React.FC<Props> = ({ deliveryDetails }) => {
                 <Form>
                   <div
                     style={{
-                      ...baseStyle,
+                      border: "1px solid #ddd",
+                      borderRadius: "5px",
+                      padding: "20px",
+                      marginBottom: "20px",
+                      cursor: "pointer",
+                      transition: "background-color 0.3s ease",
                       ...(selectedMethod === "Credit Card"
-                        ? selectedStyle
+                        ? { backgroundColor: "#e9ecef", borderColor: "#007bff" }
                         : {}),
                     }}
                     onClick={() => handleSelect("Credit Card")}
@@ -173,14 +249,23 @@ const Payment: React.FC<Props> = ({ deliveryDetails }) => {
                       onChange={() => handleSelect("Credit Card")}
                     />
                     {selectedMethod === "Credit Card" && (
-                      <div className="mt-3">{/* <CardPayment /> */}</div>
+                      <Elements stripe={stripePromise}>
+                        <PaymentForm onSuccess={() => setShowSuccess(true)} />
+                      </Elements>
                     )}
                   </div>
 
                   <div
                     style={{
-                      ...baseStyle,
-                      ...(selectedMethod === "Cash" ? selectedStyle : {}),
+                      border: "1px solid #ddd",
+                      borderRadius: "5px",
+                      padding: "20px",
+                      marginBottom: "20px",
+                      cursor: "pointer",
+                      transition: "background-color 0.3s ease",
+                      ...(selectedMethod === "Cash"
+                        ? { backgroundColor: "#e9ecef", borderColor: "#007bff" }
+                        : {}),
                     }}
                     onClick={() => handleSelect("Cash")}
                   >
@@ -205,6 +290,7 @@ const Payment: React.FC<Props> = ({ deliveryDetails }) => {
                             fontWeight: "bold",
                           }}
                           onClick={handlePlaceOrder}
+                          disabled={loading}
                         >
                           {loading ? (
                             <>

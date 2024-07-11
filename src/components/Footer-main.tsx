@@ -30,17 +30,20 @@ export default function Footer2() {
               </span>
             </h6>
             <p>
-              <a href="#!" className="text-reset text-decoration-none">
+              <a href="/HomePage" className="text-reset text-decoration-none">
                 Home
               </a>
             </p>
             <p>
-              <a href="#!" className="text-reset text-decoration-none">
+              <a href="/ProductMap" className="text-reset text-decoration-none">
                 Product Map
               </a>
             </p>
             <p>
-              <a href="#!" className="text-reset text-decoration-none">
+              <a
+                href="/CalendarBuyer"
+                className="text-reset text-decoration-none"
+              >
                 Product Calendar
               </a>
             </p>

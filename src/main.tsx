@@ -12,35 +12,25 @@ import SignupSeller from "./pages/Login/SignupSeller";
 import StepProgressBar from "./pages/Login/StepProgressBar";
 import Verifybank from "./pages/Login/Verifybank";
 import AddProduct from "./pages/AddProduct2";
-// import Email2 from "./pages/Login/Email";
-// import Verify from "./pages/Login/Verify";
-// import NewPW from "./pages/Login/NewPW";
+
 import HomePage from "./pages/HomePage";
 import SellerDashboard from "./pages/Seller/sellerDashboard";
 
-// import AddProduct from "./pages/Login/AddProduct";
-// import VerifyBank from "./pages/Login/VerifyBank";
 import ProductCalendar from "./pages/CalendarSeller";
 import TC from "./pages/Footer/T&C";
 import PrivacyPolicy from "./pages/Footer/PrivacyPolicy";
-// import MyProducts from "./pages/MyProducts";
+
 import ShoppingCart from "./pages/Checkout/ShoppingCart";
-// import Login from "./pages/AdminLogin";
+
 import createStore from "react-auth-kit/createStore";
-// import OrderHistory from "./pages/Buyer/OrderHistory";
-// import OrderDetails from "./pages/Buyer/OrderDetails";
+
 import BuyerProfile from "./pages/Buyer/BuyerProfile";
-// import OngoingOrders from "./pages/Buyer/OngoingOrders";
-// import Checkout from "./pages/Checkout/Checkout";
-// import Wallet from "./pages/Buyer/Wallet";
-// import RechargeWallet from "./pages/Buyer/RechargeWallet";
-// import AddProduct from "./pages/Seller/AddProduct";
-import Sidebar from "./components/Seller-side-bar";
-// import AdminLogin from "./pages/Admin/Admin-login";
-// import AdminNavigation from "./components/Admin-bar";
-// import Buyers from "./pages/Admin/Buyers";
-// import Sellers from "./pages/Admin/Sellers";
-// import Products from "./pages/Admin/Products";
+import Buyers from "./pages/Admin/Buyers";
+import Sellers from "./pages/Admin/Sellers";
+import Products from "./pages/Admin/Products";
+
+import AdminLogin from "./pages/Admin/Admin-login";
+import AdminDashboard from "./pages/Admin/AdminDashboard";
 import SellerProfile from "./pages/SellerProfile";
 import MyProducts from "./pages/MyProducts";
 import ManageProductPage from "./pages/ManageProducts";
@@ -174,14 +164,7 @@ const router = createBrowserRouter([
     path: "/contactUs",
     element: <Contact />,
   },
-  // {
-  //   path: "/order-details",
-  //   element: <OrderDetails />,
-  // },
-  // {
-  //   path: "/ongoing-orders",
-  //   element: <OngoingOrders />,
-  // },
+
   {
     path: "/shopping-cart",
     element: <ShoppingCart />,
@@ -190,46 +173,26 @@ const router = createBrowserRouter([
     path: "/checkout",
     element: <Checkout />,
   },
-  // {
-  //   path: "/wallet",
-  //   element: <Wallet />,
-  // },
-  // {
-  //   path: "/signup-buyer",
-  //   element: <SignUpBuyer />,
-  // },
-  // {
-  //   path: "/recharge-wallet",
-  //   element: <RechargeWallet />,
-  // },
-  // {
-  //   path: "/seller-dashboard",
-  //   element: <Sidebar/>,
-  // },
-  // {
-  //   path: "/admin-page",
-  //   element: <AdminNavigation />,
-  // },
-  // {
-  //   path: "/admin-login",
-  //   element: <AdminLogin />,
-  // },
-  // {
-  //   path: "/admin-dashboard",
-  //   element: <Dashboard />,
-  // },
-  // {
-  //   path: "/admin-buyers",
-  //   element: <Buyers />,
-  // },
-  // {
-  //   path: "/admin-sellers",
-  //   element: <Sellers />,
-  // },
-  // {
-  //   path: "/admin-products",
-  //   element: <Products />,
-  // },
+  {
+    path: "/admin-buyers",
+    element: <Buyers />,
+  },
+  {
+    path: "/admin-sellers",
+    element: <Sellers />,
+  },
+  {
+    path: "/admin-products",
+    element: <Products />,
+  },
+  {
+    path: "/admin/adminDashboard",
+    element: <AdminDashboard />,
+  },
+  {
+    path: "/adminLogin",
+    element: <AdminLogin />,
+  },
   {
     path: "/signupSeller",
     element: <SignupSeller />,
@@ -244,23 +207,6 @@ const router = createBrowserRouter([
     path: "/verifybank/:sellerId?",
     element: <Verifybank currentStep={2} />,
   },
-  /*
-  {
-    path: "/addProduct",
-    element: <AddProduct/>,
-  },*/
-  // {
-  //   path: "/email",
-  //   element: <Email2 />,
-  // },
-  // {
-  //   path: "/verify",
-  //   element: <Verify />,
-  // },
-  // {
-  //   path: "/newpw",
-  //   element: <NewPW />,
-  // },
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
