@@ -76,7 +76,7 @@ export default function Checkout() {
 
           if (allSameSeller) {
             const response = await axios.get(
-              `http://localhost:8000/seller-address`,
+              `http://localhost:8080/seller-address`,
               {
                 params: { sellerId },
               }
@@ -150,7 +150,7 @@ export default function Checkout() {
     if (shouldAutoFill) {
       try {
         const response = await axios.get(
-          "http://localhost:8000/get-delivery-details",
+          "http://localhost:8080/get-delivery-details",
           {
             params: {
               id: 1,

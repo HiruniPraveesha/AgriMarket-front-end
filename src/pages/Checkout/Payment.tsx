@@ -81,7 +81,7 @@ const Payment: React.FC<Props> = ({ deliveryDetails }) => {
         storeAddress: `${item.seller.line1}, ${item.seller.line2} ${item.seller.city}`,
       }));
 
-      const response = await fetch("http://localhost:8000/placeOrder", {
+      const response = await fetch("http://localhost:8080/placeOrder", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
