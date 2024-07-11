@@ -72,7 +72,7 @@ export default function App() {
     const fetchPoints = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:8000/products-seller-cities"
+          "http://localhost:8080/products-seller-cities"
         );
 
         const data = response.data;

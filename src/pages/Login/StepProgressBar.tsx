@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { Row, Col, Form, Button, Dropdown, DropdownButton } from "react-bootstrap";
+import {
+  Row,
+  Col,
+  Form,
+  Button,
+  Dropdown,
+  DropdownButton,
+} from "react-bootstrap";
 import axios from "axios";
 import Back from "../../assets/Back.svg";
 import HeaderSub from "../../components/Header-sub";
@@ -19,7 +26,6 @@ interface FormData {
 }
 
 const StepProgressBar: React.FC<StepProgressBarProps> = ({ currentStep }) => {
-  
   const navigate = useNavigate();
   const [formData, setFormData] = useState<FormData>({
     storeName: "",
@@ -79,7 +85,8 @@ const StepProgressBar: React.FC<StepProgressBarProps> = ({ currentStep }) => {
 
     // Validate the form fields
     const newErrors: { [key: string]: string } = {};
-    if (!formData.storeName.trim()) newErrors.storeName = "Store name is required";
+    if (!formData.storeName.trim())
+      newErrors.storeName = "Store name is required";
     if (!formData.email.trim()) {
       newErrors.email = "Email is required";
     } else if (!/^\S+@\S+\.\S+$/.test(formData.email)) {
@@ -91,8 +98,10 @@ const StepProgressBar: React.FC<StepProgressBarProps> = ({ currentStep }) => {
       newErrors.phoneNumber = "Invalid phone number";
     }
     if (!formData.district.trim()) newErrors.district = "District is required";
-    if (!formData.addressLine1.trim()) newErrors.addressLine1 = "Address line 1 is required";
-    if (!formData.addressLine2.trim()) newErrors.addressLine2 = "Address line 2 is required";
+    if (!formData.addressLine1.trim())
+      newErrors.addressLine1 = "Address line 1 is required";
+    if (!formData.addressLine2.trim())
+      newErrors.addressLine2 = "Address line 2 is required";
 
     setErrors(newErrors);
 
@@ -102,8 +111,8 @@ const StepProgressBar: React.FC<StepProgressBarProps> = ({ currentStep }) => {
         const response = await axios.post(
           "http://localhost:8080/completeSellerRegistration",
           formData,
-          { 
-            withCredentials: true ,
+          {
+            withCredentials: true,
           }
         );
 
@@ -133,11 +142,17 @@ const StepProgressBar: React.FC<StepProgressBarProps> = ({ currentStep }) => {
             if (err.response.status === 400) {
               const errorData = err.response.data;
               // Handle 'Phone number is already in use by another seller' error
-              if (errorData.error === 'Phone number is already in use by another seller') {
+              if (
+                errorData.error ===
+                "Phone number is already in use by another seller"
+              ) {
                 setBackendErrors({ phoneNumber: errorData.error });
-              } else if (errorData.error === 'Entered email does not match the verified email') {
+              } else if (
+                errorData.error ===
+                "Entered email does not match the verified email"
+              ) {
                 setBackendErrors({ email: errorData.error });
-              } else if (errorData.error === 'Invalid input format') {
+              } else if (errorData.error === "Invalid input format") {
                 setBackendErrors({ form: errorData.error });
               } else {
                 setServerError("Server Error: Please try again later");
@@ -248,7 +263,7 @@ const StepProgressBar: React.FC<StepProgressBarProps> = ({ currentStep }) => {
                   marginTop: "50px",
                 }}
               >
-                Dashboard 
+                Dashboard
               </p>
             </div>
           </Col>
@@ -331,7 +346,7 @@ const StepProgressBar: React.FC<StepProgressBarProps> = ({ currentStep }) => {
                 style={{ marginTop: "25px" }}
               >
                 <Form.Label>Address</Form.Label>
-                
+
                 <Form.Select
                   name="district"
                   value={formData.district}
@@ -344,18 +359,15 @@ const StepProgressBar: React.FC<StepProgressBarProps> = ({ currentStep }) => {
                     maxHeight: "120px",
                     overflowY: "auto",
                     position: "relative",
-                   
                   }}
-                 
                   isInvalid={!!errors.district}
-                > 
+                >
                   <option>Select District</option>
                   {districts.map((district, index) => (
                     <option key={index}>{district}</option>
-                   
-                  ))}  
-                  </Form.Select>
-               
+                  ))}
+                </Form.Select>
+
                 <Form.Control
                   type="text"
                   name="addressLine1"
@@ -370,7 +382,7 @@ const StepProgressBar: React.FC<StepProgressBarProps> = ({ currentStep }) => {
                   isInvalid={!!errors.addressLine1}
                   onChange={handleInputChange}
                 />
-                
+
                 <Form.Control
                   type="text"
                   name="addressLine2"

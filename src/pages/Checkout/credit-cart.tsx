@@ -4,7 +4,7 @@
 // export default function CardPayment() {
 //   const [cardNumber, setCardNumber] = useState('');
 
-//   const handleCardNumberChange = (e) => {
+//   const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 //     let formattedValue = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, ''); // Remove spaces and non-digits
 
 //     // Restrict to 16 characters
@@ -52,7 +52,7 @@
 //                   <Form.Control type="text" size="sm" placeholder="CVV" />
 //                 </Form.Group>
 //               </div>
-//               <Button style={{backgroundColor:'#00BA29'}}>
+//               <Button style={{ backgroundColor: '#00BA29' }}>
 //                 Pay Rs.1500
 //               </Button>
 //             </Card.Body>

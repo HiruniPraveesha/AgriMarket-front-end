@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import { Form } from "react-bootstrap";
+import { Form, Modal, Button } from "react-bootstrap";
 import MainHeader from "../components/Header-main";
 import MainFooter from "../components/Footer-main";
 import axios from "axios";
@@ -11,41 +11,106 @@ const localizer = momentLocalizer(moment);
 
 function ProductCalendar() {
   const [events, setEvents] = useState<any[]>([]);
-  const [farmers, setFarmers] = useState<string[]>([
-    "Kasun",
-    "Kamala",
-    "Sunethra",
-  ]);
-  const [categories, setCategories] = useState<string[]>([
-    "Vegetables",
-    "Fruits",
-    "Grains",
-  ]);
+  const [farmers, setFarmers] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [selectedEvent, setSelectedEvent] = useState<any>(null);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedFarmer, setSelectedFarmer] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
+  // Fetch events, farmers, and categories from the backend
   useEffect(() => {
-    fetchEvents();
+    axios
+      .get(`http://localhost:8080/CalendarBuyer`)
+      .then((response) => {
+        const formattedEvents = response.data.map((event: any) => ({
+          id: event.event_id,
+          title: `${event.product.product_id} - ${event.product.name} - ${event.note}`,
+          start: new Date(event.start),
+          end: new Date(event.start), // Adjust if you have an end time
+          description: event.note,
+          category: event.category.category_id,
+          categoryName: event.category.name,
+          seller: event.seller.seller_id,
+          sellerName: event.seller.store_name,
+          color: getCategoryColor(event.category.category_id),
+        }));
+        setEvents(formattedEvents);
+      })
+      .catch((error) => {
+        console.error("Error fetching events:", error);
+      });
+
+    axios
+      .get(`http://localhost:8080/getSellers`)
+      .then((response) => {
+        setFarmers(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching farmers:", error);
+      });
+
+    axios
+      .get(`http://localhost:8080/getCategories`)
+      .then((response) => {
+        setCategories(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching categories:", error);
+      });
   }, []);
 
-  const fetchEvents = async () => {
-    try {
-      const response = await axios.get("http://localhost:8000/CalendarBuyer");
-      const formattedEvents = response.data.map((event: any) => ({
-        id: event.event_id,
-        title: `${event.productName} - ${event.note}`,
-        start: new Date(event.start),
-        end: new Date(event.start), // Adjust if you have an end time
-        description: event.note,
-        category: event.categoryId, // Assuming categoryId represents the category name
-        seller: event.seller.store_name,
-      }));
-      setEvents(formattedEvents);
-    } catch (error) {
-      console.error("Error fetching events:", error);
-    }
+  const handleSelectEvent = (event: any) => {
+    setSelectedEvent(event);
+    setShowModal(true);
   };
 
-  const handleSelectEvent = (event: any) => {
-    alert(`Selected Event: ${event.title}`);
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
+
+  const handleFarmerChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedFarmer(event.target.value);
+  };
+
+  const handleCategoryChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    setSelectedCategory(event.target.value);
+  };
+
+  const filteredEvents = selectedCategory
+    ? events.filter(
+        (event) =>
+          event.category === parseInt(selectedCategory) &&
+          (selectedFarmer ? event.seller === parseInt(selectedFarmer) : true)
+      )
+    : events.filter((event) =>
+        selectedFarmer ? event.seller === parseInt(selectedFarmer) : true
+      );
+
+  // Giving colors to different categories
+  const getCategoryColor = (categoryId: string) => {
+    const categoryColors: { [key: string]: string } = {
+      "1": "green",
+      "2": "#FF5733",
+      "3": "#C4A484",
+      // Add more categories and colors as needed
+    };
+
+    const defaultColor = "blue";
+
+    // Get the color for the current event's category_id
+    return categoryColors[categoryId] || defaultColor;
+  };
+
+  const getEventStyle = (event: any) => {
+    return {
+      style: {
+        backgroundColor: event.color,
+        color: "#FFF", // Text color for contrast
+      },
+    };
   };
 
   return (
@@ -60,21 +125,27 @@ function ProductCalendar() {
             <div className="p-2" style={{ backgroundColor: "#DFFFC0" }}>
               <i>Sort By :</i>
               <div className="me-3 mt-4">
-                <Form.Select aria-label="Select Farmer">
-                  <option>Select Farmer</option>
-                  {farmers.map((farmer, index) => (
-                    <option key={index} value={index + 1}>
-                      {farmer}
+                <Form.Select
+                  aria-label="Select Farmer"
+                  onChange={handleFarmerChange}
+                >
+                  <option value="">Select Seller</option>
+                  {farmers.map((farmer: any, index) => (
+                    <option key={index} value={farmer.seller_id}>
+                      {farmer.store_name}
                     </option>
                   ))}
                 </Form.Select>
               </div>
               <div className="me-3 mt-4 mb-4">
-                <Form.Select aria-label="Select Category">
-                  <option>Select Category</option>
-                  {categories.map((category, index) => (
-                    <option key={index} value={index + 1}>
-                      {category}
+                <Form.Select
+                  aria-label="Select Category"
+                  onChange={handleCategoryChange}
+                >
+                  <option value="">Select Category</option>
+                  {categories.map((category: any, index) => (
+                    <option key={index} value={category.category_id}>
+                      {category.name}
                     </option>
                   ))}
                 </Form.Select>
@@ -84,7 +155,7 @@ function ProductCalendar() {
           <div className="col-lg-9 my-4" style={{ height: 700 }}>
             <Calendar
               localizer={localizer}
-              events={events}
+              events={filteredEvents}
               startAccessor="start"
               endAccessor="end"
               defaultDate={new Date()}
@@ -92,18 +163,41 @@ function ProductCalendar() {
               views={["month"]}
               step={60}
               showMultiDayTimes
-              eventPropGetter={(event: any) => ({
-                style: {
-                  backgroundColor: event.category === 1 ? "green" : "#FFD700", // Adjust based on your category ID logic
-                  color: event.category === 1 ? "#FFF" : "#000",
-                },
-              })}
+              eventPropGetter={getEventStyle}
               onSelectEvent={handleSelectEvent}
             />
           </div>
         </div>
       </div>
       <MainFooter />
+
+      {/* Event Modal */}
+      <Modal show={showModal} onHide={handleCloseModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>{selectedEvent?.title}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>
+            <strong>Description:</strong> {selectedEvent?.description}
+          </p>
+          <p>
+            <strong>Category:</strong> {selectedEvent?.categoryName}
+          </p>
+          <p>
+            <strong>Seller:</strong> {selectedEvent?.sellerName}
+          </p>
+          {/* Add more event details as needed */}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="secondary"
+            onClick={handleCloseModal}
+            style={{ backgroundColor: "#00BA29", borderColor: "#00BA29" }}
+          >
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }

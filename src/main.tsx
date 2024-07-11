@@ -44,6 +44,7 @@ import Sidebar from "./components/Seller-side-bar";
 import SellerProfile from "./pages/SellerProfile";
 import MyProducts from "./pages/MyProducts";
 import ManageProductPage from "./pages/ManageProducts";
+import Checkout from "./pages/Checkout/Checkout";
 
 const store = createStore({
   authName: "_auth",
@@ -104,10 +105,6 @@ const router = createBrowserRouter([
     path: "/selectLogin",
     element: <SelectLogin />,
   },
-  // {
-  //   path: "/MyProducts",
-  //   element: <MyProducts />,
-  // },
   {
     path: "/signUpBuyer",
     element: <SignUpBuyer />,
@@ -183,10 +180,10 @@ const router = createBrowserRouter([
     path: "/shopping-cart",
     element: <ShoppingCart />,
   },
-  // {
-  //   path: "/checkout",
-  //   element: <Checkout />,
-  // },
+  {
+    path: "/checkout",
+    element: <Checkout />,
+  },
   // {
   //   path: "/wallet",
   //   element: <Wallet />,
